@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #f3ede2;
+  --paper: #fff9f2;
+  --ink: #292524;
+  --accent: #8a3a2f;
+  --accent-soft: #d6a58f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--ink);
+  background: radial-gradient(circle at top right, #ffe3cf, var(--bg) 55%);
+}
+
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  overflow: auto;
+  border-bottom: 1px solid #dac7b5;
+  background: #fffbf6f2;
+  backdrop-filter: blur(8px);
+}
+
+.top-nav a {
+  text-decoration: none;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid #dac7b5;
+  padding: 7px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.booth-page {
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: 32px;
+}
+
+.hero p {
+  margin-top: 8px;
+  font-size: 16px;
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.panel {
+  background: var(--paper);
+  border: 1px solid #d8c8b8;
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.slot {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 10px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px dashed #c8ab95;
+}
+
+input,
+select,
+button {
+  border: 1px solid #cab8a8;
+  border-radius: 9px;
+  padding: 8px;
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--accent), #6b1d16);
+  color: #fff;
+}
+
+.summary {
+  margin-top: 8px;
+  display: grid;
+  gap: 8px;
+}
+
+.result img {
+  width: 100%;
+  max-width: 560px;
+  border-radius: 14px;
+  border: 1px solid #d8c8b8;
+}
+
+.error {
+  color: #991b1b;
+  font-weight: 600;
+}
+
+@media (max-width: 960px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
