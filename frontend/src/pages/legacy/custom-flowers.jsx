@@ -1,5 +1,5 @@
 import React from 'react';
-
+import { Link } from 'react-router-dom';
 export default function Customhoa(){
   return (
 <div className="w-[1440px] h-[1000px] px-10 relative bg-Color-3 inline-flex flex-col justify-start items-center overflow-hidden">
