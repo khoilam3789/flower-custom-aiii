@@ -6,7 +6,9 @@ const urlToGenerativePart = async (url) => {
   let finalUrl = url;
   try {
     const isLocal = url.startsWith('/');
-    finalUrl = isLocal ? `http://localhost:5173${url}` : url;
+    const frontendOrigin = process.env.CLIENT_ORIGIN
+      || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:5173");
+    finalUrl = isLocal ? new URL(url, frontendOrigin).toString() : url;
     const response = await axios.get(finalUrl, { responseType: 'arraybuffer' });
     const buffer = Buffer.from(response.data, 'binary');
     return {
