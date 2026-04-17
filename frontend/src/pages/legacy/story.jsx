@@ -74,43 +74,22 @@ const overviewBlogs = [
     title: "Ý nghĩa các loài hoa trong ngày Valentine: Chọn hoa tặng người thương sao cho đúng?",
     excerpt: "Hoa hồng được mệnh danh là nữ hoàng của các loài hoa. Theo thần thoại Hy Lạp, hoa hồng không chỉ là một loài hoa bình thường mà được tạo ra từ chính các vị thần...",
     date: "12/3/2026",
-    image: "https://images.unsplash.com/photo-1525310072745-f49212b5ac6d?w=900&h=520&fit=crop",
+    image: "/images/blog1/anh1.png",
     link: "/blog-1"
   },
   {
     title: "Túi hoa tự thiết kế: Khi việc mang hoa trở thành một trải nghiệm trọn vẹn",
     excerpt: "Một bó hoa luôn mang theo những cảm xúc đẹp. Đó có thể là lời yêu, sự trân trọng, hay đơn giản là một khoảnh khắc muốn lưu giữ...",
     date: "24/2/2026",
-    image: "https://images.unsplash.com/photo-1487073240288-854ac7f1bb3c?w=900&h=520&fit=crop",
+    image: "/images/blog2/anh1.png",
     link: "/blog-2"
   },
   {
     title: "Cách bảo quản hoa tươi: Giữ trọn vẻ đẹp và cảm xúc theo thời gian",
     excerpt: "Một bó hoa không chỉ đẹp ở khoảnh khắc được trao đi, mà còn nằm ở cách nó được nâng niu và gìn giữ sau đó...",
-    date: "13/1/2026",
-    image: "https://images.unsplash.com/photo-1470509037663-253afd7f0f51?w=900&h=520&fit=crop",
+    date: "20/12/2026",
+    image: "/images/blog3/anh1.png",
     link: "/blog-3"
-  },
-  {
-    title: "Hoa Tulip: 7 sắc màu - 7 bản tình ca - Bạn đã biết cách chọn màu thay lời muốn nói?",
-    excerpt: "Khám phá ngôn ngữ diệu kỳ ẩn sau vẻ đẹp thanh cao của Hoa Tulip tại Dear, Chérie. Không chỉ là loài hoa đại diện cho sự khởi đầu mới...",
-    date: "12/3/2026",
-    image: "https://images.unsplash.com/photo-1516478177764-9fe5bd7e9717?w=900&h=520&fit=crop",
-    link: "/blog-1"
-  },
-  {
-    title: "Hoa dành cho từng mối quan hệ: người yêu, bạn thân, gia đình",
-    excerpt: "Hoa hồng được mệnh danh là nữ hoàng của các loài hoa. Theo thần thoại Hy Lạp, hoa hồng không chỉ là một loài hoa bình thường...",
-    date: "12/3/2026",
-    image: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=900&h=520&fit=crop",
-    link: "/blog-2"
-  },
-  {
-    title: "Ý nghĩa các loài hoa trong ngày Valentine: Chọn hoa tặng người thương sao cho đúng?",
-    excerpt: "Hoa hồng được mệnh danh là nữ hoàng của các loài hoa. Theo thần thoại Hy Lạp, hoa hồng không chỉ là một loài hoa bình thường...",
-    date: "12/3/2026",
-    image: "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=900&h=520&fit=crop",
-    link: "/blog-1"
   }
 ];
 

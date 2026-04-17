@@ -122,7 +122,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mx-auto">
             {/* Blog 1 */}
             <div className="bg-red-400 rounded-[30px] overflow-hidden shadow-lg transform transition hover:-translate-y-2 flex flex-col p-8 pb-10">
-              <img src="/images/home/1.jpg" className="w-full h-48 object-cover rounded-[15px] opacity-90 mb-6" />
+              <img src="/images/blog1/anh1.png" className="w-full h-48 object-cover rounded-[15px] opacity-90 mb-6" />
               <div className="text-white flex flex-col flex-grow">
                 <span className="text-white text-[10px] font-thin font-['Geologica'] leading-3 mb-4 opacity-80 border border-white/30 px-2 py-1 self-start rounded">12/3/2026</span>
                 <h3 className="text-white text-base font-extrabold font-['Geologica'] leading-5 mb-4">Ý nghĩa các loài hoa trong ngày Valentine: Chọn hoa tặng người thương sao cho đúng?</h3>
@@ -133,7 +133,7 @@ export default function Home() {
 
             {/* Blog 2 */}
             <div className="bg-slate-500 rounded-[30px] overflow-hidden shadow-lg transform transition hover:-translate-y-2 mt-8 md:mt-24 flex flex-col p-8 pb-10">
-              <img src="/images/home/2.png" className="w-full h-48 object-cover rounded-[15px] opacity-90 mb-6" />
+              <img src="/images/blog2/anh1.png" className="w-full h-48 object-cover rounded-[15px] opacity-90 mb-6" />
               <div className="text-white flex flex-col flex-grow">
                 <span className="text-white text-[10px] font-thin font-['Geologica'] leading-3 mb-4 opacity-80 border border-white/30 px-2 py-1 self-start rounded">24/2/2026</span>
                 <h3 className="text-white text-base font-extrabold font-['Geologica'] leading-5 mb-4">Túi hoa tự thiết kế: Khi việc mang hoa trở thành một trải nghiệm trọn vẹn</h3>
@@ -144,7 +144,7 @@ export default function Home() {
 
             {/* Blog 3 */}
             <div className="bg-red-400 rounded-[30px] overflow-hidden shadow-lg transform transition hover:-translate-y-2 flex flex-col p-8 pb-10">
-              <img src="/images/home/3.png" className="w-full h-48 object-cover rounded-[15px] opacity-90 mb-6" />
+              <img src="/images/blog3/anh1.png" className="w-full h-48 object-cover rounded-[15px] opacity-90 mb-6" />
               <div className="text-white flex flex-col flex-grow">
                 <span className="text-white text-[10px] font-thin font-['Geologica'] leading-3 mb-4 opacity-80 border border-white/30 px-2 py-1 self-start rounded">20/12/2026</span>
                 <h3 className="text-white text-base font-extrabold font-['Geologica'] leading-5 mb-4">Cách bảo quản hoa tươi: Giữ trọn vẻ đẹp và cảm xúc theo thời gian</h3>
