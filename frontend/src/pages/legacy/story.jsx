@@ -144,29 +144,11 @@ const overviewBlogs = [
 export default function Story() {
   const { slug } = useParams();
   const [story, setStory] = useState(defaultStory);
-  const [storyList, setStoryList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [loadError, setLoadError] = useState("");
 
-  const storySlug = useMemo(() => slug || "hoa-mau-don", [slug]);
-
-  useEffect(() => {
-    const fetchStoryList = async () => {
-      try {
-        const response = await fetch(`${API_BASE}/api/stories`);
-        if (!response.ok) return;
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          setStoryList(data);
-        }
-      } catch (_error) {
-        // Keep UI usable with current story even if list endpoint fails.
-      }
-    };
-
-    fetchStoryList();
-  }, []);
+  const storySlug = useMemo(() => slug || "", [slug]);
 
   useEffect(() => {
     const fetchStory = async () => {
@@ -216,12 +198,6 @@ export default function Story() {
   if (!slug) {
     return (
       <div className="w-full bg-Color-3 pb-24">
-        <section className="px-4 pt-6 md:px-8 lg:px-10">
-          <div className="max-w-[1180px] mx-auto rounded-2xl bg-rose-700/85 text-white text-center py-3 px-4 font-['Geologica'] text-sm md:text-base font-light tracking-wide">
-            Đây là website phục vụ môn học Digital Marketing và không nhằm mục đích thương mại
-          </div>
-        </section>
-
         <section className="max-w-[1180px] mx-auto px-4 md:px-8 lg:px-10 mt-10">
           <div className="text-center mb-10">
             <h1 className="text-5xl md:text-7xl text-rose-700 font-semibold font-['Gowun_Batang']">Triển Lãm</h1>
@@ -335,12 +311,6 @@ export default function Story() {
 
   return (
     <div className="w-full bg-Color-3 pb-24">
-        <section className="px-4 pt-6 md:px-8 lg:px-10">
-          <div className="max-w-[1180px] mx-auto rounded-2xl bg-rose-700/85 text-white text-center py-3 px-4 font-['Geologica'] text-sm md:text-base font-light tracking-wide">
-            Đây là website phục vụ môn học Digital Marketing và không nhằm mục đích thương mại
-          </div>
-        </section>
-
         <section className="max-w-[1280px] mx-auto px-6 md:px-12 py-14 flex flex-col items-center text-center">
           <div className="mb-8 w-52 h-52 rounded-full overflow-hidden border-4 border-white shadow-xl shadow-slate-500/20">
             <img src={story.heroImage} alt={story.title} className="w-full h-full object-cover" />
