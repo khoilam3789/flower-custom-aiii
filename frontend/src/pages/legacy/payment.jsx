@@ -1,13 +1,54 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useCart } from "../../context/CartContext";
 
 export default function Payment() {
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const navigate = useNavigate();
+  const { addToCart } = useCart();
 
   const handleCheckout = (e) => {
     e.preventDefault();
     navigate("/payment-success");
+  };
+
+  const handleAddToCart = async () => {
+    try {
+      const selectionKeys = ["flowerSelection", "leafSelection", "bagSelection", "cardSelection"];
+      const blocks = selectionKeys
+        .map((key) => {
+          const raw = localStorage.getItem(key);
+          if (!raw) return null;
+          const parsed = JSON.parse(raw);
+          return {
+            key,
+            subtotal: Number(parsed?.subtotal) || 0,
+            items: Array.isArray(parsed?.items) ? parsed.items : []
+          };
+        })
+        .filter(Boolean);
+
+      const itemPrice = blocks.reduce((sum, block) => sum + block.subtotal, 0);
+      const customDetails = {
+        source: "payment-page",
+        blocks: blocks.map((block) => ({
+          key: block.key,
+          items: block.items.map((item) => ({
+            label: item.label,
+            quantity: item.quantity,
+            lineTotal: item.lineTotal
+          }))
+        }))
+      };
+
+      if (itemPrice > 0) {
+        await addToCart(customDetails, 1, itemPrice);
+      }
+    } catch (_error) {
+      // Fallback: still navigate so user is not stuck on payment page.
+    } finally {
+      navigate("/cart");
+    }
   };
 
   return (
@@ -134,9 +175,13 @@ export default function Payment() {
                 XÁC NHẬN THANH TOÁN
               </button>
 
-              <Link to="/cart" className="block w-full text-center px-8 py-4 bg-white text-rose-700 border-2 border-rose-700 font-bold text-base rounded-full hover:bg-rose-50 transition uppercase tracking-widest">
+              <button
+                type="button"
+                onClick={handleAddToCart}
+                className="block w-full text-center px-8 py-4 bg-white text-rose-700 border-2 border-rose-700 font-bold text-base rounded-full hover:bg-rose-50 transition uppercase tracking-widest"
+              >
                 BỎ VÀO GIỎ HÀNG
-              </Link>
+              </button>
 
               <div className="text-center">
                 <Link to="/cart" className="text-slate-500 hover:text-rose-700 font-semibold uppercase tracking-wider text-sm transition">
