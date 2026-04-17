@@ -1,15 +1,132 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
+import { useAuth } from "../../context/AuthContext";
+import { API_BASE } from "../../api";
 
 export default function Payment() {
   const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [summaryItems, setSummaryItems] = useState([]);
+  const [selectionBlocks, setSelectionBlocks] = useState([]);
+  const [cardMessage, setCardMessage] = useState("");
   const navigate = useNavigate();
-  const { addToCart } = useCart();
+  const { addToCart, clearCart } = useCart();
+  const { user, token } = useAuth();
 
-  const handleCheckout = (e) => {
+  const selectionLabels = {
+    flowerSelection: "Hoa",
+    leafSelection: "Lá",
+    bagSelection: "Túi",
+    cardSelection: "Thiệp"
+  };
+
+  useEffect(() => {
+    const selectionKeys = ["flowerSelection", "leafSelection", "bagSelection", "cardSelection"];
+    const blocks = selectionKeys
+      .map((key) => {
+        const raw = localStorage.getItem(key);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        return {
+          key,
+          label: selectionLabels[key],
+          subtotal: Number(parsed?.subtotal) || 0,
+          items: Array.isArray(parsed?.items) ? parsed.items : [],
+          message: typeof parsed?.message === "string" ? parsed.message : ""
+        };
+      })
+      .filter(Boolean);
+
+    const flattened = blocks.flatMap((block) =>
+      block.items.map((item, index) => ({
+        id: `${block.key}-${index}-${item.key || item.label || "item"}`,
+        group: block.label,
+        label: item.label || "Sản phẩm tùy chọn",
+        quantity: Number(item.quantity) || 0,
+        lineTotal: Number(item.lineTotal) || 0,
+        imageUrl: item.imageUrl || ""
+      }))
+    );
+
+    setSelectionBlocks(blocks);
+    setSummaryItems(flattened);
+
+    const cardBlock = blocks.find((block) => block.key === "cardSelection");
+    setCardMessage(cardBlock?.message || "");
+  }, []);
+
+  const subTotal = useMemo(
+    () => selectionBlocks.reduce((sum, block) => sum + block.subtotal, 0),
+    [selectionBlocks]
+  );
+  const shippingFee = subTotal > 0 ? 30000 : 0;
+  const totalPrice = subTotal + shippingFee;
+
+  const formatPrice = (value) => `${new Intl.NumberFormat("vi-VN").format(value)}₫`;
+
+  const buildCustomDetails = () => ({
+    source: "payment-page",
+    message: cardMessage,
+    blocks: selectionBlocks.map((block) => ({
+      key: block.key,
+      label: block.label,
+      subtotal: block.subtotal,
+      items: block.items.map((item) => ({
+        label: item.label,
+        quantity: item.quantity,
+        lineTotal: item.lineTotal
+      }))
+    }))
+  });
+
+  const clearComposerSelections = () => {
+    localStorage.removeItem("flowerSelection");
+    localStorage.removeItem("leafSelection");
+    localStorage.removeItem("bagSelection");
+    localStorage.removeItem("cardSelection");
+    localStorage.removeItem("aiGeneratedImage");
+    localStorage.removeItem("aiGeneratedComboKey");
+    localStorage.removeItem("aiGeneratedCacheVersion");
+  };
+
+  const handleCheckout = async (e) => {
     e.preventDefault();
-    navigate("/payment-success");
+
+    if (subTotal <= 0) {
+      alert("Chưa có sản phẩm nào từ luồng thiết kế để thanh toán.");
+      navigate("/custom-flowers");
+      return;
+    }
+
+    if (!user || !token) {
+      alert("Vui lòng đăng nhập để thanh toán đơn hàng.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      await addToCart(buildCustomDetails(), 1, subTotal);
+
+      const res = await fetch(`${API_BASE}/api/orders/checkout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        alert(data.message || "Thanh toán thất bại.");
+        return;
+      }
+
+      clearComposerSelections();
+      if (clearCart) clearCart();
+      navigate("/payment-success");
+    } catch (_error) {
+      alert("Không thể kết nối server để thanh toán.");
+    }
   };
 
   const handleAddToCart = async () => {
@@ -29,17 +146,7 @@ export default function Payment() {
         .filter(Boolean);
 
       const itemPrice = blocks.reduce((sum, block) => sum + block.subtotal, 0);
-      const customDetails = {
-        source: "payment-page",
-        blocks: blocks.map((block) => ({
-          key: block.key,
-          items: block.items.map((item) => ({
-            label: item.label,
-            quantity: item.quantity,
-            lineTotal: item.lineTotal
-          }))
-        }))
-      };
+      const customDetails = buildCustomDetails();
 
       if (itemPrice > 0) {
         await addToCart(customDetails, 1, itemPrice);
@@ -139,33 +246,43 @@ export default function Payment() {
             
             {/* Items */}
             <div className="space-y-6 mb-8 max-h-[300px] overflow-y-auto pr-2">
-              <div className="flex gap-4 items-center">
-                <div className="w-16 h-16 rounded-xl overflow-hidden shadow-sm border border-slate-200 shrink-0">
-                  <img src="https://images.unsplash.com/photo-1591886960571-74d43a9d4166?w=100&h=100&fit=crop" className="w-full h-full object-cover" alt="Sản phẩm" />
-                </div>
-                <div className="flex-1">
-                  <h4 className="font-bold text-slate-800 line-clamp-2">Bó hoa hồng tự chọn AI (Mã: #DH1093)</h4>
-                  <p className="text-slate-500 text-sm">SL: 1</p>
-                </div>
-                <div className="font-bold text-rose-700">450.000₫</div>
-              </div>
+              {summaryItems.length > 0 ? (
+                summaryItems.map((item) => (
+                  <div key={item.id} className="flex gap-4 items-center">
+                    <div className="w-16 h-16 rounded-xl overflow-hidden shadow-sm border border-slate-200 shrink-0 bg-white">
+                      <img
+                        src={item.imageUrl || "https://images.unsplash.com/photo-1591886960571-74d43a9d4166?w=100&h=100&fit=crop"}
+                        className="w-full h-full object-cover"
+                        alt={item.label}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-slate-800 line-clamp-2">{item.group}: {item.label}</h4>
+                      <p className="text-slate-500 text-sm">SL: {item.quantity}</p>
+                    </div>
+                    <div className="font-bold text-rose-700">{formatPrice(item.lineTotal)}</div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8 text-slate-500">Chưa có dữ liệu từ bước thiết kế.</div>
+              )}
             </div>
 
             <div className="border-t border-slate-200 pt-6 mb-6 flex flex-col space-y-4">
               <div className="flex justify-between text-slate-600">
                 <span className="font-light">Tạm tính</span>
-                <span className="font-semibold text-slate-800">450.000₫</span>
+                <span className="font-semibold text-slate-800">{formatPrice(subTotal)}</span>
               </div>
               <div className="flex justify-between text-slate-600">
                 <span className="font-light">Phí vận chuyển</span>
-                <span className="font-semibold text-slate-800">30.000₫</span>
+                <span className="font-semibold text-slate-800">{formatPrice(shippingFee)}</span>
               </div>
             </div>
 
             <div className="border-t border-slate-200 pt-6 mb-8 flex flex-col sm:flex-row sm:items-end justify-between items-start gap-4 bg-rose-50 -mx-8 px-8 py-6 rounded-b-3xl -mb-8">
                <span className="text-xl font-bold font-['Geologica'] text-slate-800 uppercase flex-1">Tổng cộng</span>
                <div className="text-right flex-1">
-                  <div className="text-3xl font-extrabold text-rose-700 mb-1">480.000₫</div>
+                <div className="text-3xl font-extrabold text-rose-700 mb-1">{formatPrice(totalPrice)}</div>
                   <div className="text-xs text-rose-700/60 font-semibold uppercase tracking-wider">(Đã bao gồm VAT)</div>
                </div>
             </div>
