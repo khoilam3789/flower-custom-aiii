@@ -50,30 +50,73 @@ export default function Story() {
   const { slug } = useParams();
   const [story, setStory] = useState(defaultStory);
   const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [loadError, setLoadError] = useState("");
 
   const storySlug = useMemo(() => slug || "hoa-mau-don", [slug]);
 
   useEffect(() => {
     const fetchStory = async () => {
+      // Route /story khong co slug thi dung trang mau mac dinh.
+      if (!slug) {
+        setStory(defaultStory);
+        setNotFound(false);
+        setLoadError("");
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
+      setNotFound(false);
+      setLoadError("");
+
       try {
-        const response = await fetch(`${API_BASE}/api/stories/${storySlug}`);
+        const response = await fetch(`${API_BASE}/api/stories/${encodeURIComponent(storySlug)}`);
         if (!response.ok) {
-          setStory(defaultStory);
+          if (response.status === 404) {
+            setNotFound(true);
+          } else {
+            setLoadError(`Khong tai duoc noi dung (HTTP ${response.status})`);
+          }
           return;
         }
 
         const data = await response.json();
         setStory(data);
       } catch (_error) {
-        setStory(defaultStory);
+        setLoadError("Khong ket noi duoc den server story");
       } finally {
         setLoading(false);
       }
     };
 
     fetchStory();
-  }, [storySlug]);
+  }, [storySlug, slug]);
+
+  if (loading) {
+    return (
+      <div className="w-full min-h-screen bg-Color-3 flex items-center justify-center px-6">
+        <div className="text-slate-600 font-semibold">Dang tai noi dung story...</div>
+      </div>
+    );
+  }
+
+  if (notFound || loadError) {
+    return (
+      <div className="w-full min-h-screen bg-Color-3 flex items-center justify-center px-6">
+        <div className="max-w-2xl w-full bg-white rounded-2xl border border-slate-200 p-8 text-center shadow-sm">
+          <h1 className="text-3xl font-bold text-slate-800">Khong tim thay trang story</h1>
+          {slug && <p className="text-slate-500 mt-3">Slug dang mo: <span className="font-semibold text-slate-700">{slug}</span></p>}
+          {loadError && <p className="text-rose-700 mt-2">{loadError}</p>}
+          <p className="text-slate-500 mt-3">Hay kiem tra lai slug trong Admin - Story Pages va bat Public cho bai viet.</p>
+          <div className="mt-6 flex items-center justify-center gap-3">
+            <Link to="/admin?tab=stories" className="px-4 py-2 rounded-lg bg-rose-700 text-white font-semibold hover:bg-rose-800 transition">Mo Admin Story</Link>
+            <Link to="/story" className="px-4 py-2 rounded-lg bg-slate-100 text-slate-700 font-semibold hover:bg-slate-200 transition">Ve trang mac dinh</Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full flex-col bg-Color-3 pb-24">
@@ -116,23 +159,19 @@ export default function Story() {
           <h2 className="text-4xl text-rose-700 font-['Geologica'] flex items-end">{story.colorsTitle}</h2>
         </div>
 
-        {loading ? (
-          <div className="text-slate-500">Dang tai noi dung...</div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
-            {story.colors?.map((item, index) => (
-              <div
-                key={`${item.color}-${index}`}
-                className={`flex items-center bg-white rounded-full p-2 pr-6 shadow-lg border border-white/40 hover:scale-[1.02] transition cursor-default ${shadowClassByIndex[index % shadowClassByIndex.length]}`}
-              >
-                <img src={item.icon} alt={item.color} className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-sm" />
-                <p className="ml-4 font-light text-black/80 text-sm md:text-base">
-                  <span className="font-bold">{item.color} </span> - {item.desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+          {story.colors?.map((item, index) => (
+            <div
+              key={`${item.color}-${index}`}
+              className={`flex items-center bg-white rounded-full p-2 pr-6 shadow-lg border border-white/40 hover:scale-[1.02] transition cursor-default ${shadowClassByIndex[index % shadowClassByIndex.length]}`}
+            >
+              <img src={item.icon} alt={item.color} className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-sm" />
+              <p className="ml-4 font-light text-black/80 text-sm md:text-base">
+                <span className="font-bold">{item.color} </span> - {item.desc}
+              </p>
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="max-w-[1280px] mx-auto px-12 md:px-24 mt-32 text-center">
