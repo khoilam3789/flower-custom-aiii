@@ -4,7 +4,7 @@ import { API_BASE } from '../../api';
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const requestPreviewWithRetry = async (url, payload, maxRetries = 2) => {
+const requestPreviewWithRetry = async (url, payload, maxRetries = 1) => {
   for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
     const response = await fetch(url, {
       method: "POST",
@@ -22,10 +22,9 @@ const requestPreviewWithRetry = async (url, payload, maxRetries = 2) => {
     }
 
     const retryAfterHeader = Number(response.headers.get("Retry-After"));
-    const backoffMs = 3000 * (attempt + 1);
     const delayMs = Number.isFinite(retryAfterHeader) && retryAfterHeader > 0
       ? retryAfterHeader * 1000
-      : backoffMs;
+      : 3000;
 
     console.warn(`Preview API quá tải, sẽ thử lại sau ${Math.round(delayMs / 1000)} giây...`);
     await sleep(delayMs);
@@ -107,7 +106,7 @@ export default function CustomPreview() {
         const resAi = await requestPreviewWithRetry(
           `${backendUrl}/api/ai/preview`,
           { flowerUrl, leafUrl, bagUrl },
-          2
+          1
         );
 
         if (resAi?.ok) {
