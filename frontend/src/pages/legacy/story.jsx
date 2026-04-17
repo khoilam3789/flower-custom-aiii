@@ -254,6 +254,94 @@ export default function Story() {
     );
   }
 
+  // Revert all flower story pages to the classic layout.
+  if (true) {
+    return (
+      <div className="w-full bg-Color-3 pb-24">
+        <section className="px-4 pt-6 md:px-8 lg:px-10">
+          <div className="max-w-[1180px] mx-auto rounded-2xl bg-rose-700/85 text-white text-center py-3 px-4 font-['Geologica'] text-sm md:text-base font-light tracking-wide">
+            Đây là website phục vụ môn học Digital Marketing và không nhằm mục đích thương mại
+          </div>
+        </section>
+
+        <section className="max-w-[1280px] mx-auto px-6 md:px-12 py-14 flex flex-col items-center text-center">
+          <div className="mb-8 w-52 h-52 rounded-full overflow-hidden border-4 border-white shadow-xl shadow-slate-500/20">
+            <img src={story.heroImage} alt={story.title} className="w-full h-full object-cover" />
+          </div>
+          <h1 className="text-5xl md:text-6xl text-rose-700 font-['Italianno'] mb-3 leading-none">{story.title}</h1>
+          <p className="text-xl md:text-3xl font-extralight text-black/80 font-['Geologica'] tracking-wide">{story.subtitle}</p>
+        </section>
+
+        <section className="max-w-[1280px] mx-auto px-6 md:px-12 relative z-10">
+          <div className="bg-white/80 rounded-[30px] p-8 md:p-12 shadow-[inset_5px_5px_70px_0px_rgba(175,46,56,0.35)] border-[3px] border-slate-500/70 relative">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-2 h-12 bg-rose-700 blur-[1px]"></div>
+              <h2 className="text-4xl md:text-5xl text-rose-700 font-normal font-['Geologica'] tracking-wide">
+                {normalizeCommonVietnamese(story.storyTitle, "Câu chuyện")}
+              </h2>
+            </div>
+
+            <p className="text-justify text-black/80 text-lg md:text-2xl font-extralight font-['Geologica'] leading-relaxed tracking-wide">
+              {story.storyBody}
+            </p>
+
+            {story.poemLines?.length > 0 && (
+              <div className="mt-8 text-center italic font-light font-['Geologica'] space-y-2 text-black/80">
+                <p className="font-medium text-rose-700 not-italic">{story.poemTitle}</p>
+                {story.poemLines.map((line, idx) => (
+                  <p key={`${line}-${idx}`}>{line}</p>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+
+        <section className="max-w-[1280px] mx-auto px-6 md:px-12 mt-10">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="w-2 h-12 bg-rose-700 blur-[1px]"></div>
+            <h2 className="text-4xl md:text-5xl text-rose-700 font-normal font-['Geologica'] tracking-wide">
+              {normalizeCommonVietnamese(story.colorsTitle, "Các sắc màu")}
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
+            {story.colors?.map((item, index) => (
+              <article
+                key={`${item.color}-${index}`}
+                className={`bg-white rounded-[30px] px-5 py-4 shadow-lg border border-rose-50 ${shadowClassByIndex[index % shadowClassByIndex.length]}`}
+              >
+                <div className="flex items-center gap-4">
+                  <img src={item.icon} alt={item.color} className="w-14 h-14 rounded-full object-cover" />
+                  <p className="text-black/80 text-lg font-normal font-['Geologica'] leading-7 tracking-wide">
+                    <span className="font-semibold">{item.color}</span> - {item.desc}
+                  </p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="max-w-[1280px] mx-auto px-6 md:px-12 mt-14 text-center">
+          <h2 className="text-5xl md:text-6xl text-blue-600 font-normal font-['Italianno'] tracking-widest mb-8">
+            {normalizeCommonVietnamese(story.exploreTitle, "Khám phá thêm về")}
+          </h2>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            {(story.explore || []).map((item, index) => (
+              <Link
+                key={`${item.slug}-${index}`}
+                to={`/story/${item.slug}`}
+                className="bg-white rounded-[10px] py-6 text-black/80 text-xl font-bold font-['Geologica'] leading-9 tracking-wide shadow-[0px_4px_4px_0px_rgba(175,46,56,0.50)] hover:bg-rose-700 hover:text-white transition"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        </section>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full bg-[#fbf5f1] pb-24">
       <section className="px-4 pt-6 md:px-8 lg:px-10">
