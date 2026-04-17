@@ -116,13 +116,19 @@ export const composeBoothImage = async ({
     });
   }
 
-  await base
+  const output = base
     .composite(composites)
     .composite([
       {
         input: Buffer.from(`<svg width="${WIDTH}" height="${HEIGHT}" xmlns="http://www.w3.org/2000/svg"><ellipse cx="512" cy="900" rx="280" ry="60" fill="#000" fill-opacity="0.18"/></svg>`)
       }
     ])
-    .png({ quality: 95 })
-    .toFile(outputAbsolutePath);
+    .png({ quality: 95 });
+
+  if (outputAbsolutePath) {
+    await output.toFile(outputAbsolutePath);
+    return null;
+  }
+
+  return output.toBuffer();
 };

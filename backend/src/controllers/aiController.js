@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import axios from "axios";
+import { composeBoothImage } from "../services/imageComposer.js";
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -19,8 +20,8 @@ const isTransientModelError = (error) => {
   );
 };
 
-// Helper tải ảnh URL → base64 inlineData cho Gemini
-const urlToGenerativePart = async (url) => {
+// Helper tải ảnh URL và trả cả inlineData (cho Gemini) lẫn dataUri (cho fallback local compose)
+const urlToImagePayload = async (url) => {
   let finalUrl = url;
   try {
     const isLocal = url.startsWith('/');
@@ -29,10 +30,14 @@ const urlToGenerativePart = async (url) => {
     finalUrl = isLocal ? new URL(url, frontendOrigin).toString() : url;
     const response = await axios.get(finalUrl, { responseType: 'arraybuffer' });
     const buffer = Buffer.from(response.data, 'binary');
+    const mimeType = response.headers['content-type'] || 'image/png';
+    const base64 = buffer.toString("base64");
+
     return {
+      dataUri: `data:${mimeType};base64,${base64}`,
       inlineData: {
-        data: buffer.toString("base64"),
-        mimeType: response.headers['content-type'] || 'image/png'
+        data: base64,
+        mimeType
       },
     };
   } catch (error) {
@@ -71,11 +76,14 @@ CRITICAL: The prompt MUST specify a "wide angle, zoomed out, full body shot" ens
 Style requirements: high-end commercial product photography, soft warm studio lighting, bokeh background, photorealistic 8K.
 Return ONLY the prompt text, no quotes, no explanation.`;
 
+    const flowerAsset = await urlToImagePayload(flowerUrl);
+    const leafAsset = leafUrl ? await urlToImagePayload(leafUrl) : null;
+    const bagAsset = bagUrl ? await urlToImagePayload(bagUrl) : null;
+
     const imageParts = [];
-    const fPart = await urlToGenerativePart(flowerUrl);
-    if (fPart) imageParts.push(fPart);
-    if (leafUrl) { const lPart = await urlToGenerativePart(leafUrl); if (lPart) imageParts.push(lPart); }
-    if (bagUrl)  { const bPart = await urlToGenerativePart(bagUrl);  if (bPart) imageParts.push(bPart); }
+    if (flowerAsset?.inlineData) imageParts.push({ inlineData: flowerAsset.inlineData });
+    if (leafAsset?.inlineData) imageParts.push({ inlineData: leafAsset.inlineData });
+    if (bagAsset?.inlineData) imageParts.push({ inlineData: bagAsset.inlineData });
 
     let generatedPrompt = null;
     for (const vModel of VISION_MODELS) {
@@ -111,12 +119,31 @@ Return ONLY the prompt text, no quotes, no explanation.`;
     }
 
     if (!generatedPrompt) {
-      generatedPrompt = [
-        "A hyper-realistic studio product photo of a handcrafted flower bouquet,",
-        "wide angle, zoomed out, full body shot, entire bouquet and container fully visible,",
-        "soft warm lighting, natural color tones, elegant bokeh background, 8k detail"
-      ].join(" ");
-      console.warn("⚠️ Vision quá tải, dùng fallback prompt để tránh trả 503.");
+      // Nếu Vision quá tải, dựng ảnh fallback từ chính asset user đã chọn để đảm bảo liên quan.
+      if (flowerAsset?.dataUri) {
+        try {
+          const composedBuffer = await composeBoothImage({
+            flowers: [{ image: flowerAsset.dataUri, quantity: 1 }],
+            leaves: leafAsset?.dataUri ? [{ image: leafAsset.dataUri, quantity: 1 }] : [],
+            bagImage: bagAsset?.dataUri || null
+          });
+
+          if (composedBuffer) {
+            const fallbackImage = `data:image/png;base64,${composedBuffer.toString("base64")}`;
+            return res.json({
+              imageBase64: fallbackImage,
+              prompt: null,
+              source: "local-compose-fallback",
+              message: "Vision model bận, đã dùng fallback dựng ảnh theo sản phẩm bạn chọn."
+            });
+          }
+        } catch (fallbackError) {
+          console.warn("⚠️ Fallback local compose thất bại:", fallbackError.message);
+        }
+      }
+
+      res.set("Retry-After", "30");
+      return res.status(503).json({ message: "Tất cả Vision model đang bận. Vui lòng thử lại sau 30 giây." });
     }
 
     // ── BƯỚC 2: sinh ảnh với các model có hỗ trợ image output ──
