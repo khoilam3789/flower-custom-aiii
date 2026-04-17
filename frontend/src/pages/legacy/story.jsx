@@ -69,33 +69,6 @@ const exhibitionImages = [
   "https://images.unsplash.com/photo-1501973801540-537f08ccae7b?w=900&h=1200&fit=crop"
 ];
 
-const overviewMeaning = [
-  {
-    title: "Hoa mẫu đơn",
-    body: "Tương truyền rằng, Trung Quốc ngày xưa chỉ có trong cung của vua chúa mới được trồng loài hoa này, qua những chiếc mũ đội đầu của công chúa, phi tần thời ấy.",
-    image: "https://images.unsplash.com/photo-1468327768560-75b778cbb551?w=520&h=760&fit=crop",
-    slug: "hoa-mau-don"
-  },
-  {
-    title: "Hoa tulip",
-    body: "Ở phương Đông, khi một chàng trai tặng hoa tulip cho người yêu, điều đó tượng trưng cho việc chàng đang say đắm vẻ đẹp của nàng...",
-    image: "https://images.unsplash.com/photo-1520763185298-1b434c919102?w=520&h=760&fit=crop",
-    slug: "hoa-tulip"
-  },
-  {
-    title: "Hoa hồng",
-    body: "Hoa hồng được mệnh danh là \"nữ hoàng của các loài hoa\". Theo thần thoại Hy Lạp, hoa hồng không chỉ là một loài hoa bình thường mà được tạo ra từ chính các vị thần...",
-    image: "https://images.unsplash.com/photo-1518621736915-f3b1c41bfd00?w=520&h=760&fit=crop",
-    slug: "hoa-hong"
-  },
-  {
-    title: "Hoa cẩm tú cầu",
-    body: "Được gọi là \"hoa hồng Nhật Bản\" là loài hoa gắn liền với mùa mưa, thời điểm những cơn mưa đầu hạ phủ lên đất trời một lớp ẩm ướt dịu dàng...",
-    image: "https://images.unsplash.com/photo-1597848212624-1f814b0d3fdb?w=520&h=760&fit=crop",
-    slug: "cam-tu-cau"
-  }
-];
-
 const overviewBlogs = [
   {
     title: "Ý nghĩa các loài hoa trong ngày Valentine: Chọn hoa tặng người thương sao cho đúng?",
@@ -144,11 +117,43 @@ const overviewBlogs = [
 export default function Story() {
   const { slug } = useParams();
   const [story, setStory] = useState(defaultStory);
+  const [overviewStories, setOverviewStories] = useState([]);
+  const [overviewLoading, setOverviewLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [loadError, setLoadError] = useState("");
 
   const storySlug = useMemo(() => slug || "", [slug]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchOverviewStories = async () => {
+      setOverviewLoading(true);
+      try {
+        const response = await fetch(`${API_BASE}/api/stories`);
+        if (!response.ok) {
+          if (isMounted) setOverviewStories([]);
+          return;
+        }
+
+        const data = await response.json();
+        if (isMounted && Array.isArray(data)) {
+          setOverviewStories(data.filter((item) => item?.slug));
+        }
+      } catch (_error) {
+        if (isMounted) setOverviewStories([]);
+      } finally {
+        if (isMounted) setOverviewLoading(false);
+      }
+    };
+
+    fetchOverviewStories();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const fetchStory = async () => {
@@ -233,25 +238,37 @@ export default function Story() {
             <h2 className="text-5xl md:text-6xl text-rose-700 font-['Italianno'] leading-none">Ý Nghĩa</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {overviewMeaning.map((item, index) => (
-              <article key={`${item.slug}-${index}`} className="bg-white rounded-[28px] border border-rose-100 overflow-hidden shadow-sm">
-                <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr]">
-                  <img src={item.image} alt={item.title} className="w-full h-56 sm:h-full object-cover" />
-                  <div className="p-5 md:p-6 flex flex-col">
-                    <h3 className="text-2xl text-black font-normal font-['Geologica']">{item.title}</h3>
-                    <p className="mt-3 text-black/75 text-base font-extralight font-['Geologica'] leading-7 line-clamp-5">{item.body}</p>
-                    <Link
-                      to={`/story/${item.slug}`}
-                      className="mt-5 inline-flex self-start rounded-full px-5 py-2 bg-rose-700 text-white font-semibold font-['Geologica'] hover:bg-rose-800 transition"
-                    >
-                      Đọc thêm
-                    </Link>
+          {overviewLoading ? (
+            <div className="text-center text-slate-600 font-['Geologica']">Đang tải danh sách ý nghĩa...</div>
+          ) : overviewStories.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {overviewStories.map((item, index) => (
+                <article key={item._id || `${item.slug}-${index}`} className="bg-white rounded-[28px] border border-rose-100 overflow-hidden shadow-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr]">
+                    <img
+                      src={item.heroImage || defaultStory.heroImage}
+                      alt={item.title || "Story"}
+                      className="w-full h-56 sm:h-full object-cover"
+                    />
+                    <div className="p-5 md:p-6 flex flex-col">
+                      <h3 className="text-2xl text-black font-normal font-['Geologica']">{item.title || "Story"}</h3>
+                      <p className="mt-3 text-black/75 text-base font-extralight font-['Geologica'] leading-7 line-clamp-5">
+                        {item.subtitle || item.storyBody || "Khám phá ý nghĩa của loài hoa này."}
+                      </p>
+                      <Link
+                        to={`/story/${item.slug}`}
+                        className="mt-5 inline-flex self-start rounded-full px-5 py-2 bg-rose-700 text-white font-semibold font-['Geologica'] hover:bg-rose-800 transition"
+                      >
+                        Đọc thêm
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
-          </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center text-slate-600 font-['Geologica']">Chưa có dữ liệu story để hiển thị.</div>
+          )}
         </section>
 
         <section className="max-w-[1180px] mx-auto px-4 md:px-8 lg:px-10 mt-24">
