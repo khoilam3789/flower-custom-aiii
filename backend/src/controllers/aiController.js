@@ -111,8 +111,12 @@ Return ONLY the prompt text, no quotes, no explanation.`;
     }
 
     if (!generatedPrompt) {
-      res.set("Retry-After", "30");
-      return res.status(503).json({ message: "Tất cả Vision model đang bận. Vui lòng thử lại sau 30 giây." });
+      generatedPrompt = [
+        "A hyper-realistic studio product photo of a handcrafted flower bouquet,",
+        "wide angle, zoomed out, full body shot, entire bouquet and container fully visible,",
+        "soft warm lighting, natural color tones, elegant bokeh background, 8k detail"
+      ].join(" ");
+      console.warn("⚠️ Vision quá tải, dùng fallback prompt để tránh trả 503.");
     }
 
     // ── BƯỚC 2: sinh ảnh với các model có hỗ trợ image output ──
