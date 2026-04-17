@@ -1,76 +1,70 @@
-﻿export default function Blog2(){
+export default function Blog2() {
   return (
-<div className="w-[1440px] h-[3484px] px-10 relative bg-Color-3 inline-flex flex-col justify-start items-center overflow-hidden">
-  <div className="w-[1231px] h-32 left-[104px] top-[266px] absolute bg-yellow-50 border border-red-50" />
-  <div className="w-[1448px] h-72 left-[-8px] top-[3181px] absolute bg-slate-500 outline outline-[10px] outline-offset-[-10px] overflow-hidden">
-    <img className="w-40 h-40 left-[81px] top-[19px] absolute" src="https://placehold.co/163x159" />
-    <div className="w-44 h-11 left-[78px] top-[191px] absolute justify-center text-white text-5xl font-normal font-['Italianno'] leading-[69.60px]">Dear, ChÃ©rie</div>
-    <div className="w-80 h-24 left-[81px] top-[204px] absolute justify-center text-white text-sm font-thin font-['Geologica'] leading-5">Má»—i bÃ³ hoa khÃ´ng chá»‰ lÃ  má»™t mÃ³n quÃ , mÃ  lÃ  má»™t lÃ¡ thÆ° Ä‘áº§y cáº£m xÃºc Ä‘Æ°á»£c gá»­i Ä‘áº¿n ngÆ°á»i thÃ¢n yÃªu</div>
-    <div className="w-36 h-24 left-[781px] top-[35px] absolute justify-center text-white text-xl font-extralight font-['Geologica'] leading-7">Vá» ChÃºng TÃ´i</div>
-    <div className="w-36 h-24 left-[457px] top-[58px] absolute justify-center text-white text-xl font-extralight font-['Geologica'] leading-7">1900-6868</div>
-    <div className="w-36 h-24 left-[453px] top-[181px] absolute justify-center text-white text-xl font-normal font-['Geologica'] leading-7">Facebook</div>
-    <div className="w-36 h-24 left-[453px] top-[219px] absolute justify-center text-white text-xl font-normal font-['Geologica'] leading-7">TikTok</div>
-    <div className="w-96 h-24 left-[1048px] top-[55px] absolute justify-center text-white text-xl font-extralight font-['Geologica'] leading-7">Nháº­n ngay Æ°u Ä‘Ã£i 10% cho Ä‘Æ¡n hÃ ng Ä‘áº§u tiÃªn khi Ä‘Äƒng kÃ½ báº£n tin cá»§a chÃºng tÃ´i</div>
-    <div className="w-36 h-24 left-[781px] top-[70px] absolute justify-center text-white text-xl font-extralight font-['Geologica'] leading-7">Thiáº¿t Káº¿ TÃºi</div>
-    <div className="w-36 h-24 left-[781px] top-[102px] absolute justify-center text-white text-xl font-extralight font-['Geologica'] leading-7">NgÃ´n Ngá»¯ Hoa</div>
-    <div className="w-36 h-24 left-[781px] top-[137px] absolute justify-center text-white text-xl font-extralight font-['Geologica'] leading-7">LiÃªn Há»‡</div>
-    <div className="w-36 h-10 left-[781px] top-[231px] absolute justify-center text-white text-xl font-extralight font-['Geologica'] leading-7">ChÃ­nh sÃ¡ch</div>
-    <div className="w-48 h-10 left-[781px] top-[200px] absolute justify-center text-white text-xl font-extralight font-['Geologica'] leading-7">CÃ¢u há»i thÆ°á»ng gáº·p</div>
-    <div className="w-96 h-20 left-[1066px] top-[200px] absolute justify-center text-white text-base font-thin font-['Geologica'] leading-6"> 10 XuÃ¢n Thuá»·, P. Tháº£o Äiá»n, Quáº­n 2, TP. HCM </div>
-    <div className="w-80 h-5 left-[430px] top-[33px] absolute justify-center text-white text-2xl font-extrabold font-['Geologica'] leading-9">THÃ”NG TIN LIÃŠN Há»†</div>
-    <div className="w-64 h-2.5 left-[430px] top-[72px] absolute justify-center text-rose-700 text-base font-extrabold font-['Geologica'] leading-6">HOTLINE:</div>
-    <div className="w-64 h-2.5 left-[430px] top-[191px] absolute justify-center text-rose-700 text-base font-extrabold font-['Geologica'] leading-6">Káº¾T Ná»I</div>
-    <div className="w-64 h-2.5 left-[430px] top-[132px] absolute justify-center text-rose-700 text-base font-extrabold font-['Geologica'] leading-6">EMAIL</div>
-    <div className="w-64 h-2.5 left-[430px] top-[132px] absolute justify-center text-rose-700 text-base font-extrabold font-['Geologica'] leading-6">EMAIL</div>
-    <div className="w-36 h-5 left-[781px] top-[37px] absolute justify-center text-white text-2xl font-extrabold font-['Geologica'] leading-9">TRANG CHá»¦</div>
-    <div className="w-36 h-5 left-[1188px] top-[41px] absolute justify-center text-white text-2xl font-extrabold font-['Geologica'] leading-9">ÄÄ‚NG KÃ</div>
-    <div className="w-56 h-8 left-[453px] top-[151px] absolute justify-center text-white text-base font-extrabold font-['Geologica'] underline leading-6">dearcherie.info@gmail.com</div>
-    <div className="w-80 h-12 left-[1061px] top-[146px] absolute bg-zinc-300" />
-    <div className="w-60 h-8 left-[1088px] top-[157px] absolute justify-center text-rose-700 text-sm font-thin font-['Geologica'] leading-5">Email cá»§a báº¡n....</div>
-  </div>
-  <div className="w-3 h-32 left-[104px] top-[267px] absolute bg-slate-500 border border-red-50" />
-  <div className="w-96 h-56 left-[940px] top-[432px] absolute bg-slate-500 rounded-[30px] border border-red-50" />
-  <img className="w-[1237px] h-[488px] left-[101px] top-[996px] absolute rounded-[30px] border border-red-50" src="https://placehold.co/1237x488" />
-  <div className="w-72 h-12 left-[1002px] top-[592px] absolute bg-white rounded-[30px] border border-red-50" />
-  <div className="w-[815px] h-56 left-[104px] top-[432px] absolute bg-yellow-50 rounded-[30px] border border-slate-500" />
-  <div className="w-[904px] px-7 py-2.5 bg-Color-3 outline outline-1 outline-offset-[-0.50px] inline-flex justify-start items-center gap-10">
-    <div className="text-center justify-center text-rose-700 text-base font-medium font-['Geologica'] capitalize leading-6">Trang chá»§</div>
-    <div className="text-center justify-center text-Color text-base font-medium font-['Geologica'] capitalize leading-6">Vá» chÃºng tÃ´i</div>
-    <div className="text-center justify-center text-Color text-base font-medium font-['Geologica'] capitalize leading-6">Thiáº¿t Káº¿ TÃºi</div>
-    <div className="justify-center text-Color-2 text-6xl font-normal font-['Italianno'] leading-[70.40px]">Dear, ChÃ©rie</div>
-    <div className="w-52 h-6 relative">
-      <div className="left-[-0.50px] top-0 absolute text-center justify-center text-rose-700 text-base font-medium font-['Geologica'] capitalize leading-6">NgÃ´n ngá»¯ Hoa</div>
-      <div className="left-[142.50px] top-0 absolute text-center justify-center text-rose-700 text-base font-medium font-['Geologica'] capitalize leading-6">LiÃªn Há»‡</div>
+    <div className="w-full max-w-[900px] mx-auto px-6 md:px-12 py-16 lg:py-24 font-sans text-slate-800">
+      <header className="mb-12 text-center md:text-left border-b border-rose-100 pb-12">
+        <h1 className="text-3xl md:text-5xl font-bold font-['Geologica'] text-rose-700 leading-tight mb-6">
+          Túi hoa tự thiết kế: Khi việc mang hoa trở thành một trải nghiệm trọn vẹn
+        </h1>
+        <p className="text-slate-500 font-light text-lg mb-8 italic">
+          Bạn muốn chọn một bó hoa độc đáo để tặng cho người thương?
+        </p>
+        <div className="flex flex-col sm:flex-row items-center justify-between">
+          <span className="text-sm font-semibold tracking-widest text-slate-400 uppercase">Ngày đăng: 24/02/2026</span>
+        </div>
+      </header>
+
+      <article className="prose prose-lg md:prose-xl prose-rose max-w-none text-justify font-light leading-relaxed">
+        <p>
+          Một bó hoa luôn mang theo những cảm xúc đẹp: đó có thể là lời yêu, sự trân trọng, hay đơn giản là một khoảnh khắc muốn lưu giữ.
+          Nhưng thực tế, việc mang theo một bó hoa trong suốt cả ngày lại không hề dễ dàng như chúng ta tưởng. Những bất tiện đó vô tình
+          làm gián đoạn trải nghiệm vốn dĩ rất lãng mạn.
+        </p>
+
+        <h2 className="text-2xl font-bold font-['Geologica'] text-slate-800 mt-12 mb-6">
+          Khi việc tặng hoa không chỉ dừng lại ở bó hoa
+        </h2>
+        <p>
+          Ngày nay, người tặng hoa không chỉ muốn mua một bó hoa đẹp có sẵn mà còn muốn tạo ra một bó hoa mang dấu ấn của riêng mình.
+          Mỗi mối quan hệ là một câu chuyện khác nhau: bó hoa dành cho người yêu sẽ khác với bó hoa tặng mẹ, bạn thân hay đồng nghiệp.
+          Vì thế, khả năng tự tay lựa chọn và phối hợp các thành phần của bó hoa giúp món quà trở nên tinh tế và cá nhân hơn rất nhiều.
+        </p>
+
+        <h2 className="text-2xl font-bold font-['Geologica'] text-slate-800 mt-12 mb-6">
+          Tại sao nên tự thiết kế bó hoa?
+        </h2>
+        <p>
+          Tự thiết kế giúp bạn chủ động chọn loại hoa, tông màu, số lượng và cả phong cách gói phù hợp với người nhận. Không chỉ là thao tác
+          chọn sản phẩm, đó còn là một quá trình sáng tạo. Bạn nhìn thấy món quà dần hoàn thiện theo từng quyết định nhỏ, và chính điều này làm
+          cho khoảnh khắc trao tặng trở nên ý nghĩa hơn.
+        </p>
+
+        <h2 className="text-2xl font-bold font-['Geologica'] text-slate-800 mt-12 mb-6">
+          Trải nghiệm chọn túi hoa theo phong cách riêng
+        </h2>
+        <p>
+          Ở bước chọn túi hoa, quá trình thiết kế trở nên trực quan hơn nhờ hình ảnh minh họa rõ ràng. Mỗi mẫu túi mang một tinh thần riêng,
+          từ nhẹ nhàng, đáng yêu cho đến thanh lịch, tối giản. Bên cạnh đó, phần tạm tính giúp người dùng theo dõi ngân sách theo thời gian thực,
+          từ đó dễ so sánh các lựa chọn và kiểm soát chi phí tốt hơn.
+        </p>
+
+        <h2 className="text-2xl font-bold font-['Geologica'] text-slate-800 mt-12 mb-6">
+          Lời kết
+        </h2>
+        <p>
+          Một bó hoa đáng nhớ không nằm ở số lượng bông hoa, mà nằm ở câu chuyện và sự chăm chút trong từng chi tiết. Khi bạn tự tay thiết kế,
+          món quà trở thành một thông điệp cá nhân hóa trọn vẹn, và người nhận sẽ cảm nhận được điều đó ngay từ khoảnh khắc đầu tiên.
+        </p>
+      </article>
+
+      <div className="mt-16 bg-rose-700 text-white p-8 md:p-12 rounded-[40px] text-center shadow-[0_10px_30px_rgba(225,29,72,0.3)]">
+        <h3 className="text-3xl font-['Italianno'] mb-4 text-rose-100">Lời muốn nói, gói trong hoa</h3>
+        <p className="font-light mb-8 max-w-lg mx-auto">
+          Tự tay tạo bó hoa của chính mình cùng Dear, Chérie ngay hôm nay để gửi gắm lời yêu thương hoàn hảo nhất.
+        </p>
+        <a href="/booth" className="inline-block px-10 py-4 bg-white text-rose-700 font-bold uppercase tracking-widest rounded-full hover:bg-rose-50 transition shadow-lg">
+          Tạo Ngay
+        </a>
+      </div>
     </div>
-  </div>
-  <div className="w-[1231px] h-32 left-[111px] top-[102px] absolute justify-center text-rose-700 text-6xl font-bold font-['Gentium_Book_Plus'] leading-[60.50px]">TÃºi hoa tá»± thiáº¿t káº¿: Khi viá»‡c mang hoa trá»Ÿ thÃ nh má»™t tráº£i nghiá»‡m trá»n váº¹n</div>
-  <div className="w-96 h-20 left-[958px] top-[454px] absolute text-center justify-center text-white text-3xl font-bold font-['Geologica'] leading-9">Báº¡n muá»‘n chá»n má»™t bÃ³ hoa Ä‘á»™c Ä‘Ã¡o Ä‘á»ƒ táº·ng cho ngÆ°á»i thÆ°Æ¡ng?</div>
-  <div className="w-72 left-[1002px] top-[601px] absolute text-center justify-center text-slate-500 text-3xl font-bold font-['Geologica'] leading-8">Táº O NGAY</div>
-  <div className="w-96 left-[946px] top-[557px] absolute text-center justify-center text-white text-base font-thin font-['Geologica'] leading-4">Tá»± tay táº¡o bÃ³ hoa cá»§a chÃ­nh mÃ¬nh cÃ¹ng Dear, ChÃ©rie</div>
-  <div className="w-7 h-7 left-[1341px] top-[30px] absolute overflow-hidden">
-    <div className="w-7 h-7 left-[1.25px] top-[1.25px] absolute outline outline-[1.60px] outline-offset-[-0.80px] outline-Icon-Default-Default" />
-  </div>
-  <img className="w-7 h-7 left-[1283px] top-[30px] absolute" src="https://placehold.co/30x30" />
-  <div className="w-[1147px] left-[146px] top-[280px] absolute text-justify justify-center text-black text-2xl font-thin font-['Geologica'] leading-7">Má»™t bÃ³ hoa luÃ´n mang theo nhá»¯ng cáº£m xÃºc Ä‘áº¹p - Ä‘Ã³ cÃ³ thá»ƒ lÃ  lá»i yÃªu, sá»± trÃ¢n trá»ng, hay Ä‘Æ¡n giáº£n lÃ  má»™t khoáº£nh kháº¯c muá»‘n lÆ°u giá»¯. NhÆ°ng thá»±c táº¿, viá»‡c mang theo má»™t bÃ³ hoa trong suá»‘t cáº£ ngÃ y láº¡i khÃ´ng há» dá»… dÃ ng nhÆ° chÃºng ta tÆ°á»Ÿng. Nhá»¯ng báº¥t tiá»‡n Ä‘Ã³ vÃ´ tÃ¬nh lÃ m giÃ¡n Ä‘oáº¡n tráº£i nghiá»‡m vá»‘n dÄ© ráº¥t lÃ£ng máº¡n.</div>
-  <div className="w-[809px] left-[131px] top-[507px] absolute text-justify justify-center text-black text-2xl font-thin font-['Geologica'] leading-8">Khi viá»‡c táº·ng hoa khÃ´ng chá»‰ dá»«ng láº¡i á»Ÿ bÃ³ hoa<br/>Táº¡i sao nÃªn tá»± thiáº¿t káº¿ bÃ³ hoa cá»§a riÃªng mÃ¬nh?<br/>CÃ¡c bÆ°á»›c tá»± thiáº¿t káº¿ bÃ³ hoa cá»§a riÃªng mÃ¬nh vá»›i Dear, ChÃ©rie<br/>Lá»i káº¿t</div>
-  <div className="w-[809px] left-[131px] top-[449px] absolute text-justify justify-center text-slate-500 text-4xl font-extrabold font-['Geologica'] leading-10">Má»¤C Lá»¤C BÃ€I VIáº¾T</div>
-  <div className="w-[768.16px] h-1 left-[123.13px] top-[498.30px] absolute bg-slate-500 border border-red-50" />
-  <div className="w-[1231px] left-[107px] top-[743px] absolute text-justify justify-center text-black text-2xl font-thin font-['Geologica'] leading-7">Má»™t bÃ³ hoa luÃ´n mang theo cáº£m xÃºc, Ä‘Ã³ cÃ³ thá»ƒ lÃ  tÃ¬nh yÃªu, sá»± trÃ¢n trá»ng, hay Ä‘Æ¡n giáº£n lÃ  má»™t lá»i quan tÃ¢m nháº¹ nhÃ ng. Tháº¿ nhÆ°ng, tráº£i nghiá»‡m táº·ng hoa thá»±c táº¿ khÃ´ng chá»‰ náº±m á»Ÿ khoáº£nh kháº¯c trao hoa, mÃ  báº¯t Ä‘áº§u tá»« ráº¥t sá»›m, tá»« lÃºc chá»n hoa, chuáº©n bá»‹ hoa, cho Ä‘áº¿n khi mang bÃ³ hoa theo mÃ¬nh trÃªn suá»‘t quÃ£ng Ä‘Æ°á»ng di chuyá»ƒn. Trong nhá»‹p sá»‘ng Ä‘Ã´ thá»‹, nhiá»u ngÆ°á»i pháº£i mang hoa khi Ä‘i xe mÃ¡y, vá»«a giá»¯ hoa vá»«a cáº§m tÃºi xÃ¡ch hay Ä‘á»“ cÃ¡ nhÃ¢n, vÃ  khÃ´ng khá»i lo láº¯ng hoa bá»‹ dáº­p cÃ¡nh hay máº¥t form. ChÃ­nh nhá»¯ng tÃ¬nh huá»‘ng quen thuá»™c Ä‘Ã³ khiáº¿n nhiá»u ngÆ°á»i nháº­n ra ráº±ng má»™t bÃ³ hoa Ä‘áº¹p lÃ  chÆ°a Ä‘á»§, cÃ¡ch bÃ³ hoa Ä‘Æ°á»£c mang Ä‘i cÅ©ng lÃ  má»™t pháº§n quan trá»ng cá»§a tráº£i nghiá»‡m táº·ng hoa. VÃ  tá»« nhá»¯ng báº¥t tiá»‡n nhá» áº¥y, nhu cáº§u vá» nhá»¯ng giáº£i phÃ¡p giÃºp viá»‡c mang hoa trá»Ÿ nÃªn dá»… dÃ ng, gá»n gÃ ng vÃ  trá»n váº¹n hÆ¡n cÅ©ng dáº§n hÃ¬nh thÃ nh.</div>
-  <div className="w-[761px] h-1 left-[106px] top-[725px] absolute bg-slate-500 border border-red-50" />
-  <div className="w-[1069px] h-14 left-[106px] top-[670px] absolute justify-center text-slate-500 text-4xl font-bold font-['Google_Sans_Flex'] leading-10">Khi viá»‡c táº·ng hoa khÃ´ng chá»‰ dá»«ng láº¡i á»Ÿ bÃ³ hoa</div>
-  <div className="w-[1237px] h-72 left-[101px] top-[1565px] absolute text-justify justify-center text-black text-2xl font-thin font-['Geologica'] leading-7">NgÃ y nay, hÃ nh vi táº·ng hoa Ä‘Ã£ dáº§n thay Ä‘á»•i, ngÆ°á»i táº·ng khÃ´ng chá»‰ muá»‘n mua má»™t bÃ³ hoa Ä‘áº¹p cÃ³ sáºµn, mÃ  mong muá»‘n táº¡o ra má»™t bÃ³ hoa mang dáº¥u áº¥n riÃªng cá»§a mÃ¬nh. Bá»Ÿi láº½, má»—i má»‘i quan há»‡ Ä‘á»u lÃ  má»™t cÃ¢u chuyá»‡n khÃ¡c nhau: má»™t bÃ³ hoa dÃ nh cho ngÆ°á»i yÃªu sáº½ mang cáº£m xÃºc khÃ¡c vá»›i bÃ³ hoa táº·ng máº¹, báº¡n thÃ¢n hay Ä‘á»“ng nghiá»‡p. ChÃ­nh vÃ¬ váº­y, viá»‡c tá»± thiáº¿t káº¿ bÃ³ hoa cho phÃ©p ngÆ°á»i táº·ng lá»±a chá»n loáº¡i hoa phÃ¹ há»£p vá»›i tá»«ng má»‘i quan há»‡, phá»‘i mÃ u theo Ã½ nghÄ©a riÃªng vÃ  táº¡o nÃªn má»™t mÃ³n quÃ  chá»©a Ä‘á»±ng cÃ¢u chuyá»‡n cÃ¡ nhÃ¢n. Nhá»¯ng mÃ³n quÃ  Ä‘Æ°á»£c cÃ¡ nhÃ¢n hÃ³a nhÆ° váº­y thÆ°á»ng táº¡o áº¥n tÆ°á»£ng máº¡nh hÆ¡n, thá»ƒ hiá»‡n sá»± tinh táº¿ vÃ  cho tháº¥y ngÆ°á»i táº·ng Ä‘Ã£ dÃ nh thá»i gian suy nghÄ©, khiáº¿n ngÆ°á»i nháº­n khÃ´ng chá»‰ nhÃ¬n tháº¥y bÃ³ hoa mÃ  cÃ²n cáº£m nháº­n Ä‘Æ°á»£c sá»± quan tÃ¢m phÃ­a sau tá»«ng lá»±a chá»n. Äá»“ng thá»i, khi Ä‘Æ°á»£c tá»± tay chá»n tá»«ng chi tiáº¿t, ngÆ°á»i táº·ng cÅ©ng cáº£m tháº¥y tá»± tin hÆ¡n khi trao hoa, Ã­t lo láº¯ng vá» viá»‡c chá»n sai vÃ  yÃªn tÃ¢m ráº±ng mÃ³n quÃ  cá»§a mÃ¬nh tháº­t sá»± phÃ¹ há»£p. Tuy nhiÃªn, Ä‘á»ƒ viá»‡c tá»± thiáº¿t káº¿ má»™t bÃ³ hoa trá»Ÿ nÃªn dá»… dÃ ng vÃ  thuáº­n tiá»‡n, cáº§n cÃ³ má»™t ná»n táº£ng há»— trá»£ quÃ¡ trÃ¬nh nÃ y má»™t cÃ¡ch trá»±c quan vÃ  Ä‘Ã³ chÃ­nh lÃ  lÃºc tráº£i nghiá»‡m customize trÃªn website trá»Ÿ nÃªn quan trá»ng.</div>
-  <div className="w-[754px] h-1 left-[101px] top-[1568px] absolute bg-slate-500 border border-red-50" />
-  <div className="w-[1228px] h-14 left-[101px] top-[1513px] absolute justify-center text-slate-500 text-4xl font-bold font-['Google_Sans_Flex'] leading-10">Táº¡i sao nÃªn tá»± thiáº¿t káº¿ bÃ³ hoa cá»§a riÃªng mÃ¬nh?</div>
-  <div className="w-[1243px] left-[101px] top-[1935px] absolute text-justify justify-center"><span className="text-black text-2xl font-thin font-['Geologica'] leading-7">Thiáº¿t káº¿ bÃ³ hoa cá»§a riÃªng báº¡n </span><span className="text-black text-2xl font-bold font-['Geologica'] leading-7">táº¡i Ä‘Ã¢y</span><span className="text-black text-2xl font-thin font-['Geologica'] leading-7">!<br/>á»ž bÆ°á»›c lá»±a chá»n tÃºi hoa, quÃ¡ trÃ¬nh thiáº¿t káº¿ bÃ³ hoa trá»Ÿ nÃªn sinh Ä‘á»™ng vÃ  mang tÃ­nh cÃ¡ nhÃ¢n hÃ³a rÃµ rá»‡t hÆ¡n. NgÆ°á»i dÃ¹ng sáº½ Ä‘Æ°á»£c hiá»ƒn thá»‹ nhiá»u máº«u tÃºi khÃ¡c nhau vá»›i hÃ¬nh áº£nh minh há»a trá»±c quan, giÃºp dá»… dÃ ng hÃ¬nh dung kiá»ƒu dÃ¡ng vÃ  phong cÃ¡ch cá»§a tá»«ng lá»±a chá»n. Má»—i máº«u tÃºi khÃ´ng chá»‰ khÃ¡c nhau vá» mÃ u sáº¯c hay hÃ¬nh dÃ¡ng, mÃ  cÃ²n mang má»™t tinh tháº§n riÃªng, cÃ³ thá»ƒ lÃ  sá»± nháº¹ nhÃ ng vá»›i nhá»¯ng gam mÃ u pastel, nÃ©t Ä‘Ã¡ng yÃªu vá»›i cÃ¡c thiáº¿t káº¿ tráº» trung, hay sá»± thanh lá»‹ch vá»›i nhá»¯ng kiá»ƒu tÃºi tá»‘i giáº£n. Nhá» Ä‘Ã³, ngÆ°á»i táº·ng cÃ³ thá»ƒ cÃ¢n nháº¯c lá»±a chá»n máº«u tÃºi phÃ¹ há»£p vá»›i tÃ­nh cÃ¡ch cá»§a ngÆ°á»i nháº­n, cÅ©ng nhÆ° hÃ²a há»£p vá»›i tá»•ng thá»ƒ bÃ³ hoa Ä‘Ã£ thiáº¿t káº¿ trÆ°á»›c Ä‘Ã³.<br/><br/>BÃªn cáº¡nh Ä‘Ã³, khu vá»±c hiá»ƒn thá»‹ táº¡m tÃ­nh á»Ÿ phÃ­a bÃªn giÃºp ngÆ°á»i dÃ¹ng theo dÃµi sá»± thay Ä‘á»•i vá» chi phÃ­ theo tá»«ng lá»±a chá»n, táº¡o cáº£m giÃ¡c chá»§ Ä‘á»™ng vÃ  dá»… kiá»ƒm soÃ¡t ngÃ¢n sÃ¡ch. NgÆ°á»i dÃ¹ng cÃ³ thá»ƒ thá»­ thay Ä‘á»•i giá»¯a cÃ¡c máº«u tÃºi, so sÃ¡nh vÃ  quan sÃ¡t tá»•ng thá»ƒ mÃ³n quÃ  dáº§n hoÃ n thiá»‡n theo tá»«ng quyáº¿t Ä‘á»‹nh nhá». ChÃ­nh quÃ¡ trÃ¬nh lá»±a chá»n nÃ y khÃ´ng chá»‰ lÃ  thao tÃ¡c ká»¹ thuáº­t, mÃ  cÃ²n lÃ  má»™t pháº§n cá»§a tráº£i nghiá»‡m sÃ¡ng táº¡o, nÆ¡i ngÆ°á»i táº·ng tá»«ng bÆ°á»›c xÃ¢y dá»±ng nÃªn má»™t mÃ³n quÃ  mang dáº¥u áº¥n cÃ¡ nhÃ¢n. Khi Ä‘Ã£ tÃ¬m Ä‘Æ°á»£c máº«u tÃºi Æ°ng Ã½, chá»‰ cáº§n nháº¥n tiáº¿p tá»¥c Ä‘á»ƒ chuyá»ƒn sang bÆ°á»›c káº¿ tiáº¿p, tiáº¿n gáº§n hÆ¡n Ä‘áº¿n viá»‡c hoÃ n thiá»‡n má»™t bÃ³ hoa khÃ´ng chá»‰ Ä‘áº¹p mÃ  cÃ²n thá»ƒ hiá»‡n rÃµ sá»± chÄƒm chÃºt trong tá»«ng chi tiáº¿t.</span></div>
-  <div className="w-[743px] h-1 left-[101px] top-[1919px] absolute bg-slate-500 border border-red-50" />
-  <div className="w-[1217px] h-14 left-[101px] top-[1864px] absolute justify-center text-slate-500 text-4xl font-bold font-['Google_Sans_Flex'] leading-10">CÃ¡c bÆ°á»›c tá»± thiáº¿t káº¿ bÃ³ hoa cá»§a riÃªng mÃ¬nh vá»›i Dear, ChÃ©rie</div>
-  <div className="w-[1249px] left-[101px] top-[2905px] absolute text-justify justify-center text-black text-2xl font-thin font-['Geologica'] leading-7">Cuá»‘i cÃ¹ng, Ä‘iá»u lÃ m nÃªn giÃ¡ trá»‹ cá»§a má»™t bÃ³ hoa khÃ´ng chá»‰ náº±m á»Ÿ nhá»¯ng bÃ´ng hoa Ä‘Æ°á»£c lá»±a chá»n, mÃ  cÃ²n á»Ÿ cÃ¡ch chÃºng Ä‘Æ°á»£c chuáº©n bá»‹, nÃ¢ng niu trÃªn suá»‘t hÃ nh trÃ¬nh vÃ  trao Ä‘i vá»›i trá»n váº¹n cáº£m xÃºc. Viá»‡c tá»± thiáº¿t káº¿ bÃ³ hoa vÃ¬ tháº¿ khÃ´ng chá»‰ Ä‘Æ¡n thuáº§n lÃ  má»™t lá»±a chá»n tiá»‡n lá»£i, mÃ  cÃ²n lÃ  cÃ¡ch Ä‘á»ƒ má»—i mÃ³n quÃ  trá»Ÿ nÃªn Ã½ nghÄ©a hÆ¡n, pháº£n Ã¡nh sá»± quan tÃ¢m vÃ  tinh táº¿ cá»§a ngÆ°á»i táº·ng trong tá»«ng chi tiáº¿t nhá». Vá»›i nhá»¯ng cÃ´ng cá»¥ customize Ä‘Æ¡n giáº£n vÃ  trá»±c quan, viá»‡c táº¡o nÃªn má»™t bÃ³ hoa mang dáº¥u áº¥n cÃ¡ nhÃ¢n khÃ´ng cÃ²n lÃ  Ä‘iá»u phá»©c táº¡p, mÃ  dáº§n trá»Ÿ thÃ nh má»™t tráº£i nghiá»‡m thÃº vá»‹ , nÆ¡i má»—i lá»±a chá»n Ä‘á»u gÃ³p pháº§n ká»ƒ nÃªn cÃ¢u chuyá»‡n riÃªng cá»§a báº¡n. Bá»Ÿi Ä‘Ã´i khi, Ä‘iá»u khiáº¿n má»™t bÃ³ hoa trá»Ÿ nÃªn Ä‘Ã¡ng nhá»› khÃ´ng pháº£i lÃ  sá»‘ lÆ°á»£ng hoa trong Ä‘Ã³, mÃ  chÃ­nh lÃ  cÃ¢u chuyá»‡n vÃ  cáº£m xÃºc Ä‘Æ°á»£c gá»­i gáº¯m bÃªn trong nÃ³.</div>
-  <div className="w-[732px] h-1 left-[101px] top-[2887px] absolute bg-slate-500 border border-red-50" />
-  <div className="w-[1206px] h-14 left-[101px] top-[2832px] absolute justify-center text-slate-500 text-4xl font-bold font-['Google_Sans_Flex'] leading-10">Lá»i káº¿t</div>
-  <img className="w-[1249px] h-[488px] left-[101px] top-[2335px] absolute rounded-[30px] border border-red-50" src="https://placehold.co/1249x488" />
-  <div className="w-[1288px] left-[62px] top-[3134px] absolute text-right justify-center text-black text-2xl font-bold font-['Geologica'] leading-7">24/2/2026</div>
-</div>
   );
 }
-
-
