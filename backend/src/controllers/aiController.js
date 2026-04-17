@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import axios from "axios";
+import AiConfig from "../models/AiConfig.js";
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -17,6 +18,52 @@ const isTransientModelError = (error) => {
   return ["overloaded", "busy", "rate", "quota", "unavailable", "timed out"].some((token) =>
     message.includes(token)
   );
+};
+
+const ALLOWED_IMAGE_PROVIDERS = ["auto", "gemini-only", "pollinations-only"];
+
+const resolveImageProvider = async () => {
+  try {
+    const config = await AiConfig.findOne({ singletonKey: "default" }).lean();
+    const provider = config?.imageProvider;
+    return ALLOWED_IMAGE_PROVIDERS.includes(provider) ? provider : "auto";
+  } catch (_error) {
+    return "auto";
+  }
+};
+
+export const getAiSettings = async (_req, res) => {
+  try {
+    let config = await AiConfig.findOne({ singletonKey: "default" });
+    if (!config) {
+      config = await AiConfig.create({ singletonKey: "default", imageProvider: "auto" });
+    }
+
+    res.json({ imageProvider: config.imageProvider });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const updateAiSettings = async (req, res) => {
+  try {
+    const nextProvider = String(req.body?.imageProvider || "").trim();
+    if (!ALLOWED_IMAGE_PROVIDERS.includes(nextProvider)) {
+      return res.status(400).json({
+        message: "imageProvider không hợp lệ. Dùng: auto | gemini-only | pollinations-only"
+      });
+    }
+
+    const updated = await AiConfig.findOneAndUpdate(
+      { singletonKey: "default" },
+      { singletonKey: "default", imageProvider: nextProvider },
+      { upsert: true, new: true }
+    );
+
+    res.json({ imageProvider: updated.imageProvider });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 // Helper tải ảnh URL → base64 inlineData cho Gemini
@@ -44,6 +91,7 @@ const urlToGenerativePart = async (url) => {
 export const generatePreview = async (req, res) => {
   try {
     const { flowerUrl, leafUrl, bagUrl } = req.body;
+    const imageProvider = await resolveImageProvider();
 
     if (!flowerUrl) {
       return res.status(400).json({ message: "Thiếu ảnh hoa." });
@@ -117,6 +165,8 @@ Return ONLY the prompt text, no quotes, no explanation.`;
 
     // ── BƯỚC 2: sinh ảnh với các model có hỗ trợ image output ──
     let base64Image = null;
+    const shouldTryGeminiImage = imageProvider !== "pollinations-only";
+    const shouldTryPollinations = imageProvider !== "gemini-only";
 
     const generateWithImageModel = async (modelName) => {
       const MAX_IMAGE_RETRIES = 1;
@@ -156,16 +206,18 @@ Return ONLY the prompt text, no quotes, no explanation.`;
       return null;
     };
 
-    // Thử 1: gemini-2.5-flash-image (hỗ trợ image generation, có trong ListModels)
-    base64Image = await generateWithImageModel("gemini-2.5-flash-image");
+    if (shouldTryGeminiImage) {
+      // Thử 1: gemini-2.5-flash-image (hỗ trợ image generation, có trong ListModels)
+      base64Image = await generateWithImageModel("gemini-2.5-flash-image");
 
-    // Thử 2: gemini-3.1-flash-image-preview (fallback)
-    if (!base64Image) {
-      base64Image = await generateWithImageModel("gemini-3.1-flash-image-preview");
+      // Thử 2: gemini-3.1-flash-image-preview (fallback)
+      if (!base64Image) {
+        base64Image = await generateWithImageModel("gemini-3.1-flash-image-preview");
+      }
     }
 
     // Thử 4: Pollinations AI (Miễn phí 100%, không cần API Key - Giải pháp cứu cánh cho luồng miễn phí)
-    if (!base64Image) {
+    if (!base64Image && shouldTryPollinations) {
       try {
         console.log("🔄 Thử Pollinations AI (Free Open Source Image Gen)...");
         // Mã hoá prompt để đưa lên URL
@@ -187,11 +239,12 @@ Return ONLY the prompt text, no quotes, no explanation.`;
       return res.status(500).json({
         message: "Tất cả model sinh ảnh đều bị chặn hoặc quá tải ở Free Tier.",
         prompt: generatedPrompt,
+        provider: imageProvider,
         hint: "Kiểm tra quota hoặc enable billing tại https://ai.dev/rate-limit"
       });
     }
 
-    res.json({ imageBase64: base64Image, prompt: generatedPrompt });
+    res.json({ imageBase64: base64Image, prompt: generatedPrompt, provider: imageProvider });
 
   } catch (error) {
     const details = error.response?.data || error.message;

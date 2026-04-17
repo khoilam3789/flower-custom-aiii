@@ -75,7 +75,7 @@ export default function AdminDashboard() {
   const backendUrl = API_BASE;
 
   const tabFromQuery = searchParams.get("tab");
-  const allowedTabs = ["users", "orders", "products", "stories"];
+  const allowedTabs = ["users", "orders", "products", "stories", "ai-settings"];
   const initialTab = allowedTabs.includes(tabFromQuery) ? tabFromQuery : "users";
 
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -83,7 +83,9 @@ export default function AdminDashboard() {
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
   const [stories, setStories] = useState([]);
+  const [aiSettings, setAiSettings] = useState({ imageProvider: "auto" });
   const [loading, setLoading] = useState(false);
+  const [savingAiSettings, setSavingAiSettings] = useState(false);
   const [editingStoryId, setEditingStoryId] = useState(null);
 
   // Form State cho Product
@@ -98,6 +100,7 @@ export default function AdminDashboard() {
       else if (activeTab === "orders") fetchOrders();
       else if (activeTab === "products") fetchProducts();
       else if (activeTab === "stories") fetchStories();
+      else if (activeTab === "ai-settings") fetchAiSettings();
     }
   }, [activeTab, user]);
 
@@ -155,6 +158,49 @@ export default function AdminDashboard() {
       console.error(e);
     }
     setLoading(false);
+  };
+
+  const fetchAiSettings = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${backendUrl}/api/ai/settings`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setAiSettings({ imageProvider: data.imageProvider || "auto" });
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setLoading(false);
+  };
+
+  const handleSaveAiSettings = async (e) => {
+    e.preventDefault();
+    setSavingAiSettings(true);
+    try {
+      const res = await fetch(`${backendUrl}/api/ai/settings`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ imageProvider: aiSettings.imageProvider })
+      });
+
+      if (!res.ok) {
+        alert((await res.json()).message || "Lưu AI settings thất bại");
+        return;
+      }
+
+      const data = await res.json();
+      setAiSettings({ imageProvider: data.imageProvider || "auto" });
+      alert("Đã cập nhật API tạo ảnh");
+    } catch (e) {
+      console.error(e);
+    }
+    setSavingAiSettings(false);
   };
 
   // ----- ACTIONS CHO USERS -----
@@ -428,6 +474,7 @@ export default function AdminDashboard() {
         <button onClick={() => switchTab("orders")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "orders" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Quản Lý Đơn Hàng</button>
         <button onClick={() => switchTab("products")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "products" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Kho Sản Phẩm (Hoa/Lá)</button>
         <button onClick={() => switchTab("stories")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "stories" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Trang Story</button>
+        <button onClick={() => switchTab("ai-settings")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "ai-settings" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>AI Settings</button>
       </div>
 
       {loading ? (
@@ -568,7 +615,7 @@ export default function AdminDashboard() {
             {products.length === 0 && <div className="text-center py-10 text-slate-500">Chưa có sản phẩm nào</div>}
           </div>
         </div>
-      ) : (
+      ) : activeTab === "stories" ? (
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="lg:w-1/2 bg-white rounded-3xl shadow-sm border border-slate-200 p-6">
             <h2 className="text-xl font-bold mb-4">{editingStoryId ? "Chỉnh sửa Story" : "Tạo Story mới"}</h2>
@@ -720,6 +767,36 @@ export default function AdminDashboard() {
             </table>
             {stories.length === 0 && <div className="text-center py-10 text-slate-500">Chưa có trang story nào</div>}
           </div>
+        </div>
+      ) : (
+        <div className="max-w-3xl bg-white rounded-3xl shadow-sm border border-slate-200 p-6">
+          <h2 className="text-xl font-bold mb-2">AI Image Provider</h2>
+          <p className="text-slate-500 mb-6">Chọn API/model sẽ được ưu tiên khi tạo ảnh preview AI.</p>
+
+          <form onSubmit={handleSaveAiSettings} className="space-y-4">
+            <div>
+              <label className="block text-sm font-bold text-slate-600 mb-1">Nguồn tạo ảnh</label>
+              <select
+                value={aiSettings.imageProvider}
+                onChange={(e) => setAiSettings({ imageProvider: e.target.value })}
+                className="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:border-rose-500"
+              >
+                <option value="auto">Auto (Gemini trước, Pollinations fallback)</option>
+                <option value="gemini-only">Gemini only</option>
+                <option value="pollinations-only">Pollinations only</option>
+              </select>
+            </div>
+
+            <div className="text-sm text-slate-500 bg-slate-50 border border-slate-200 rounded-lg p-3">
+              {aiSettings.imageProvider === "auto" && "Auto: thử Gemini trước, nếu lỗi sẽ fallback Pollinations."}
+              {aiSettings.imageProvider === "gemini-only" && "Gemini only: chỉ dùng model Gemini để tạo ảnh."}
+              {aiSettings.imageProvider === "pollinations-only" && "Pollinations only: bỏ qua model image Gemini, dùng Pollinations để tạo ảnh."}
+            </div>
+
+            <button type="submit" disabled={savingAiSettings} className="px-5 py-2.5 bg-rose-700 text-white font-semibold rounded-lg hover:bg-rose-800 transition disabled:opacity-60">
+              {savingAiSettings ? "Đang lưu..." : "Lưu cài đặt AI"}
+            </button>
+          </form>
         </div>
       )}
       </div>
