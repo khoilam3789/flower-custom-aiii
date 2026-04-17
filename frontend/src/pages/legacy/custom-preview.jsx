@@ -2,6 +2,37 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { API_BASE } from '../../api';
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const requestPreviewWithRetry = async (url, payload, maxRetries = 1) => {
+  for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      return response;
+    }
+
+    const shouldRetry = response.status === 503 && attempt < maxRetries;
+    if (!shouldRetry) {
+      return response;
+    }
+
+    const retryAfterHeader = Number(response.headers.get("Retry-After"));
+    const delayMs = Number.isFinite(retryAfterHeader) && retryAfterHeader > 0
+      ? retryAfterHeader * 1000
+      : 3000;
+
+    console.warn(`Preview API quá tải, sẽ thử lại sau ${Math.round(delayMs / 1000)} giây...`);
+    await sleep(delayMs);
+  }
+
+  return null;
+};
+
 export default function CustomPreview() {
   const backendUrl = API_BASE;
   const previewCacheVersion = 'preview-v2';
@@ -72,13 +103,13 @@ export default function CustomPreview() {
         }
 
         // Call our AI Backend
-        const resAi = await fetch(`${backendUrl}/api/ai/preview`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ flowerUrl, leafUrl, bagUrl })
-        });
+        const resAi = await requestPreviewWithRetry(
+          `${backendUrl}/api/ai/preview`,
+          { flowerUrl, leafUrl, bagUrl },
+          1
+        );
 
-        if (resAi.ok) {
+        if (resAi?.ok) {
           const aiData = await resAi.json();
           if (aiData.imageBase64) {
             setAiImage(aiData.imageBase64);
@@ -87,7 +118,7 @@ export default function CustomPreview() {
             localStorage.setItem('aiGeneratedCacheVersion', previewCacheVersion);
           }
         } else {
-          console.error("AI Generation failed:", await resAi.text());
+          console.error("AI Generation failed:", resAi ? await resAi.text() : "No response from preview API after retries");
         }
       } catch (error) {
         console.error("Error setting up AI Preview:", error);

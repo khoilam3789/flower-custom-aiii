@@ -1,6 +1,24 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import axios from "axios";
 
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const getErrorStatus = (error) =>
+  error?.status || error?.response?.status || error?.cause?.status || null;
+
+const isTransientModelError = (error) => {
+  const status = getErrorStatus(error);
+  const message = String(error?.message || "").toLowerCase();
+
+  if ([429, 500, 502, 503, 504].includes(status)) {
+    return true;
+  }
+
+  return ["overloaded", "busy", "rate", "quota", "unavailable", "timed out"].some((token) =>
+    message.includes(token)
+  );
+};
+
 // Helper tải ảnh URL → base64 inlineData cho Gemini
 const urlToGenerativePart = async (url) => {
   let finalUrl = url;
@@ -61,59 +79,89 @@ Return ONLY the prompt text, no quotes, no explanation.`;
 
     let generatedPrompt = null;
     for (const vModel of VISION_MODELS) {
-      try {
-        console.log(`🧠 Vision thử model: ${vModel}`);
-        const visionModel = genAI.getGenerativeModel({ model: vModel });
-        const visionResult = await visionModel.generateContent([promptInstructions, ...imageParts]);
-        generatedPrompt = visionResult.response.text().trim();
-        console.log(`✅ Vision OK (${vModel}):`, generatedPrompt.substring(0, 80) + "...");
+      const MAX_VISION_RETRIES = 2;
+      const BASE_DELAY_MS = 1200;
+
+      for (let attempt = 1; attempt <= MAX_VISION_RETRIES + 1; attempt += 1) {
+        try {
+          console.log(`🧠 Vision thử model: ${vModel} (lần ${attempt})`);
+          const visionModel = genAI.getGenerativeModel({ model: vModel });
+          const visionResult = await visionModel.generateContent([promptInstructions, ...imageParts]);
+          generatedPrompt = visionResult.response.text().trim();
+          console.log(`✅ Vision OK (${vModel}):`, generatedPrompt.substring(0, 80) + "...");
+          break;
+        } catch (ve) {
+          const shortMessage = String(ve?.message || "Unknown error").substring(0, 140);
+          const shouldRetry = isTransientModelError(ve) && attempt <= MAX_VISION_RETRIES;
+          console.warn(`⚠️ Vision ${vModel} thất bại (lần ${attempt}):`, shortMessage);
+
+          if (!shouldRetry) {
+            break;
+          }
+
+          const backoffMs = BASE_DELAY_MS * attempt;
+          console.log(`⏳ Retry Vision ${vModel} sau ${backoffMs}ms...`);
+          await wait(backoffMs);
+        }
+      }
+
+      if (generatedPrompt) {
         break;
-      } catch (ve) {
-        console.warn(`⚠️ Vision ${vModel} thất bại:`, ve.message.substring(0, 100));
       }
     }
 
     if (!generatedPrompt) {
+      res.set("Retry-After", "30");
       return res.status(503).json({ message: "Tất cả Vision model đang bận. Vui lòng thử lại sau 30 giây." });
     }
 
     // ── BƯỚC 2: sinh ảnh với các model có hỗ trợ image output ──
     let base64Image = null;
 
-    // Thử 1: gemini-2.5-flash-image (hỗ trợ image generation, có trong ListModels)
-    try {
-      console.log("🎨 Thử gemini-2.5-flash-image...");
-      const imgModel = genAI.getGenerativeModel({ model: "gemini-2.5-flash-image" });
-      const imgResult = await imgModel.generateContent({
-        contents: [{ role: "user", parts: [{ text: generatedPrompt }] }],
-        generationConfig: { responseModalities: ["image", "text"] }
-      });
-      const imgPart = imgResult.response.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
-      if (imgPart) {
-        base64Image = `data:${imgPart.inlineData.mimeType};base64,${imgPart.inlineData.data}`;
-        console.log("✅ gemini-2.5-flash-image thành công!");
+    const generateWithImageModel = async (modelName) => {
+      const MAX_IMAGE_RETRIES = 1;
+      const BASE_DELAY_MS = 1000;
+
+      for (let attempt = 1; attempt <= MAX_IMAGE_RETRIES + 1; attempt += 1) {
+        try {
+          console.log(`🎨 Thử ${modelName} (lần ${attempt})...`);
+          const model = genAI.getGenerativeModel({ model: modelName });
+          const result = await model.generateContent({
+            contents: [{ role: "user", parts: [{ text: generatedPrompt }] }],
+            generationConfig: { responseModalities: ["image", "text"] }
+          });
+
+          const imgPart = result.response.candidates?.[0]?.content?.parts?.find((p) => p.inlineData);
+          if (imgPart?.inlineData?.data && imgPart?.inlineData?.mimeType) {
+            console.log(`✅ ${modelName} thành công!`);
+            return `data:${imgPart.inlineData.mimeType};base64,${imgPart.inlineData.data}`;
+          }
+
+          throw new Error(`${modelName} không trả về image inlineData.`);
+        } catch (error) {
+          const shortMessage = String(error?.message || "Unknown error").substring(0, 140);
+          const shouldRetry = isTransientModelError(error) && attempt <= MAX_IMAGE_RETRIES;
+          console.warn(`⚠️ ${modelName} thất bại (lần ${attempt}):`, shortMessage);
+
+          if (!shouldRetry) {
+            break;
+          }
+
+          const backoffMs = BASE_DELAY_MS * attempt;
+          console.log(`⏳ Retry ${modelName} sau ${backoffMs}ms...`);
+          await wait(backoffMs);
+        }
       }
-    } catch (e1) {
-      console.warn("⚠️ gemini-2.5-flash-image thất bại:", e1.message);
-    }
+
+      return null;
+    };
+
+    // Thử 1: gemini-2.5-flash-image (hỗ trợ image generation, có trong ListModels)
+    base64Image = await generateWithImageModel("gemini-2.5-flash-image");
 
     // Thử 2: gemini-3.1-flash-image-preview (fallback)
     if (!base64Image) {
-      try {
-        console.log("🔄 Thử gemini-3.1-flash-image-preview...");
-        const imgModel2 = genAI.getGenerativeModel({ model: "gemini-3.1-flash-image-preview" });
-        const imgResult2 = await imgModel2.generateContent({
-          contents: [{ role: "user", parts: [{ text: generatedPrompt }] }],
-          generationConfig: { responseModalities: ["image", "text"] }
-        });
-        const imgPart2 = imgResult2.response.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
-        if (imgPart2) {
-          base64Image = `data:${imgPart2.inlineData.mimeType};base64,${imgPart2.inlineData.data}`;
-          console.log("✅ gemini-3.1-flash-image-preview thành công!");
-        }
-      } catch (e2) {
-        console.warn("⚠️ gemini-3.1-flash-image-preview thất bại:", e2.message);
-      }
+      base64Image = await generateWithImageModel("gemini-3.1-flash-image-preview");
     }
 
     // Thử 4: Pollinations AI (Miễn phí 100%, không cần API Key - Giải pháp cứu cánh cho luồng miễn phí)

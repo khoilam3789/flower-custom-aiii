@@ -5,7 +5,13 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "seed:users": "node seeder.js",
+    "seed:flowers": "node seedFlowers.js",
+    "seed:leaves": "node seedLeaves.js",
+    "seed:bags": "node seedBags.js",
+    "seed:cards": "node seedCards.js",
+    "seed:all": "npm run seed:users && npm run seed:flowers && npm run seed:leaves && npm run seed:bags && npm run seed:cards"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
