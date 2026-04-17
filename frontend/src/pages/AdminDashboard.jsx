@@ -83,7 +83,13 @@ export default function AdminDashboard() {
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
   const [stories, setStories] = useState([]);
-  const [aiSettings, setAiSettings] = useState({ imageProvider: "auto" });
+  const [aiSettings, setAiSettings] = useState({
+    imageProvider: "auto",
+    geminiApiKeyInput: "",
+    hasGeminiApiKey: false,
+    maskedGeminiApiKey: "",
+    clearGeminiApiKey: false
+  });
   const [loading, setLoading] = useState(false);
   const [savingAiSettings, setSavingAiSettings] = useState(false);
   const [editingStoryId, setEditingStoryId] = useState(null);
@@ -168,7 +174,13 @@ export default function AdminDashboard() {
       });
       if (res.ok) {
         const data = await res.json();
-        setAiSettings({ imageProvider: data.imageProvider || "auto" });
+        setAiSettings({
+          imageProvider: data.imageProvider || "auto",
+          geminiApiKeyInput: "",
+          hasGeminiApiKey: Boolean(data.hasGeminiApiKey),
+          maskedGeminiApiKey: data.maskedGeminiApiKey || "",
+          clearGeminiApiKey: false
+        });
       }
     } catch (e) {
       console.error(e);
@@ -186,7 +198,11 @@ export default function AdminDashboard() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ imageProvider: aiSettings.imageProvider })
+        body: JSON.stringify({
+          imageProvider: aiSettings.imageProvider,
+          geminiApiKey: aiSettings.geminiApiKeyInput,
+          clearGeminiApiKey: aiSettings.clearGeminiApiKey
+        })
       });
 
       if (!res.ok) {
@@ -195,7 +211,14 @@ export default function AdminDashboard() {
       }
 
       const data = await res.json();
-      setAiSettings({ imageProvider: data.imageProvider || "auto" });
+      setAiSettings((prev) => ({
+        ...prev,
+        imageProvider: data.imageProvider || "auto",
+        geminiApiKeyInput: "",
+        hasGeminiApiKey: Boolean(data.hasGeminiApiKey),
+        maskedGeminiApiKey: data.maskedGeminiApiKey || "",
+        clearGeminiApiKey: false
+      }));
       alert("Đã cập nhật API tạo ảnh");
     } catch (e) {
       console.error(e);
@@ -778,13 +801,52 @@ export default function AdminDashboard() {
               <label className="block text-sm font-bold text-slate-600 mb-1">Nguồn tạo ảnh</label>
               <select
                 value={aiSettings.imageProvider}
-                onChange={(e) => setAiSettings({ imageProvider: e.target.value })}
+                onChange={(e) =>
+                  setAiSettings((prev) => ({
+                    ...prev,
+                    imageProvider: e.target.value
+                  }))
+                }
                 className="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:border-rose-500"
               >
                 <option value="auto">Auto (Gemini trước, Pollinations fallback)</option>
                 <option value="gemini-only">Gemini only</option>
                 <option value="pollinations-only">Pollinations only</option>
               </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-slate-600 mb-1">Gemini API key</label>
+              <input
+                type="password"
+                value={aiSettings.geminiApiKeyInput}
+                onChange={(e) =>
+                  setAiSettings((prev) => ({
+                    ...prev,
+                    geminiApiKeyInput: e.target.value
+                  }))
+                }
+                placeholder="Nhập key mới để thay thế"
+                className="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:border-rose-500"
+              />
+              <p className="text-xs text-slate-500 mt-2">
+                {aiSettings.hasGeminiApiKey
+                  ? `Đã lưu key: ${aiSettings.maskedGeminiApiKey}`
+                  : "Chưa có key Gemini trong cài đặt admin, hệ thống sẽ dùng biến môi trường nếu có."}
+              </p>
+              <label className="mt-2 inline-flex items-center gap-2 text-sm text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={aiSettings.clearGeminiApiKey}
+                  onChange={(e) =>
+                    setAiSettings((prev) => ({
+                      ...prev,
+                      clearGeminiApiKey: e.target.checked
+                    }))
+                  }
+                />
+                Xóa key đã lưu trên hệ thống
+              </label>
             </div>
 
             <div className="text-sm text-slate-500 bg-slate-50 border border-slate-200 rounded-lg p-3">

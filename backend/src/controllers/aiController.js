@@ -22,13 +22,21 @@ const isTransientModelError = (error) => {
 
 const ALLOWED_IMAGE_PROVIDERS = ["auto", "gemini-only", "pollinations-only"];
 
-const resolveImageProvider = async () => {
+const maskApiKey = (key = "") => {
+  if (!key) return "";
+  if (key.length <= 8) return "********";
+  return `${"*".repeat(Math.max(0, key.length - 4))}${key.slice(-4)}`;
+};
+
+const resolveAiConfig = async () => {
   try {
     const config = await AiConfig.findOne({ singletonKey: "default" }).lean();
     const provider = config?.imageProvider;
-    return ALLOWED_IMAGE_PROVIDERS.includes(provider) ? provider : "auto";
+    const imageProvider = ALLOWED_IMAGE_PROVIDERS.includes(provider) ? provider : "auto";
+    const geminiApiKey = String(config?.geminiApiKey || "").trim();
+    return { imageProvider, geminiApiKey };
   } catch (_error) {
-    return "auto";
+    return { imageProvider: "auto", geminiApiKey: "" };
   }
 };
 
@@ -36,10 +44,14 @@ export const getAiSettings = async (_req, res) => {
   try {
     let config = await AiConfig.findOne({ singletonKey: "default" });
     if (!config) {
-      config = await AiConfig.create({ singletonKey: "default", imageProvider: "auto" });
+      config = await AiConfig.create({ singletonKey: "default", imageProvider: "auto", geminiApiKey: "" });
     }
 
-    res.json({ imageProvider: config.imageProvider });
+    res.json({
+      imageProvider: config.imageProvider,
+      hasGeminiApiKey: Boolean(config.geminiApiKey),
+      maskedGeminiApiKey: maskApiKey(config.geminiApiKey)
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -54,13 +66,31 @@ export const updateAiSettings = async (req, res) => {
       });
     }
 
+    const patch = {
+      singletonKey: "default",
+      imageProvider: nextProvider
+    };
+
+    if (req.body?.clearGeminiApiKey === true) {
+      patch.geminiApiKey = "";
+    } else if (typeof req.body?.geminiApiKey === "string") {
+      const nextApiKey = req.body.geminiApiKey.trim();
+      if (nextApiKey) {
+        patch.geminiApiKey = nextApiKey;
+      }
+    }
+
     const updated = await AiConfig.findOneAndUpdate(
       { singletonKey: "default" },
-      { singletonKey: "default", imageProvider: nextProvider },
+      patch,
       { upsert: true, new: true }
     );
 
-    res.json({ imageProvider: updated.imageProvider });
+    res.json({
+      imageProvider: updated.imageProvider,
+      hasGeminiApiKey: Boolean(updated.geminiApiKey),
+      maskedGeminiApiKey: maskApiKey(updated.geminiApiKey)
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -91,13 +121,13 @@ const urlToGenerativePart = async (url) => {
 export const generatePreview = async (req, res) => {
   try {
     const { flowerUrl, leafUrl, bagUrl } = req.body;
-    const imageProvider = await resolveImageProvider();
+    const { imageProvider, geminiApiKey } = await resolveAiConfig();
 
     if (!flowerUrl) {
       return res.status(400).json({ message: "Thiếu ảnh hoa." });
     }
 
-    const API_KEY = process.env.GEMINI_API_KEY;
+    const API_KEY = geminiApiKey || process.env.GEMINI_API_KEY;
     if (!API_KEY) {
       return res.status(500).json({ message: "Thiếu GEMINI_API_KEY trên server." });
     }

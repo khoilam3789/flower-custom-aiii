@@ -7,6 +7,10 @@ const aiConfigSchema = new mongoose.Schema(
       type: String,
       enum: ['auto', 'gemini-only', 'pollinations-only'],
       default: 'auto'
+    },
+    geminiApiKey: {
+      type: String,
+      default: ''
     }
   },
   { timestamps: true }
