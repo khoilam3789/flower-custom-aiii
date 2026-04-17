@@ -1,4 +1,4 @@
-import { Link, Route, Routes } from "react-router-dom";
+import { Link, Route, Routes, useLocation } from "react-router-dom";
 import BoothPage from "./pages/BoothPage";
 import AboutPage from "./pages/legacy/about-us";
 import Blog1Page from "./pages/legacy/blog-1";
@@ -44,9 +44,12 @@ const figmaRoutes = [
 ];
 
 export default function App() {
+  const location = useLocation();
+  const isAdminRoute = location.pathname.startsWith("/admin");
+
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-Color-3 text-ink">
-      <Header />
+    <div className={`min-h-screen flex flex-col font-sans text-ink ${isAdminRoute ? "bg-slate-100" : "bg-Color-3"}`}>
+      {!isAdminRoute && <Header />}
       <main className="flex-grow">
         <Routes>
           <Route path="/admin" element={<AdminDashboard />} />
@@ -57,7 +60,7 @@ export default function App() {
           ))}
         </Routes>
       </main>
-      <Footer />
+      {!isAdminRoute && <Footer />}
     </div>
   );
 }

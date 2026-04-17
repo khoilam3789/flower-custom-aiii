@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { API_BASE } from "../api";
 
 const initialStoryForm = {
@@ -64,9 +64,14 @@ const storyToForm = (story) => ({
 export default function AdminDashboard() {
   const { user, token } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const backendUrl = API_BASE;
 
-  const [activeTab, setActiveTab] = useState("users");
+  const tabFromQuery = searchParams.get("tab");
+  const allowedTabs = ["users", "orders", "products", "stories"];
+  const initialTab = allowedTabs.includes(tabFromQuery) ? tabFromQuery : "users";
+
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [users, setUsers] = useState([]);
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
@@ -95,6 +100,20 @@ export default function AdminDashboard() {
       else if (activeTab === "stories") fetchStories();
     }
   }, [activeTab, user]);
+
+  useEffect(() => {
+    const queryTab = searchParams.get("tab");
+    if (allowedTabs.includes(queryTab) && queryTab !== activeTab) {
+      setActiveTab(queryTab);
+    }
+  }, [searchParams]);
+
+  const switchTab = (tab) => {
+    setActiveTab(tab);
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set("tab", tab);
+    setSearchParams(nextParams, { replace: true });
+  };
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -318,16 +337,29 @@ export default function AdminDashboard() {
   if (!user || user.role !== 'admin') return null;
 
   return (
-    <div className="w-full max-w-[1280px] mx-auto px-6 py-12 min-h-screen">
-      <h1 className="text-3xl md:text-4xl font-bold font-['Geologica'] mb-8 text-slate-800 uppercase">
-        Trang Quản Trị Hệ Thống
-      </h1>
+    <div className="w-full min-h-screen bg-slate-100">
+      <div className="max-w-[1440px] mx-auto px-6 md:px-8 py-8 md:py-10">
+        <div className="bg-white border border-slate-200 rounded-2xl px-6 md:px-8 py-5 mb-6 shadow-sm">
+          <h1 className="text-2xl md:text-3xl font-bold font-['Geologica'] text-slate-800 uppercase tracking-wide">
+            Admin Dashboard
+          </h1>
+          <p className="text-sm text-slate-500 mt-1">Quản lý tài khoản, đơn hàng, kho sản phẩm và nội dung story.</p>
+          <div className="mt-4">
+            <button
+              type="button"
+              onClick={() => switchTab("stories")}
+              className="px-4 py-2 rounded-lg bg-rose-700 text-white text-sm font-semibold hover:bg-rose-800 transition"
+            >
+              Vào Story Pages
+            </button>
+          </div>
+        </div>
 
-      <div className="flex space-x-4 mb-8 border-b border-slate-200 overflow-x-auto whitespace-nowrap">
-        <button onClick={() => setActiveTab("users")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "users" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Quản Lý Tài Khoản</button>
-        <button onClick={() => setActiveTab("orders")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "orders" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Quản Lý Đơn Hàng</button>
-        <button onClick={() => setActiveTab("products")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "products" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Kho Sản Phẩm (Hoa/Lá)</button>
-        <button onClick={() => setActiveTab("stories")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "stories" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Trang Story</button>
+      <div className="flex space-x-4 mb-6 bg-white border border-slate-200 rounded-2xl px-3 pt-4 overflow-x-auto whitespace-nowrap shadow-sm">
+        <button onClick={() => switchTab("users")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "users" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Quản Lý Tài Khoản</button>
+        <button onClick={() => switchTab("orders")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "orders" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Quản Lý Đơn Hàng</button>
+        <button onClick={() => switchTab("products")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "products" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Kho Sản Phẩm (Hoa/Lá)</button>
+        <button onClick={() => switchTab("stories")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "stories" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Trang Story</button>
       </div>
 
       {loading ? (
@@ -560,6 +592,7 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }
