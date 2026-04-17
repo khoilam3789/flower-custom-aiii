@@ -1,30 +1,30 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { API_BASE } from "../../api";
 
 const defaultStory = {
-  title: "Y nghia cua hoa mau don",
+  title: "Ý nghĩa của hoa mẫu đơn",
   slug: "hoa-mau-don",
   heroImage: "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=300&h=300&fit=crop",
-  subtitle: "Su no ro cua hanh phuc, hoan my, thinh vuong va phu quy",
-  storyTitle: "Cau chuyen",
+  subtitle: "Sự nở rộ của hạnh phúc, hoàn mỹ, thịnh vượng và phú quý",
+  storyTitle: "Câu chuyện",
   storyBody:
-    "Tuong truyen rang, Trung Quoc ngay xua chi co trong cung cua vua chua moi duoc trong loai hoa nay. Ngoai y nghia ve su vuong gia, mau don tai Nhat con duoc xem la loai hoa cua hanh phuc gia dinh. Trong van hoa phuong Tay, chung thuong duoc lien ket voi su lang man, thinh vuong va e then.",
-  poemTitle: "Bai tho: Mau don",
+    "Tương truyền rằng, Trung Quốc ngày xưa chỉ có trong cung của vua chúa mới được trồng loài hoa này. Ngoài ý nghĩa về sự vương giả, mẫu đơn tại Nhật còn được xem là loài hoa của hạnh phúc gia đình. Trong văn hóa phương Tây, chúng thường được liên kết với sự lãng mạn, thịnh vượng và e thẹn.",
+  poemTitle: "Bài thơ: Mẫu đơn",
   poemLines: [
-    "Mau don yeu diem loan nhan tam,",
-    "Nhat quoc nhu cuong bat tich kim.",
-    "Hat nhuoc dong vien dao du ly,",
-    "Qua thanh vo ngu tu thuy am."
+    "Mẫu đơn yêu diễm loạn nhân tâm,",
+    "Nhất quốc như cuồng bất tích kim.",
+    "Hạt nhược đông viên đào dữ lý,",
+    "Quả thành vô ngữ tự thuỳ âm."
   ],
-  colorsTitle: "Cac sac mau cua mau don",
+  colorsTitle: "Các sắc màu của mẫu đơn",
   colors: [
-    { color: "Xanh", icon: "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=50&h=50&fit=crop", desc: "su tuoi mat, em dem, niem tin, hy vong" },
-    { color: "Hong", icon: "https://images.unsplash.com/photo-1549472350-dfd358178122?w=50&h=50&fit=crop", desc: "tinh mau tu, su bao dung, long nhan ai va su thau hieu" },
-    { color: "Do", icon: "https://images.unsplash.com/photo-1582794543139-8ac9cb0f7b11?w=50&h=50&fit=crop", desc: "su may man, giau sang, quyen luc" },
-    { color: "Trang", icon: "https://images.unsplash.com/photo-1490750967868-88cb44cb2ecd?w=50&h=50&fit=crop", desc: "su tinh khoi, thuan khiet, chan thanh" }
+    { color: "Xanh", icon: "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?w=50&h=50&fit=crop", desc: "sự tươi mát, êm đềm, niềm tin, hy vọng" },
+    { color: "Hồng", icon: "https://images.unsplash.com/photo-1549472350-dfd358178122?w=50&h=50&fit=crop", desc: "tình mẫu tử, sự bao dung, lòng nhân ái và sự thấu hiểu" },
+    { color: "Đỏ", icon: "https://images.unsplash.com/photo-1582794543139-8ac9cb0f7b11?w=50&h=50&fit=crop", desc: "sự may mắn, giàu sang, quyền lực" },
+    { color: "Trắng", icon: "https://images.unsplash.com/photo-1490750967868-88cb44cb2ecd?w=50&h=50&fit=crop", desc: "sự tinh khôi, thuần khiết, chân thành" }
   ],
-  exploreTitle: "Kham pha them ve",
+  exploreTitle: "Khám phá thêm về",
   explore: [
     { label: "Linh Lan", slug: "linh-lan" },
     { label: "Hoa Sen", slug: "hoa-sen" },
@@ -35,6 +35,20 @@ const defaultStory = {
     { label: "Cuc Dong Tien", slug: "cuc-dong-tien" },
     { label: "Hoa Hong", slug: "hoa-hong" }
   ]
+};
+
+const normalizeCommonVietnamese = (value, fallback = "") => {
+  const text = String(value || "").trim();
+  if (!text) return fallback;
+
+  const map = {
+    "Cau chuyen": "Câu chuyện",
+    "Cac sac mau": "Các sắc màu",
+    "Cac sac mau cua mau don": "Các sắc màu của mẫu đơn",
+    "Kham pha them ve": "Khám phá thêm về"
+  };
+
+  return map[text] || text;
 };
 
 const shadowClassByIndex = [
@@ -48,6 +62,7 @@ const shadowClassByIndex = [
 
 export default function Story() {
   const { slug } = useParams();
+  const navigate = useNavigate();
   const [story, setStory] = useState(defaultStory);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -57,12 +72,28 @@ export default function Story() {
 
   useEffect(() => {
     const fetchStory = async () => {
-      // Route /story khong co slug thi dung trang mau mac dinh.
+      // Route /story khong co slug: tu dong tro den bai dau tien trong danh sach story.
       if (!slug) {
-        setStory(defaultStory);
+        setLoading(true);
         setNotFound(false);
         setLoadError("");
-        setLoading(false);
+        try {
+          const listResponse = await fetch(`${API_BASE}/api/stories`);
+          if (listResponse.ok) {
+            const stories = await listResponse.json();
+            const firstStory = Array.isArray(stories) && stories.length > 0 ? stories[0] : null;
+            if (firstStory?.slug) {
+              navigate(`/story/${firstStory.slug}`, { replace: true });
+              return;
+            }
+          }
+          // Neu danh sach rong thi fallback ve bai mac dinh.
+          setStory(defaultStory);
+        } catch (_error) {
+          setStory(defaultStory);
+        } finally {
+          setLoading(false);
+        }
         return;
       }
 
@@ -135,7 +166,7 @@ export default function Story() {
         <div className="bg-gradient-to-br from-white via-[#fcf6f8] to-[#f2ecf3] rounded-3xl p-12 md:p-16 shadow-lg border border-red-50 relative">
           <div className="absolute top-4 left-12 flex">
             <div className="w-4 h-12 bg-rose-700 mr-3"></div>
-            <h2 className="text-4xl text-rose-700 font-['Geologica'] flex items-end font-light">{story.storyTitle || "Cau chuyen"}</h2>
+            <h2 className="text-4xl text-rose-700 font-['Geologica'] flex items-end font-light">{normalizeCommonVietnamese(story.storyTitle, "Câu chuyện")}</h2>
           </div>
 
           <p className="text-justify font-light text-black/80 font-['Geologica'] leading-loose mb-10 text-lg mt-6">
@@ -156,7 +187,7 @@ export default function Story() {
       <section className="max-w-[1280px] mx-auto px-12 md:px-24 mt-24">
         <div className="flex mb-12">
           <div className="w-4 h-12 bg-rose-700 mr-3"></div>
-          <h2 className="text-4xl text-rose-700 font-['Geologica'] flex items-end">{story.colorsTitle}</h2>
+          <h2 className="text-4xl text-rose-700 font-['Geologica'] flex items-end">{normalizeCommonVietnamese(story.colorsTitle, "Các sắc màu")}</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
@@ -175,7 +206,7 @@ export default function Story() {
       </section>
 
       <section className="max-w-[1280px] mx-auto px-12 md:px-24 mt-32 text-center">
-        <h2 className="text-5xl text-[#598CBC] font-['Italianno'] mb-12">{story.exploreTitle}</h2>
+        <h2 className="text-5xl text-[#598CBC] font-['Italianno'] mb-12">{normalizeCommonVietnamese(story.exploreTitle, "Khám phá thêm về")}</h2>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {(story.explore || []).map((item, index) => (

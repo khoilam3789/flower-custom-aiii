@@ -8,13 +8,13 @@ const initialStoryForm = {
   slug: "",
   heroImage: "",
   subtitle: "",
-  storyTitle: "Cau chuyen",
+  storyTitle: "Câu chuyện",
   storyBody: "",
   poemTitle: "",
   poemLinesText: "",
-  colorsTitle: "Cac sac mau",
+  colorsTitle: "Các sắc màu",
   colors: [{ color: "", icon: "", desc: "" }],
-  exploreTitle: "Kham pha them ve",
+  exploreTitle: "Khám phá thêm về",
   explore: [{ label: "", slug: "" }],
   isPublished: true
 };
@@ -47,11 +47,11 @@ const storyToForm = (story) => ({
   slug: story.slug || "",
   heroImage: story.heroImage || "",
   subtitle: story.subtitle || "",
-  storyTitle: story.storyTitle || "Cau chuyen",
+  storyTitle: story.storyTitle || "Câu chuyện",
   storyBody: story.storyBody || "",
   poemTitle: story.poemTitle || "",
   poemLinesText: (story.poemLines || []).join("\n"),
-  colorsTitle: story.colorsTitle || "Cac sac mau",
+  colorsTitle: story.colorsTitle || "Các sắc màu",
   colors: (story.colors || []).length > 0
     ? story.colors.map((item) => ({
         color: item.color || "",
@@ -59,7 +59,7 @@ const storyToForm = (story) => ({
         desc: item.desc || ""
       }))
     : [{ color: "", icon: "", desc: "" }],
-  exploreTitle: story.exploreTitle || "Kham pha them ve",
+  exploreTitle: story.exploreTitle || "Khám phá thêm về",
   explore: (story.explore || []).length > 0
     ? story.explore.map((item) => ({
         label: item.label || "",
@@ -696,7 +696,15 @@ export default function AdminDashboard() {
                         placeholder="Mô tả"
                         className="col-span-3 px-3 py-2 bg-white border rounded-md outline-none focus:border-rose-500"
                       />
-                      <button type="button" onClick={() => removeColorRow(index)} className="col-span-1 px-2 py-2 rounded-md bg-red-50 text-red-600 font-semibold hover:bg-red-100 transition">-</button>
+                      <button type="button" onClick={() => removeColorRow(index)} className="col-span-1 px-2 py-2 rounded-md bg-red-50 text-red-600 font-semibold hover:bg-red-100 transition flex items-center justify-center" aria-label="Xóa màu">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                          <path d="M3 6h18" />
+                          <path d="M8 6V4h8v2" />
+                          <path d="M19 6l-1 14H6L5 6" />
+                          <path d="M10 11v6" />
+                          <path d="M14 11v6" />
+                        </svg>
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -723,7 +731,15 @@ export default function AdminDashboard() {
                         placeholder="Slug"
                         className="col-span-6 px-3 py-2 bg-white border rounded-md outline-none focus:border-rose-500"
                       />
-                      <button type="button" onClick={() => removeExploreRow(index)} className="col-span-1 px-2 py-2 rounded-md bg-red-50 text-red-600 font-semibold hover:bg-red-100 transition">-</button>
+                      <button type="button" onClick={() => removeExploreRow(index)} className="col-span-1 px-2 py-2 rounded-md bg-red-50 text-red-600 font-semibold hover:bg-red-100 transition flex items-center justify-center" aria-label="Xóa mục khám phá">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                          <path d="M3 6h18" />
+                          <path d="M8 6V4h8v2" />
+                          <path d="M19 6l-1 14H6L5 6" />
+                          <path d="M10 11v6" />
+                          <path d="M14 11v6" />
+                        </svg>
+                      </button>
                     </div>
                   ))}
                 </div>
