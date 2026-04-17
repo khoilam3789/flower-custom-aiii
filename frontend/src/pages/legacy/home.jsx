@@ -25,7 +25,7 @@ export default function Home() {
             <h1 className="text-rose-700 text-6xl sm:text-7xl md:text-[80px] lg:text-[100px] font-normal font-['Italiana'] leading-[1] my-4 drop-shadow-sm ml-0 md:ml-10">TÚI HOA</h1>
             <p className="text-Color text-lg md:text-xl font-light font-['Geologica'] leading-7 mb-8 md:mb-16 italic ml-0 md:ml-20">để mang lời thương toả khắp lối</p>
             <div className="flex gap-4 flex-wrap justify-center md:justify-start ml-0 md:ml-32 mt-4 md:mt-0">
-              <a href="http://localhost:5173/custom-flowers" className="px-6 py-3 bg-slate-500 text-white rounded-[100px] text-sm font-light font-['Geologica'] transition hover:bg-slate-500/80 uppercase shadow-sm">
+                    <a href="/custom-flowers" className="px-6 py-3 bg-slate-500 text-white rounded-[100px] text-sm font-light font-['Geologica'] transition hover:bg-slate-500/80 uppercase shadow-sm">
                 THIẾT KẾ NGAY
               </a>
               <Link to="/about" className="px-6 py-3 bg-Color-3 text-Color border border-slate-500 rounded-[100px] text-sm font-light font-['Geologica'] transition hover:bg-zinc-300 uppercase shadow-sm">
