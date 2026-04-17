@@ -61,12 +61,10 @@ const shadowClassByIndex = [
 ];
 
 const exhibitionImages = [
-  "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=900&h=1200&fit=crop",
-  "https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=900&h=1200&fit=crop",
-  "https://images.unsplash.com/photo-1470509037663-253afd7f0f51?w=900&h=1200&fit=crop",
-  "https://images.unsplash.com/photo-1462275646964-a0e3386b89fa?w=900&h=1200&fit=crop",
-  "https://images.unsplash.com/photo-1476041800959-2f6bb412c8ce?w=900&h=1200&fit=crop",
-  "https://images.unsplash.com/photo-1501973801540-537f08ccae7b?w=900&h=1200&fit=crop"
+  "/images/story/1.png",
+  "/images/story/2.png",
+  "/images/story/3.png",
+  "/images/story/4.png"
 ];
 
 const overviewBlogs = [
@@ -212,15 +210,17 @@ export default function Story() {
           </div>
 
           <div className="rounded-[30px] bg-gradient-to-r from-[#fbe8e1] via-[#f7f4ff] to-[#e8f3ff] p-4 md:p-6 border border-white shadow-[0_25px_60px_-45px_rgba(2,6,23,0.85)]">
-            <div className="max-w-[560px] mx-auto grid grid-cols-1 gap-5 md:gap-6">
-              {exhibitionImages.slice(0, 4).map((image, index) => (
+            <div className="overflow-x-auto pb-2">
+              <div className="inline-flex items-center gap-6 md:gap-14 min-w-max mx-auto">
+                {exhibitionImages.slice(0, 4).map((image, index) => (
                 <img
                   key={`${image}-${index}`}
                   src={image}
                   alt={`Triển lãm ${index + 1}`}
-                  className="w-full h-72 md:h-[430px] object-cover rounded-2xl shadow-md"
+                  className="w-[280px] md:w-[340px] lg:w-96 h-[420px] md:h-[500px] lg:h-[541px] object-cover rounded-2xl shadow-md"
                 />
               ))}
+              </div>
             </div>
             <div className="mt-6 text-center">
               <button
