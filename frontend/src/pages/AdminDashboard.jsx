@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { API_BASE } from "../api";
 
 const initialStoryForm = {
@@ -63,7 +63,6 @@ const storyToForm = (story) => ({
 
 export default function AdminDashboard() {
   const { user, token } = useAuth();
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const backendUrl = API_BASE;
 
@@ -84,13 +83,6 @@ export default function AdminDashboard() {
     name: '', category: 'flower', price: '', imageUrl: '', description: ''
   });
   const [storyForm, setStoryForm] = useState(initialStoryForm);
-
-  useEffect(() => {
-    if (!user || user.role !== 'admin') {
-      navigate('/');
-      return;
-    }
-  }, [user, navigate]);
 
   useEffect(() => {
     if (user && user.role === 'admin') {
@@ -334,7 +326,33 @@ export default function AdminDashboard() {
   };
 
 
-  if (!user || user.role !== 'admin') return null;
+  if (!user) {
+    return (
+      <div className="w-full min-h-screen bg-slate-100 flex items-center justify-center px-6">
+        <div className="max-w-lg w-full bg-white border border-slate-200 rounded-2xl p-8 shadow-sm text-center">
+          <h2 className="text-2xl font-bold text-slate-800">Bạn chưa đăng nhập</h2>
+          <p className="text-slate-500 mt-2">Vui lòng đăng nhập tài khoản admin để truy cập trang quản trị.</p>
+          <Link to="/login" className="inline-block mt-6 px-5 py-2.5 rounded-lg bg-rose-700 text-white font-semibold hover:bg-rose-800 transition">
+            Đi tới đăng nhập
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (user.role !== 'admin') {
+    return (
+      <div className="w-full min-h-screen bg-slate-100 flex items-center justify-center px-6">
+        <div className="max-w-lg w-full bg-white border border-slate-200 rounded-2xl p-8 shadow-sm text-center">
+          <h2 className="text-2xl font-bold text-slate-800">Không có quyền truy cập</h2>
+          <p className="text-slate-500 mt-2">Tài khoản hiện tại không có quyền admin.</p>
+          <Link to="/" className="inline-block mt-6 px-5 py-2.5 rounded-lg bg-slate-700 text-white font-semibold hover:bg-slate-800 transition">
+            Về trang chủ
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full min-h-screen bg-slate-100">
