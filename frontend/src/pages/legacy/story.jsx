@@ -133,7 +133,7 @@ export default function Story() {
         <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-rose-700/10 rounded-full blur-2xl"></div>
 
         <div className="bg-gradient-to-br from-white via-[#fcf6f8] to-[#f2ecf3] rounded-3xl p-12 md:p-16 shadow-lg border border-red-50 relative">
-          <div className="absolute -top-6 left-12 flex">
+          <div className="absolute top-4 left-12 flex">
             <div className="w-4 h-12 bg-rose-700 mr-3"></div>
             <h2 className="text-4xl text-rose-700 font-['Geologica'] flex items-end font-light">{story.storyTitle || "Cau chuyen"}</h2>
           </div>

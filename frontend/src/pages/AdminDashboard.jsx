@@ -13,9 +13,9 @@ const initialStoryForm = {
   poemTitle: "",
   poemLinesText: "",
   colorsTitle: "Cac sac mau",
-  colorsText: "",
+  colors: [{ color: "", icon: "", desc: "" }],
   exploreTitle: "Kham pha them ve",
-  exploreText: "",
+  explore: [{ label: "", slug: "" }],
   isPublished: true
 };
 
@@ -25,20 +25,21 @@ const parseMultiLine = (input) =>
     .map((line) => line.trim())
     .filter(Boolean);
 
-const parseColorItems = (input) =>
-  parseMultiLine(input)
-    .map((line) => {
-      const [color = "", icon = "", desc = ""] = line.split("|");
-      return { color: color.trim(), icon: icon.trim(), desc: desc.trim() };
-    })
+const sanitizeColorItems = (items = []) =>
+  (Array.isArray(items) ? items : [])
+    .map((item) => ({
+      color: String(item?.color || "").trim(),
+      icon: String(item?.icon || "").trim(),
+      desc: String(item?.desc || "").trim()
+    }))
     .filter((item) => item.color && item.icon && item.desc);
 
-const parseExploreItems = (input) =>
-  parseMultiLine(input)
-    .map((line) => {
-      const [label = "", slug = ""] = line.split("|");
-      return { label: label.trim(), slug: slug.trim() || label.trim() };
-    })
+const sanitizeExploreItems = (items = []) =>
+  (Array.isArray(items) ? items : [])
+    .map((item) => ({
+      label: String(item?.label || "").trim(),
+      slug: String(item?.slug || "").trim() || String(item?.label || "").trim()
+    }))
     .filter((item) => item.label);
 
 const storyToForm = (story) => ({
@@ -51,13 +52,20 @@ const storyToForm = (story) => ({
   poemTitle: story.poemTitle || "",
   poemLinesText: (story.poemLines || []).join("\n"),
   colorsTitle: story.colorsTitle || "Cac sac mau",
-  colorsText: (story.colors || [])
-    .map((item) => `${item.color}|${item.icon}|${item.desc}`)
-    .join("\n"),
+  colors: (story.colors || []).length > 0
+    ? story.colors.map((item) => ({
+        color: item.color || "",
+        icon: item.icon || "",
+        desc: item.desc || ""
+      }))
+    : [{ color: "", icon: "", desc: "" }],
   exploreTitle: story.exploreTitle || "Kham pha them ve",
-  exploreText: (story.explore || [])
-    .map((item) => `${item.label}|${item.slug}`)
-    .join("\n"),
+  explore: (story.explore || []).length > 0
+    ? story.explore.map((item) => ({
+        label: item.label || "",
+        slug: item.slug || ""
+      }))
+    : [{ label: "", slug: "" }],
   isPublished: Boolean(story.isPublished)
 });
 
@@ -222,11 +230,53 @@ export default function AdminDashboard() {
     poemTitle: storyForm.poemTitle,
     poemLines: parseMultiLine(storyForm.poemLinesText),
     colorsTitle: storyForm.colorsTitle,
-    colors: parseColorItems(storyForm.colorsText),
+    colors: sanitizeColorItems(storyForm.colors),
     exploreTitle: storyForm.exploreTitle,
-    explore: parseExploreItems(storyForm.exploreText),
+    explore: sanitizeExploreItems(storyForm.explore),
     isPublished: storyForm.isPublished
   });
+
+  const addColorRow = () => {
+    setStoryForm({
+      ...storyForm,
+      colors: [...storyForm.colors, { color: "", icon: "", desc: "" }]
+    });
+  };
+
+  const updateColorRow = (index, field, value) => {
+    const nextColors = [...storyForm.colors];
+    nextColors[index] = { ...nextColors[index], [field]: value };
+    setStoryForm({ ...storyForm, colors: nextColors });
+  };
+
+  const removeColorRow = (index) => {
+    const nextColors = storyForm.colors.filter((_, idx) => idx !== index);
+    setStoryForm({
+      ...storyForm,
+      colors: nextColors.length > 0 ? nextColors : [{ color: "", icon: "", desc: "" }]
+    });
+  };
+
+  const addExploreRow = () => {
+    setStoryForm({
+      ...storyForm,
+      explore: [...storyForm.explore, { label: "", slug: "" }]
+    });
+  };
+
+  const updateExploreRow = (index, field, value) => {
+    const nextExplore = [...storyForm.explore];
+    nextExplore[index] = { ...nextExplore[index], [field]: value };
+    setStoryForm({ ...storyForm, explore: nextExplore });
+  };
+
+  const removeExploreRow = (index) => {
+    const nextExplore = storyForm.explore.filter((_, idx) => idx !== index);
+    setStoryForm({
+      ...storyForm,
+      explore: nextExplore.length > 0 ? nextExplore : [{ label: "", slug: "" }]
+    });
+  };
 
   const resetStoryForm = () => {
     setStoryForm(initialStoryForm);
@@ -548,12 +598,65 @@ export default function AdminDashboard() {
                 <textarea value={storyForm.poemLinesText} onChange={(e) => setStoryForm({ ...storyForm, poemLinesText: e.target.value })} className="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:border-rose-500" rows={4}></textarea>
               </div>
               <div>
-                <label className="block text-sm font-bold text-slate-600 mb-1">Màu sắc (mỗi dòng: ten|iconUrl|mo ta)</label>
-                <textarea value={storyForm.colorsText} onChange={(e) => setStoryForm({ ...storyForm, colorsText: e.target.value })} className="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:border-rose-500 font-mono text-sm" rows={5}></textarea>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-bold text-slate-600">Màu sắc</label>
+                  <button type="button" onClick={addColorRow} className="px-3 py-1.5 rounded-md bg-slate-100 text-slate-700 text-sm font-semibold hover:bg-slate-200 transition">+ Thêm màu</button>
+                </div>
+                <div className="space-y-2">
+                  {storyForm.colors.map((item, index) => (
+                    <div key={`color-${index}`} className="grid grid-cols-12 gap-2 bg-slate-50 border border-slate-200 rounded-lg p-2">
+                      <input
+                        type="text"
+                        value={item.color}
+                        onChange={(e) => updateColorRow(index, "color", e.target.value)}
+                        placeholder="Tên màu"
+                        className="col-span-3 px-3 py-2 bg-white border rounded-md outline-none focus:border-rose-500"
+                      />
+                      <input
+                        type="text"
+                        value={item.icon}
+                        onChange={(e) => updateColorRow(index, "icon", e.target.value)}
+                        placeholder="Icon URL"
+                        className="col-span-5 px-3 py-2 bg-white border rounded-md outline-none focus:border-rose-500"
+                      />
+                      <input
+                        type="text"
+                        value={item.desc}
+                        onChange={(e) => updateColorRow(index, "desc", e.target.value)}
+                        placeholder="Mô tả"
+                        className="col-span-3 px-3 py-2 bg-white border rounded-md outline-none focus:border-rose-500"
+                      />
+                      <button type="button" onClick={() => removeColorRow(index)} className="col-span-1 px-2 py-2 rounded-md bg-red-50 text-red-600 font-semibold hover:bg-red-100 transition">-</button>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div>
-                <label className="block text-sm font-bold text-slate-600 mb-1">Khám phá thêm (mỗi dòng: label|slug)</label>
-                <textarea value={storyForm.exploreText} onChange={(e) => setStoryForm({ ...storyForm, exploreText: e.target.value })} className="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:border-rose-500 font-mono text-sm" rows={4}></textarea>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-bold text-slate-600">Khám phá thêm</label>
+                  <button type="button" onClick={addExploreRow} className="px-3 py-1.5 rounded-md bg-slate-100 text-slate-700 text-sm font-semibold hover:bg-slate-200 transition">+ Thêm mục</button>
+                </div>
+                <div className="space-y-2">
+                  {storyForm.explore.map((item, index) => (
+                    <div key={`explore-${index}`} className="grid grid-cols-12 gap-2 bg-slate-50 border border-slate-200 rounded-lg p-2">
+                      <input
+                        type="text"
+                        value={item.label}
+                        onChange={(e) => updateExploreRow(index, "label", e.target.value)}
+                        placeholder="Label"
+                        className="col-span-5 px-3 py-2 bg-white border rounded-md outline-none focus:border-rose-500"
+                      />
+                      <input
+                        type="text"
+                        value={item.slug}
+                        onChange={(e) => updateExploreRow(index, "slug", e.target.value)}
+                        placeholder="Slug"
+                        className="col-span-6 px-3 py-2 bg-white border rounded-md outline-none focus:border-rose-500"
+                      />
+                      <button type="button" onClick={() => removeExploreRow(index)} className="col-span-1 px-2 py-2 rounded-md bg-red-50 text-red-600 font-semibold hover:bg-red-100 transition">-</button>
+                    </div>
+                  ))}
+                </div>
               </div>
               <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
                 <input type="checkbox" checked={storyForm.isPublished} onChange={(e) => setStoryForm({ ...storyForm, isPublished: e.target.checked })} />
@@ -590,7 +693,16 @@ export default function AdminDashboard() {
                     <td className="p-4">
                       <img src={story.heroImage} alt={story.title} className="w-14 h-14 rounded-md object-cover border" />
                     </td>
-                    <td className="p-4 font-semibold text-slate-800">{story.title}</td>
+                    <td className="p-4 font-semibold text-slate-800">
+                      <Link
+                        to={`/story/${story.slug}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-slate-800 hover:text-rose-700 hover:underline"
+                      >
+                        {story.title}
+                      </Link>
+                    </td>
                     <td className="p-4 text-xs text-slate-500">{story.slug}</td>
                     <td className="p-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-bold ${story.isPublished ? "bg-green-100 text-green-700" : "bg-slate-200 text-slate-600"}`}>
