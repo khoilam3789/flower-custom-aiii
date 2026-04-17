@@ -51,6 +51,7 @@ export default function App() {
         <Routes>
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/booth" element={<BoothPage />} />
+          <Route path="/story/:slug" element={<StoryPage />} />
           {figmaRoutes.map(([path, _label, Component]) => (
             <Route key={path} path={path} element={<Component />} />
           ))}
