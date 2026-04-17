@@ -128,16 +128,22 @@ export default function Payment() {
                   <div className="text-xs text-rose-700/60 font-semibold uppercase tracking-wider">(Đã bao gồm VAT)</div>
                </div>
             </div>
-          </div>
-          
-          <button form="checkout-form" type="submit" className="w-full mt-10 text-center px-8 py-5 bg-rose-700 text-white font-bold text-xl rounded-full hover:bg-rose-800 transition shadow-xl uppercase tracking-widest shadow-rose-700/30">
-            XÁC NHẬN THANH TOÁN
-          </button>
-          
-          <div className="mt-4 text-center">
-            <Link to="/cart" className="text-slate-500 hover:text-rose-700 font-semibold uppercase tracking-wider text-sm transition">
-              &larr; Quay lại Giỏ hàng
-            </Link>
+
+            <div className="mt-10 space-y-4">
+              <button form="checkout-form" type="submit" className="w-full text-center px-8 py-5 bg-rose-700 text-white font-bold text-xl rounded-full hover:bg-rose-800 transition shadow-xl uppercase tracking-widest shadow-rose-700/30">
+                XÁC NHẬN THANH TOÁN
+              </button>
+
+              <Link to="/cart" className="block w-full text-center px-8 py-4 bg-white text-rose-700 border-2 border-rose-700 font-bold text-base rounded-full hover:bg-rose-50 transition uppercase tracking-widest">
+                BỎ VÀO GIỎ HÀNG
+              </Link>
+
+              <div className="text-center">
+                <Link to="/cart" className="text-slate-500 hover:text-rose-700 font-semibold uppercase tracking-wider text-sm transition">
+                  &larr; Quay lại Giỏ hàng
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>

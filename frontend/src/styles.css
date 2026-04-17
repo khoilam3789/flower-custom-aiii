@@ -103,8 +103,9 @@ button {
 
 button {
   cursor: pointer;
-  background: linear-gradient(135deg, var(--accent), #6b1d16);
-  color: #fff;
+  background: transparent;
+  border: none;
+  color: inherit;
 }
 
 .summary {

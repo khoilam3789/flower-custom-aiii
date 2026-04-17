@@ -45,3 +45,14 @@ Frontend mac dinh: `http://localhost:5173`
 
 - De render thanh cong cac class tu Figma, frontend dang giu nguyen JSX layout goc.
 - Generator hien dang theo huong deterministic layout + dong nhat lighting, phu hop de giu style nhat quan.
+
+## 3) Tài khoản Mẫu (Sample Accounts)
+
+Dưới đây là một số tài khoản dùng thử nghiệm cho việc Đăng Nhập / Giỏ Hàng:
+
+| Vai Trò | Email | Mật Khẩu |
+| :--- | :--- | :--- |
+| **Admin** | admin@flowerbooth.com | admin123 |
+| **Khách Nhập** | khach@gmail.com | khach123 |
+
+*(Lưu ý: Bạn có thể vào link `/register` để tự tạo thêm các tài khoản Khách hàng khác vô tư).*

@@ -3,6 +3,11 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import generationRoutes from "./routes/generationRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
+import cartRoutes from "./routes/cartRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import aiRoutes from "./routes/aiRoutes.js";
 
 const app = express();
 
@@ -19,6 +24,11 @@ const uploadsPath = path.resolve(__dirname, "../uploads");
 
 app.use("/uploads", express.static(uploadsPath));
 app.use("/api/generate", generationRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.get("/api/health", (_, res) => {
   res.json({ ok: true });

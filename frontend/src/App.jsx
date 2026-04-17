@@ -8,16 +8,19 @@ import Cart from "./pages/legacy/cart";
 import FaqPage from "./pages/legacy/faq";
 import Home from "./pages/legacy/home";
 import Login from "./pages/legacy/login";
+import Register from "./pages/legacy/register";
 import Payment from "./pages/legacy/payment";
 import PaymentSuccessPage from "./pages/legacy/payment-success";
 import StoryPage from "./pages/legacy/story";
 
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
+import AdminDashboard from "./pages/AdminDashboard";
 
 import Customhoa from "./pages/legacy/custom-flowers";
 import Customleaves from "./pages/legacy/custom-leaves";
 import Custombags from "./pages/legacy/custom-bags";
+import CustomPreview from "./pages/legacy/custom-preview";
 import Customcards from "./pages/legacy/custom-cards";
 
 const figmaRoutes = [
@@ -30,9 +33,11 @@ const figmaRoutes = [
   ["/custom-flowers", "Custom Flowers", Customhoa],
   ["/custom-leaves", "Custom Leaves", Customleaves],
   ["/custom-bags", "Custom Bags", Custombags],
+  ["/custom-preview", "AI Preview", CustomPreview],
   ["/custom-cards", "Custom Cards", Customcards],
   ["/faq", "FAQ", FaqPage],
   ["/login", "Login", Login],
+  ["/register", "Register", Register],
   ["/payment", "Payment", Payment],
   ["/payment-success", "Payment Success", PaymentSuccessPage],
   ["/story", "Story", StoryPage]
@@ -44,6 +49,7 @@ export default function App() {
       <Header />
       <main className="flex-grow">
         <Routes>
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/booth" element={<BoothPage />} />
           {figmaRoutes.map(([path, _label, Component]) => (
             <Route key={path} path={path} element={<Component />} />

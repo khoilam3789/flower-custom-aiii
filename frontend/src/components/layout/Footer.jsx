@@ -1,8 +1,11 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Footer() {
+  const { user } = useAuth();
+
   return (
-    <footer className="w-full bg-slate-500 pb-12 pt-12 md:pt-16">
+    <footer id="contact-footer" className="w-full bg-slate-500 pb-12 pt-12 md:pt-16">
       <div className="max-w-[1280px] mx-auto px-6 md:px-12 lg:px-24 flex flex-col lg:flex-row justify-between text-white gap-10 lg:gap-8 border-[10px] border-slate-500 rounded-lg">
         
         {/* Branch 1: Logo & Mission */}
@@ -40,7 +43,7 @@ export default function Footer() {
           <Link to="/about" className="font-light hover:underline">Về Chúng Tôi</Link>
           <Link to="/custom-flowers" className="font-light hover:underline">Thiết Kế Túi</Link>
           <Link to="/story" className="font-light hover:underline">Ngôn Ngữ Hoa</Link>
-          <Link to="/faq" className="font-light hover:underline">Liên Hệ</Link>
+          <a href="#contact-footer" className="font-light hover:underline">Liên Hệ</a>
           <Link to="/faq" className="font-light hover:underline">Câu hỏi thường gặp</Link>
           <Link to="/faq" className="font-light hover:underline">Chính sách</Link>
         </div>
@@ -54,7 +57,9 @@ export default function Footer() {
           <div className="flex w-full">
             <input 
               type="email" 
+              value={user?.email || ""}
               placeholder="Email của bạn..." 
+              readOnly
               className="px-4 py-2 w-full bg-zinc-300 text-rose-700 placeholder:text-rose-700/60 focus:outline-none rounded-sm"
             />
           </div>

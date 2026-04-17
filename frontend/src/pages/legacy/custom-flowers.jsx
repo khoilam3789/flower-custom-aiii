@@ -1,105 +1,238 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 export default function Customhoa(){
+  const FLOWER_STORAGE_KEY = 'flowerSelection';
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+  const location = useLocation();
+  
+  const [products, setProducts] = useState([]);
+  const [counts, setCounts] = useState({});
+
+  const restoreCart = (availableProducts) => {
+    try {
+      const raw = localStorage.getItem(FLOWER_STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : { items: [] };
+      const restoredCounts = {};
+      availableProducts.forEach(p => restoredCounts[p._id] = 0);
+      if (Array.isArray(parsed.items)) {
+        parsed.items.forEach((item) => {
+          if (restoredCounts[item.key] !== undefined) {
+            restoredCounts[item.key] = Math.max(0, Number(item.quantity) || 0);
+          }
+        });
+      }
+      setCounts(restoredCounts);
+    } catch (_) {}
+  };
+
+  useEffect(() => {
+    const isBack = location.state?.back === true;
+
+    if (!isBack) {
+      // Bắt đầu phiên mới → xóa toàn bộ data cũ
+      localStorage.removeItem('flowerSelection');
+      localStorage.removeItem('leafSelection');
+      localStorage.removeItem('bagSelection');
+    }
+
+    const fetchFlowers = async () => {
+      try {
+        const res = await fetch(`${backendUrl}/api/products?category=flower`);
+        if (res.ok) {
+          const data = await res.json();
+          setProducts(data);
+          if (isBack) {
+            // Quay lại từ trang lá → restore lựa chọn cũ
+            restoreCart(data);
+          } else {
+            // Phiên mới → counts = 0
+            const initCounts = {};
+            data.forEach(p => initCounts[p._id] = 0);
+            setCounts(initCounts);
+          }
+        }
+      } catch (e) {
+        console.error("Lỗi lấy nguyên liệu hoa:", e);
+      }
+    };
+    fetchFlowers();
+  }, []);
+
+  const increase = (id) => {
+    setCounts((prev) => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
+  };
+
+  const decrease = (id) => {
+    setCounts((prev) => ({ ...prev, [id]: Math.max(0, (prev[id] || 0) - 1) }));
+  };
+
+  const selectedItems = products
+    .map((item) => ({
+      key: item._id,
+      label: item.name,
+      price: item.price,
+      quantity: counts[item._id] || 0,
+      lineTotal: (counts[item._id] || 0) * item.price
+    }))
+    .filter((item) => item.quantity > 0);
+
+  const subtotal = selectedItems.reduce((sum, item) => sum + item.lineTotal, 0);
+
+  const formatPrice = (value) => `${new Intl.NumberFormat('vi-VN').format(value)}đ`;
+
+  const buildPayload = () => ({
+    items: selectedItems.map((item) => ({
+      key: item.key,
+      label: item.label,
+      price: item.price,
+      quantity: item.quantity,
+      lineTotal: item.lineTotal
+    })),
+    subtotal,
+    updatedAt: Date.now()
+  });
+
+  const persistSelection = () => {
+    if (Object.keys(counts).length > 0) {
+      localStorage.setItem(FLOWER_STORAGE_KEY, JSON.stringify(buildPayload()));
+    }
+  };
+
+  useEffect(() => {
+    persistSelection();
+  }, [subtotal, counts]);
+
+  const handleContinue = () => {
+    persistSelection();
+  };
+
   return (
 <div className="w-[1440px] h-[1000px] px-10 relative bg-Color-3 inline-flex flex-col justify-start items-center overflow-hidden">
+  
+  {/* Panel Tạm tính (Bên phải) */}
   <div className="w-[525px] h-[532px] left-[816px] top-[280px] absolute bg-white rounded-[10px] outline outline-1 outline-offset-[-1px] outline-[#AF2E38] overflow-hidden">
+    <div className="w-[477px] h-[340px] left-[24px] top-[26px] absolute overflow-y-auto overflow-x-hidden scrollbar-hide pr-3">
+      {selectedItems.length === 0 ? (
+        <div className="h-full flex items-center justify-center text-center text-zinc-400 text-base font-light font-['Geologica'] leading-6">
+          Chưa có hoa nào được chọn
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {selectedItems.map((item) => (
+            <div key={item.key} className="w-full px-4 py-3 bg-[#FAF9F5] rounded-lg flex items-center justify-between">
+              <span className="text-[#AF2E38] text-lg font-normal font-['Geologica'] leading-6">x{item.quantity} {item.label}</span>
+              <span className="text-[#AF2E38] text-lg font-semibold font-['Geologica'] leading-6">{formatPrice(item.lineTotal)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
     <div className="w-[619px] h-36 left-0 top-[404px] absolute bg-[#AF2E38] rounded-[10px]" />
     <div className="w-40 h-10 left-[16px] top-[472px] absolute text-center justify-center text-white text-3xl font-semibold font-['Geologica'] leading-10">Tạm tính</div>
-    <div className="w-52 h-10 left-[296px] top-[472px] absolute text-right justify-center text-white text-3xl font-light font-['Geologica'] leading-10">450.000</div>
+    <div className="w-52 h-10 left-[296px] top-[472px] absolute text-right justify-center text-white text-3xl font-light font-['Geologica'] leading-10">{new Intl.NumberFormat('vi-VN').format(subtotal)}</div>
   </div>
-  <div className="w-[623px] h-[621px] left-[120px] top-[280px] absolute bg-[#AF2E38] rounded-[20px] outline outline-1 outline-offset-[-1px] outline-[#AF2E38] overflow-hidden">
-    <div className="w-[585px] h-[1907px] left-[19px] top-[-13px] absolute overflow-hidden">
-      <img className="w-64 h-80 left-[22px] top-[20px] absolute shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]" src="/images/CustomizeHoa/nenhoa.png" />
-      <img className="w-28 h-40 left-[71px] top-[75px] absolute" src="/images/CustomizeHoa/huongduong.png" />
-      <div className="w-[120px] h-[72px] left-[90px] top-[212px] absolute bg-white" />
-      <div className="w-[120px] h-6 left-[90px] top-[216px] absolute text-center justify-center text-[#AF2E38] text-sm font-black font-['Geologica'] leading-5">Hướng Dương</div>
-      <div className="w-[120px] h-7 left-[90px] top-[238px] absolute text-center justify-center text-black text-[10px] font-thin font-['Geologica'] leading-4"> Sự trung thành, kiên định & sức sống mãnh liệt</div>
-      <div className="w-[120px] h-6 left-[90px] top-[258px] absolute text-center justify-center"><span className="text-[#AF2E38] text-xl font-light font-['Geologica'] leading-7"> -  </span><span className="text-[#AF2E38] text-xl font-bold font-['Geologica'] leading-7">0</span><span className="text-[#AF2E38] text-xl font-light font-['Geologica'] leading-7"> +</span></div>
-      <img className="w-64 h-80 left-[308px] top-[20px] absolute shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]" src="/images/CustomizeHoa/nenhoa.png" />
-      <div className="w-32 h-5 left-[369px] top-[74px] absolute justify-center text-[#AF2E38] text-xs font-light font-['Geologica'] leading-4">29.000 VNĐ/cành</div>
-      <img className="w-32 h-52 left-[358px] top-[78px] absolute origin-top-left rotate-[-8deg]" src="/images/CustomizeHoa/hoahong.png" />
-      <div className="w-[120px] h-[72px] left-[376px] top-[200px] absolute bg-white" />
-      <div className="w-[120px] h-6 left-[376px] top-[201px] absolute text-center justify-center text-[#AF2E38] text-sm font-black font-['Geologica'] leading-5">Hoa Hồng</div>
-      <div className="w-32 h-5 left-[84px] top-[68px] absolute justify-center text-[#AF2E38] text-xs font-light font-['Geologica'] leading-4">19.000 VNĐ/cành</div>
-      <div className="w-[120px] h-7 left-[376px] top-[224px] absolute text-center justify-center text-black text-[10px] font-thin font-['Geologica'] leading-4">Tình yêu, sự lãng mạn và sắc đẹp<br/></div>
-      <div className="w-[120px] h-6 left-[376px] top-[244px] absolute text-center justify-center"><span className="text-[#AF2E38] text-xl font-light font-['Geologica'] leading-7"> -  </span><span className="text-[#AF2E38] text-xl font-bold font-['Geologica'] leading-7">0</span><span className="text-[#AF2E38] text-xl font-light font-['Geologica'] leading-7"> +</span></div>
-      <img className="w-64 h-80 left-[22px] top-[321px] absolute shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]" src="/images/CustomizeHoa/nenhoa.png" />
-      <img className="w-24 h-52 left-[118px] top-[338px] absolute origin-top-left rotate-[6deg]" src="/images/CustomizeHoa/tulip.png" />
-      <div className="w-[120px] h-[72px] left-[90px] top-[513px] absolute bg-white" />
-      <div className="w-[120px] h-6 left-[90px] top-[516px] absolute text-center justify-center text-[#AF2E38] text-sm font-black font-['Geologica'] leading-5">Tulip</div>
-      <div className="w-[120px] h-7 left-[90px] top-[539px] absolute text-center justify-center text-black text-[10px] font-thin font-['Geologica'] leading-4">Lời tỏ tình tinh tế dành cho "người thương"</div>
-      <div className="w-[120px] h-6 left-[90px] top-[559px] absolute text-center justify-center"><span className="text-[#AF2E38] text-xl font-light font-['Geologica'] leading-7"> -  </span><span className="text-[#AF2E38] text-xl font-bold font-['Geologica'] leading-7">0</span><span className="text-[#AF2E38] text-xl font-light font-['Geologica'] leading-7"> +</span></div>
-      <div className="w-32 h-5 left-[84px] top-[370px] absolute justify-center text-[#AF2E38] text-xs font-light font-['Geologica'] leading-4">49.000 VNĐ/cành</div>
-      <img className="w-64 h-80 left-[308px] top-[321px] absolute shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]" src="/images/CustomizeHoa/nenhoa.png" />
-      <img className="w-28 h-40 left-[372px] top-[378px] absolute" src="/images/CustomizeHoa/huongduong.png" />
-      <div className="w-[120px] h-[72px] left-[376px] top-[513px] absolute bg-white" />
-      <div className="w-[120px] h-6 left-[376px] top-[516px] absolute text-center justify-center text-[#AF2E38] text-sm font-black font-['Geologica'] leading-5">Hướng Dương</div>
-      <div className="w-[120px] h-6 left-[376px] top-[576px] absolute text-center justify-center text-[#AF2E38] text-sm font-light font-['Geologica'] leading-5">8.000đ/cành</div>
-      <div className="w-[120px] h-7 left-[376px] top-[539px] absolute text-center justify-center text-black text-[10px] font-thin font-['Geologica'] leading-4"> Sự trung thành, kiên định & sức sống mãnh liệt</div>
-      <img className="w-64 h-80 left-[308px] top-[321px] absolute shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]" src="/images/CustomizeHoa/nenhoa.png" />
-      <img className="w-24 h-52 left-[387px] top-[344px] absolute" src="/images/CustomizeHoa/linhlan.png" />
-      <div className="w-[120px] h-[72px] left-[376px] top-[513px] absolute bg-white" />
-      <div className="w-[120px] h-6 left-[376px] top-[516px] absolute text-center justify-center text-[#AF2E38] text-sm font-black font-['Geologica'] leading-5">Linh Lan</div>
-      <div className="w-[120px] h-7 left-[376px] top-[539px] absolute text-center justify-center text-black text-[10px] font-thin font-['Geologica'] leading-4"> Sự "trở lại" của hạnh phúc, may mắn</div>
-      <div className="w-[120px] h-6 left-[376px] top-[559px] absolute text-center justify-center"><span className="text-[#AF2E38] text-xl font-light font-['Geologica'] leading-7"> -  </span><span className="text-[#AF2E38] text-xl font-bold font-['Geologica'] leading-7">0</span><span className="text-[#AF2E38] text-xl font-light font-['Geologica'] leading-7"> +</span></div>
-      <div className="w-32 h-5 left-[369px] top-[374px] absolute justify-center text-[#AF2E38] text-xs font-light font-['Geologica'] leading-4">89.000 VNĐ/cành</div>
-      <img className="w-64 h-80 left-[22px] top-[620px] absolute shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]" src="/images/CustomizeHoa/nenhoa.png" />
-      <div className="w-32 h-5 left-[56px] top-[659px] absolute justify-center text-[#AF2E38] text-xs font-light font-['Geologica'] leading-4">39.000 VNĐ/cành</div>
-      <img className="w-32 h-44 left-[74px] top-[676px] absolute" src="https://placehold.co/136x182" />
-      <div className="w-[120px] h-[72px] left-[90px] top-[825px] absolute bg-white" />
-      <div className="w-[120px] h-6 left-[90px] top-[827px] absolute text-center justify-center text-[#AF2E38] text-sm font-black font-['Geologica'] leading-5">Cẩm Tú Cầu</div>
-      <div className="w-[120px] h-7 left-[90px] top-[849px] absolute text-center justify-center text-black text-xs font-thin font-['Geologica'] leading-4"> Lòng biết ơn, sự chân thành & lời xin lỗi</div>
-      <div className="w-[120px] h-6 left-[90px] top-[875px] absolute text-center justify-center"><span className="text-[#AF2E38] text-xl font-light font-['Geologica'] leading-7"> -  </span><span className="text-[#AF2E38] text-xl font-bold font-['Geologica'] leading-7">0</span><span className="text-[#AF2E38] text-xl font-light font-['Geologica'] leading-7"> +</span></div>
-      <img className="w-64 h-80 left-[308px] top-[620px] absolute shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]" src="/images/CustomizeHoa/nenhoa.png" />
-      <div className="w-32 h-5 left-[344px] top-[659px] absolute justify-center text-[#AF2E38] text-xs font-light font-['Geologica'] leading-4">19.000 VNĐ/cành</div>
-      <img className="w-32 h-40 left-[370px] top-[673px] absolute" src="https://placehold.co/123x164" />
-      <div className="w-[120px] h-[72px] left-[376px] top-[825px] absolute bg-white" />
-      <div className="w-[120px] h-6 left-[376px] top-[825px] absolute text-center justify-center text-[#AF2E38] text-sm font-black font-['Geologica'] leading-5">Cúc Đồng Tiền</div>
-      <div className="w-[120px] h-7 left-[376px] top-[848px] absolute text-center justify-center text-black text-[10px] font-thin font-['Geologica'] leading-4">Sự khởi đầu mới</div>
-      <div className="w-[120px] h-6 left-[376px] top-[876px] absolute text-center justify-center"><span className="text-[#AF2E38] text-xl font-light font-['Geologica'] leading-7"> -  </span><span className="text-[#AF2E38] text-xl font-bold font-['Geologica'] leading-7">0</span><span className="text-[#AF2E38] text-xl font-light font-['Geologica'] leading-7"> +</span></div>
-      <img className="w-64 h-80 left-[22px] top-[921px] absolute shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]" src="/images/CustomizeHoa/nenhoa.png" />
-      <img className="w-36 h-52 left-[36.39px] top-[993px] absolute origin-top-left rotate-[-26.82deg]" src="https://placehold.co/143x209" />
-      <div className="w-[120px] h-[72px] left-[90px] top-[1126px] absolute bg-white" />
-      <div className="w-[120px] h-6 left-[90px] top-[1126px] absolute text-center justify-center text-[#AF2E38] text-sm font-black font-['Geologica'] leading-5">Mẫu Đơn</div>
-      <div className="w-[120px] h-7 left-[90px] top-[1151px] absolute text-center justify-center text-black text-xs font-thin font-['Geologica'] leading-4"> Hạnh phúc, hoàn mỹ & thịnh vượng</div>
-      <div className="w-[120px] h-6 left-[90px] top-[1174px] absolute text-center justify-center"><span className="text-[#AF2E38] text-xl font-light font-['Geologica'] leading-7"> -  </span><span className="text-[#AF2E38] text-xl font-bold font-['Geologica'] leading-7">0</span><span className="text-[#AF2E38] text-xl font-light font-['Geologica'] leading-7"> +</span></div>
-      <div className="w-32 h-5 left-[56px] top-[959px] absolute justify-center text-[#AF2E38] text-xs font-light font-['Geologica'] leading-4">189.000 VNĐ/cành</div>
-      <img className="w-64 h-80 left-[308px] top-[921px] absolute shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]" src="/images/CustomizeHoa/nenhoa.png" />
-      <img className="w-36 h-48 left-[346.88px] top-[981.73px] absolute origin-top-left rotate-[-18.99deg]" src="https://placehold.co/140x187" />
-      <div className="w-[120px] h-[72px] left-[376px] top-[1126px] absolute bg-white" />
-      <div className="w-[120px] h-6 left-[376px] top-[1129px] absolute text-center justify-center text-[#AF2E38] text-sm font-black font-['Geologica'] leading-5">Hoa Ly</div>
-      <div className="w-[120px] h-7 left-[376px] top-[1144px] absolute text-center justify-center text-black text-xs font-thin font-['Geologica'] leading-4">Lòng chung thuỷ & cao thượng</div>
-      <div className="w-[120px] h-6 left-[376px] top-[1176px] absolute text-center justify-center"><span className="text-[#AF2E38] text-xl font-light font-['Geologica'] leading-7"> -  </span><span className="text-[#AF2E38] text-xl font-bold font-['Geologica'] leading-7">0</span><span className="text-[#AF2E38] text-xl font-light font-['Geologica'] leading-7"> +</span></div>
-      <div className="w-32 h-5 left-[342px] top-[959px] absolute justify-center text-[#AF2E38] text-xs font-light font-['Geologica'] leading-4">29.000 VNĐ/cành</div>
-      <img className="w-64 h-80 left-[21px] top-[1222.42px] absolute shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]" src="/images/CustomizeHoa/nenhoa.png" />
-      <div className="w-32 h-5 left-[55px] top-[1260px] absolute justify-center text-[#AF2E38] text-xs font-light font-['Geologica'] leading-4">39.000 VNĐ/cành</div>
-      <img className="w-36 h-52 left-[61px] top-[1245.28px] absolute" src="https://placehold.co/143x209" />
-      <div className="w-[120px] h-[72px] left-[90px] top-[1427.42px] absolute bg-white" />
-      <div className="w-[120px] h-6 left-[90px] top-[1427.42px] absolute text-center justify-center text-[#AF2E38] text-sm font-black font-['Geologica'] leading-5">Hoa Sen</div>
-      <div className="w-[120px] h-7 left-[90px] top-[1452.42px] absolute text-center justify-center text-black text-xs font-thin font-['Geologica'] leading-4"> Hạnh phúc, hoàn mỹ & thịnh vượng</div>
-      <div className="w-[120px] h-6 left-[90px] top-[1475.42px] absolute text-center justify-center"><span className="text-[#AF2E38] text-xl font-light font-['Geologica'] leading-7"> -  </span><span className="text-[#AF2E38] text-xl font-bold font-['Geologica'] leading-7">0</span><span className="text-[#AF2E38] text-xl font-light font-['Geologica'] leading-7"> +</span></div>
+
+  {/* Panel Chọn Hoa (Bên trái) - Đã tái cấu trúc CSS */}
+  <div className="w-[623px] h-[621px] left-[120px] top-[280px] absolute bg-[#AF2E38] rounded-[20px] outline outline-1 outline-offset-[-1px] outline-[#AF2E38] overflow-y-auto overflow-x-hidden scrollbar-hide scroll-smooth py-6 px-4">
+    <div className="flex flex-wrap justify-center gap-x-1 gap-y-2 w-full">
+      {products.map((flower) => (
+         <div key={flower._id} className="relative w-[256px] min-w-[256px] h-[320px] flex-none flex flex-col items-center" style={{ overflow: 'hidden' }}>
+            {/* Background base */}
+            <img className="absolute top-0 w-[256px] h-[320px] drop-shadow-md z-0" src="/images/CustomizeHoa/nenhoa.png" alt="nen" />
+            
+            {/* Inner Content */}
+            <div className="absolute inset-0 flex flex-col z-10 pointer-events-none" style={{ padding: '32px 24px 24px 24px', gap: '6px', overflow: 'hidden' }}>
+               {/* Price */}
+               <div className="pointer-events-auto" style={{ fontSize: '11px', fontWeight: '700', fontStyle: 'italic', color: '#AF2E38', paddingLeft: '20px' }}>
+                 {new Intl.NumberFormat('vi-VN').format(flower.price)} VNĐ/cành
+               </div>
+               
+               {/* Image */}
+               <div className="flex justify-center items-center pointer-events-auto" style={{ height: '130px' }}>
+                 <img className="object-contain hover:scale-105 transition" style={{ height: '125px', width: 'auto' }} src={flower.imageUrl} alt={flower.name} />
+               </div>
+               
+               {/* Name */}
+               <div className="text-center pointer-events-auto" style={{ color: '#3B73A9', fontSize: '13px', fontWeight: '700', fontFamily: 'Geologica', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                 {flower.name}
+               </div>
+               
+               {/* Description */}
+               <div style={{ color: '#444', fontSize: '10px', fontStyle: 'italic', fontFamily: 'Geologica', lineHeight: '1.3', wordBreak: 'break-all', overflowWrap: 'break-word', overflow: 'hidden', textAlign: 'center', maxHeight: '28px', width: '100%', boxSizing: 'border-box', padding: '0 28px' }}>
+                 {flower.description?.substring(0, 25)}{flower.description?.length > 25 ? '...' : ''}
+               </div>
+
+               {/* Buttons */}
+               <div className="flex items-center justify-center gap-5 pointer-events-auto">
+                 <button onClick={() => decrease(flower._id)} style={{ background: 'transparent', border: 'none', color: '#AF2E38', fontSize: '20px', fontWeight: '500', width: '30px', height: '30px', padding: 0, cursor: 'pointer' }}>-</button>
+                 <span style={{ color: '#AF2E38', fontSize: '15px', fontWeight: '700', fontStyle: 'italic', width: '16px', textAlign: 'center' }}>{counts[flower._id] || 0}</span>
+                 <button onClick={() => increase(flower._id)} style={{ background: 'transparent', border: 'none', color: '#AF2E38', fontSize: '20px', fontWeight: '500', width: '30px', height: '30px', padding: 0, cursor: 'pointer' }}>+</button>
+               </div>
+            </div>
+         </div>
+      ))}
     </div>
   </div>
 
+
+  {/* Header Status Bar (Các bước điều hướng tĩnh) */}
   <div className="w-[1131px] h-28 left-[150px] top-[135px] absolute overflow-hidden">
     <div className="w-[982px] h-[1px] left-[70px] top-[47px] absolute bg-black"></div>
-    <div className="w-10 h-10 left-[50px] top-[27px] absolute bg-[#AF2E38] rounded-full"></div>
-    <div className="w-10 h-10 left-[290px] top-[25px] absolute bg-[#B8DAFF] rounded-full"></div>
-    <div className="w-10 h-10 left-[538px] top-[25px] absolute bg-[#B8DAFF] rounded-full"></div>
-    <div className="w-10 h-10 left-[785px] top-[25px] absolute bg-[#B8DAFF] rounded-full"></div>
-    <div className="w-10 h-10 left-[1032px] top-[25px] absolute bg-[#B8DAFF] rounded-full"></div>
-    <div className="w-16 h-6 left-[39px] top-[75px] absolute text-center justify-center text-black text-2xl font-extralight font-['Geologica'] leading-9">Hoa</div>
-    <div className="w-16 h-6 left-[281px] top-[75px] absolute text-center justify-center text-black text-2xl font-extralight font-['Geologica'] leading-9">Lá</div>
-    <div className="w-16 h-6 left-[526px] top-[75px] absolute text-center justify-center text-black text-2xl font-extralight font-['Geologica'] leading-9">Túi</div>
-    <div className="w-16 h-6 left-[770px] top-[75px] absolute text-center justify-center text-black text-2xl font-extralight font-['Geologica'] leading-9">Thiệp</div>
-    <div className="w-32 h-6 left-[982px] top-[75px] absolute text-center justify-center text-black text-2xl font-extralight font-['Geologica'] leading-9">Thanh toán</div>
+    {/* Bước 1: Hoa (active) */}
+    <Link to="/custom-flowers" className="absolute left-[50px] top-[27px]">
+      <div className="w-10 h-10 bg-[#AF2E38] rounded-full cursor-pointer"></div>
+    </Link>
+    <Link to="/custom-flowers" className="absolute left-[39px] top-[75px]">
+      <div className="w-16 h-6 text-center text-[#AF2E38] text-2xl font-extralight font-['Geologica'] leading-9 cursor-pointer">Hoa</div>
+    </Link>
+    {/* Bước 2: Lá */}
+    <div className="absolute left-[290px] top-[25px]">
+      <div className="w-10 h-10 bg-[#B8DAFF] rounded-full"></div>
+    </div>
+    <div className="absolute left-[281px] top-[75px]">
+      <div className="w-16 h-6 text-center text-black text-2xl font-extralight font-['Geologica'] leading-9">Lá</div>
+    </div>
+    {/* Bước 3: Túi */}
+    <div className="absolute left-[538px] top-[25px]">
+      <div className="w-10 h-10 bg-[#B8DAFF] rounded-full"></div>
+    </div>
+    <div className="absolute left-[526px] top-[75px]">
+      <div className="w-16 h-6 text-center text-black text-2xl font-extralight font-['Geologica'] leading-9">Túi</div>
+    </div>
+    {/* Bước 4: Xem trước (AI) */}
+    <div className="absolute left-[620px] top-[15px] z-20">
+      <div className="w-16 h-16 bg-[#B8DAFF] rounded-full flex items-center justify-center">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#4A90C4" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="2"/>
+          <ellipse cx="12" cy="6" rx="1.8" ry="3"/>
+          <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(60 12 12)"/>
+          <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(120 12 12)"/>
+          <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(180 12 12)"/>
+          <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(240 12 12)"/>
+          <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(300 12 12)"/>
+        </svg>
+      </div>
+    </div>
+    <div className="w-24 h-6 left-[600px] top-[75px] absolute text-center justify-center text-black text-xl font-extralight font-['Geologica'] leading-9">Xem Trước</div>
+    {/* Bước 5: Thiệp */}
+    <div className="absolute left-[785px] top-[25px]">
+      <div className="w-10 h-10 bg-[#B8DAFF] rounded-full"></div>
+    </div>
+    <div className="absolute left-[770px] top-[75px]">
+      <div className="w-16 h-6 text-center text-black text-2xl font-extralight font-['Geologica'] leading-9">Thiệp</div>
+    </div>
+    {/* Bước 6: Thanh toán */}
+    <div className="absolute left-[1032px] top-[25px]">
+      <div className="w-10 h-10 bg-[#B8DAFF] rounded-full"></div>
+    </div>
+    <div className="absolute left-[982px] top-[75px]">
+      <div className="w-32 h-6 text-center text-black text-2xl font-extralight font-['Geologica'] leading-9">Thanh toán</div>
+    </div>
   </div>
 
-  <Link to="/custom-leaves" className="w-80 h-24 left-[1000px] top-[830px] absolute overflow-hidden block">
-    <div className="w-48 h-12 left-[152px] top-[24px] absolute bg-[#B8DAFF] rounded-[10px]"></div>
-    <div className="left-[192px] top-[35px] absolute text-center justify-center text-[#AF2E38] text-2xl font-normal font-['Geologica'] leading-7">TIẾP TỤC</div>
+  <Link to="/custom-leaves" onClick={handleContinue} className="absolute" style={{ right: '60px', top: '830px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ background: '#B8DAFF', borderRadius: '10px', padding: '12px 28px', color: '#AF2E38', fontSize: '24px', fontFamily: 'Geologica', fontWeight: '400', whiteSpace: 'nowrap' }}>TIẾP TỤC</div>
   </Link>
   
 </div>

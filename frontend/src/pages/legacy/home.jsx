@@ -25,9 +25,9 @@ export default function Home() {
             <h1 className="text-rose-700 text-6xl sm:text-7xl md:text-[80px] lg:text-[100px] font-normal font-['Italiana'] leading-[1] my-4 drop-shadow-sm ml-0 md:ml-10">TÚI HOA</h1>
             <p className="text-Color text-lg md:text-xl font-light font-['Geologica'] leading-7 mb-8 md:mb-16 italic ml-0 md:ml-20">để mang lời thương toả khắp lối</p>
             <div className="flex gap-4 flex-wrap justify-center md:justify-start ml-0 md:ml-32 mt-4 md:mt-0">
-              <Link to="/booth" className="px-6 py-3 bg-slate-500 text-white rounded-[100px] text-sm font-light font-['Geologica'] transition hover:bg-slate-500/80 uppercase shadow-sm">
+              <a href="http://localhost:5173/custom-flowers" className="px-6 py-3 bg-slate-500 text-white rounded-[100px] text-sm font-light font-['Geologica'] transition hover:bg-slate-500/80 uppercase shadow-sm">
                 THIẾT KẾ NGAY
-              </Link>
+              </a>
               <Link to="/about" className="px-6 py-3 bg-Color-3 text-Color border border-slate-500 rounded-[100px] text-sm font-light font-['Geologica'] transition hover:bg-zinc-300 uppercase shadow-sm">
                 TÌM HIỂU THÊM
               </Link>
@@ -180,7 +180,7 @@ export default function Home() {
                     </p>
                   </div>
                   <div className="absolute right-0 md:right-4 flex flex-col items-center">
-                    <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&h=150&fit=crop" className="w-[100px] h-[100px] md:w-[130px] md:h-[130px] rounded-full object-cover border-[6px] border-[#FBFAF7] shadow-sm mb-2" />
+                    <img src="/images/anhnguoi/1.jpg" className="w-[100px] h-[100px] md:w-[130px] md:h-[130px] rounded-full object-cover border-[6px] border-[#FBFAF7] shadow-sm mb-2" />
                     <span className="text-rose-700 text-sm md:text-[15px] font-bold font-['Geologica'] mt-1">Sinh viên</span>
                   </div>
                 </div>
@@ -200,7 +200,7 @@ export default function Home() {
                     </p>
                   </div>
                   <div className="absolute left-0 md:left-4 flex flex-col items-center">
-                    <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=150&h=150&fit=crop" className="w-[100px] h-[100px] md:w-[130px] md:h-[130px] rounded-full object-cover border-[6px] border-[#FBFAF7] shadow-sm mb-2" />
+                    <img src="/images/anhnguoi/2.jpg" className="w-[100px] h-[100px] md:w-[130px] md:h-[130px] rounded-full object-cover border-[6px] border-[#FBFAF7] shadow-sm mb-2" />
                     <span className="text-rose-700 text-sm md:text-[15px] font-bold font-['Geologica'] mt-1">Lập trình viên</span>
                   </div>
                 </div>
@@ -218,7 +218,7 @@ export default function Home() {
                     </p>
                   </div>
                   <div className="absolute right-0 md:right-4 flex flex-col items-center">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&fit=crop" className="w-[100px] h-[100px] md:w-[130px] md:h-[130px] rounded-full object-cover border-[6px] border-[#FBFAF7] shadow-sm mb-2" />
+                    <img src="/images/anhnguoi/3.jpg" className="w-[100px] h-[100px] md:w-[130px] md:h-[130px] rounded-full object-cover border-[6px] border-[#FBFAF7] shadow-sm mb-2" />
                     <span className="text-rose-700 text-sm md:text-[15px] font-bold font-['Geologica'] mt-1">Doanh nhân</span>
                   </div>
                 </div>
