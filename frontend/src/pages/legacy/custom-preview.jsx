@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { API_BASE } from '../../api';
 
 export default function CustomPreview() {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const backendUrl = API_BASE;
   const previewCacheVersion = 'preview-v2';
   
   const [aiImage, setAiImage] = useState(null);

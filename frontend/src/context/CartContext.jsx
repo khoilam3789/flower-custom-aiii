@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import { useAuth } from './AuthContext';
+import { API_BASE } from '../api';
 
 const CartContext = createContext();
 
@@ -7,7 +8,7 @@ export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const { user, token } = useAuth();
   
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+  const backendUrl = API_BASE;
 
   // Chức năng: Lưu tạm vô Local Storage dành cho người chưa login
   useEffect(() => {

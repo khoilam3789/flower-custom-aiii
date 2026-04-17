@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { API_BASE } from '../../api';
 
 export default function Customleaves(){
   const FLOWER_STORAGE_KEY = 'flowerSelection';
   const LEAF_STORAGE_KEY = 'leafSelection';
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+  const backendUrl = API_BASE;
   
   const [products, setProducts] = useState([]);
   const [counts, setCounts] = useState({});

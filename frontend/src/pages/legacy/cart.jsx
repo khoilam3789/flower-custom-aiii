@@ -1,12 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
+import { API_BASE } from "../../api";
 
 export default function Cart() {
   const { cartItems, removeFromCart, subTotalCart, clearCart } = useCart();
   const { token, user } = useAuth();
   const navigate = useNavigate();
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+  const backendUrl = API_BASE;
 
   const shippingFee = cartItems.length > 0 ? 30000 : 0;
   const total = subTotalCart + shippingFee;

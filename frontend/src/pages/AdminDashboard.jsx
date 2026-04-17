@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { API_BASE } from "../api";
 
 export default function AdminDashboard() {
   const { user, token } = useAuth();
   const navigate = useNavigate();
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+  const backendUrl = API_BASE;
 
   const [activeTab, setActiveTab] = useState("users");
   const [users, setUsers] = useState([]);

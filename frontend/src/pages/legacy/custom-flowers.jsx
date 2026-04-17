@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { API_BASE } from '../../api';
 
 export default function Customhoa(){
   const FLOWER_STORAGE_KEY = 'flowerSelection';
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+  const backendUrl = API_BASE;
   const location = useLocation();
   
   const [products, setProducts] = useState([]);

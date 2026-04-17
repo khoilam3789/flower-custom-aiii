@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { API_BASE } from '../../api';
 
 export default function Customcards() {
   const FLOWER_STORAGE_KEY = 'flowerSelection';
@@ -7,7 +8,7 @@ export default function Customcards() {
   const BAG_STORAGE_KEY = 'bagSelection';
   const CARD_STORAGE_KEY = 'cardSelection';
   
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+  const backendUrl = API_BASE;
   const navigate = useNavigate();
   
   const [products, setProducts] = useState([]);
