@@ -70,6 +70,7 @@ export default function Customleaves(){
     .map((item) => ({
       key: item._id,
       label: item.name,
+      imageUrl: item.imageUrl,
       price: item.price,
       quantity: counts[item._id] || 0,
       lineTotal: (counts[item._id] || 0) * item.price
@@ -82,20 +83,22 @@ export default function Customleaves(){
   const formatPrice = (value) => `${new Intl.NumberFormat('vi-VN').format(value)}đ`;
 
   const persistSelection = () => {
-    if (Object.keys(counts).length > 0) {
-      const payload = {
-        items: selectedItems.map((item) => ({
-          key: item.key,
-          label: item.label,
-          price: item.price,
-          quantity: item.quantity,
-          lineTotal: item.lineTotal
-        })),
-        subtotal: leafSubtotal,
-        updatedAt: Date.now()
-      };
-      localStorage.setItem(LEAF_STORAGE_KEY, JSON.stringify(payload));
-    }
+    const payload = {
+      items: selectedItems.map((item) => ({
+        key: item.key,
+        label: item.label,
+        imageUrl: item.imageUrl,
+        price: item.price,
+        quantity: item.quantity,
+        lineTotal: item.lineTotal
+      })),
+      subtotal: leafSubtotal,
+      updatedAt: Date.now()
+    };
+    localStorage.setItem(LEAF_STORAGE_KEY, JSON.stringify(payload));
+    localStorage.removeItem('aiGeneratedImage');
+    localStorage.removeItem('aiGeneratedComboKey');
+    localStorage.removeItem('aiGeneratedCacheVersion');
   };
 
   useEffect(() => {

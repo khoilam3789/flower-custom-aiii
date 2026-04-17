@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 export default function CustomPreview() {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const previewCacheVersion = 'preview-v2';
   
   const [aiImage, setAiImage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -35,8 +36,11 @@ export default function CustomPreview() {
           if (!raw) return null;
           const parsed = JSON.parse(raw);
           if (parsed && parsed.items && parsed.items.length > 0) {
-            // Get the first selected item ID
-            const prodId = parsed.items[0].key;
+            const firstItem = parsed.items[0];
+            if (firstItem.imageUrl) return firstItem.imageUrl;
+
+            // Backward compatibility for old localStorage payloads only storing product id
+            const prodId = firstItem.key;
             const product = allProducts.find(p => p._id === prodId);
             return product ? product.imageUrl : null;
           }
@@ -57,8 +61,9 @@ export default function CustomPreview() {
         const currentComboKey = `${flowerUrl}_${leafUrl}_${bagUrl}`;
         const cachedComboKey = localStorage.getItem('aiGeneratedComboKey');
         const cachedImage = localStorage.getItem('aiGeneratedImage');
+        const cachedVersion = localStorage.getItem('aiGeneratedCacheVersion');
 
-        if (cachedImage && cachedComboKey === currentComboKey) {
+        if (cachedImage && cachedComboKey === currentComboKey && cachedVersion === previewCacheVersion) {
             console.log("Combo chưa đổi, dùng lại ảnh AI cũ tự động.");
             setAiImage(cachedImage);
             setLoading(false);
@@ -78,6 +83,7 @@ export default function CustomPreview() {
             setAiImage(aiData.imageBase64);
             localStorage.setItem('aiGeneratedImage', aiData.imageBase64);
             localStorage.setItem('aiGeneratedComboKey', currentComboKey);
+            localStorage.setItem('aiGeneratedCacheVersion', previewCacheVersion);
           }
         } else {
           console.error("AI Generation failed:", await resAi.text());

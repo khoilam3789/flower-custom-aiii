@@ -46,6 +46,12 @@ Thumbs.db
 .cache/
 .parcel-cache/
 .eslintcache
+.vite/
+frontend/.vite/
+
+# Temporary editor files
+*.swp
+*~
 
 # Optional lock files (uncomment if you do not want to commit lockfiles)
 # package-lock.json

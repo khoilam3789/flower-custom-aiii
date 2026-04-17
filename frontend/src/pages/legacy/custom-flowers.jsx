@@ -34,6 +34,9 @@ export default function Customhoa(){
       localStorage.removeItem('flowerSelection');
       localStorage.removeItem('leafSelection');
       localStorage.removeItem('bagSelection');
+      localStorage.removeItem('aiGeneratedImage');
+      localStorage.removeItem('aiGeneratedComboKey');
+      localStorage.removeItem('aiGeneratedCacheVersion');
     }
 
     const fetchFlowers = async () => {
@@ -71,6 +74,7 @@ export default function Customhoa(){
     .map((item) => ({
       key: item._id,
       label: item.name,
+      imageUrl: item.imageUrl,
       price: item.price,
       quantity: counts[item._id] || 0,
       lineTotal: (counts[item._id] || 0) * item.price
@@ -85,6 +89,7 @@ export default function Customhoa(){
     items: selectedItems.map((item) => ({
       key: item.key,
       label: item.label,
+      imageUrl: item.imageUrl,
       price: item.price,
       quantity: item.quantity,
       lineTotal: item.lineTotal
