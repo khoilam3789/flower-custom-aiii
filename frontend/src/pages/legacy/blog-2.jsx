@@ -1,69 +1,104 @@
 export default function Blog2() {
   return (
-    <div className="w-full max-w-[900px] mx-auto px-6 md:px-12 py-16 lg:py-24 font-sans text-slate-800">
-      <header className="mb-12 text-center md:text-left border-b border-rose-100 pb-12">
-        <h1 className="text-3xl md:text-5xl font-bold font-['Geologica'] text-rose-700 leading-tight mb-6">
-          Túi hoa tự thiết kế: Khi việc mang hoa trở thành một trải nghiệm trọn vẹn
-        </h1>
-        <p className="text-slate-500 font-light text-lg mb-8 italic">
-          Bạn muốn chọn một bó hoa độc đáo để tặng cho người thương?
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-between">
-          <span className="text-sm font-semibold tracking-widest text-slate-400 uppercase">Ngày đăng: 24/02/2026</span>
-        </div>
-      </header>
+    <div className="w-full bg-Color-3 pb-24 pt-10">
+      <div className="max-w-[1280px] mx-auto px-4 md:px-8 lg:px-10">
+        <section className="relative rounded-[28px] bg-pink-300/40 border border-red-50 p-6 md:p-8">
+          <h1 className="text-2xl md:text-5xl text-rose-700 font-bold font-['Gentium_Book_Plus'] leading-tight md:leading-[60px]">
+            Túi hoa tự thiết kế: Khi việc mang hoa trở thành một trải nghiệm trọn vẹn
+          </h1>
 
-      <article className="prose prose-lg md:prose-xl prose-rose max-w-none text-justify font-light leading-relaxed">
-        <p>
-          Một bó hoa luôn mang theo những cảm xúc đẹp: đó có thể là lời yêu, sự trân trọng, hay đơn giản là một khoảnh khắc muốn lưu giữ.
-          Nhưng thực tế, việc mang theo một bó hoa trong suốt cả ngày lại không hề dễ dàng như chúng ta tưởng. Những bất tiện đó vô tình
-          làm gián đoạn trải nghiệm vốn dĩ rất lãng mạn.
-        </p>
+          <p className="mt-6 text-black text-base md:text-2xl font-thin font-['Geologica'] leading-7 md:leading-8 text-justify">
+            Một bó hoa luôn mang theo những cảm xúc đẹp - đó có thể là lời yêu, sự trân trọng, hay đơn giản là một khoảnh khắc muốn lưu giữ.
+            Nhưng thực tế, việc mang theo một bó hoa trong suốt cả ngày lại không hề dễ dàng như chúng ta tưởng. Những bất tiện đó vô tình làm
+            gián đoạn trải nghiệm vốn dĩ rất lãng mạn.
+          </p>
+        </section>
 
-        <h2 className="text-2xl font-bold font-['Geologica'] text-slate-800 mt-12 mb-6">
-          Khi việc tặng hoa không chỉ dừng lại ở bó hoa
-        </h2>
-        <p>
-          Ngày nay, người tặng hoa không chỉ muốn mua một bó hoa đẹp có sẵn mà còn muốn tạo ra một bó hoa mang dấu ấn của riêng mình.
-          Mỗi mối quan hệ là một câu chuyện khác nhau: bó hoa dành cho người yêu sẽ khác với bó hoa tặng mẹ, bạn thân hay đồng nghiệp.
-          Vì thế, khả năng tự tay lựa chọn và phối hợp các thành phần của bó hoa giúp món quà trở nên tinh tế và cá nhân hơn rất nhiều.
-        </p>
+        <section className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <article className="lg:col-span-2 bg-pink-300/40 rounded-[30px] border border-slate-500 p-6 md:p-8">
+            <h2 className="text-slate-500 text-2xl md:text-4xl font-extrabold font-['Geologica'] leading-tight">MỤC LỤC BÀI VIẾT</h2>
+            <div className="h-[2px] bg-slate-500 mt-4 mb-5"></div>
+            <div className="text-black text-base md:text-2xl font-thin font-['Geologica'] leading-8 space-y-2">
+              <p>Khi việc tặng hoa không chỉ dừng lại ở bó hoa</p>
+              <p>Tại sao nên tự thiết kế bó hoa của riêng mình?</p>
+              <p>Các bước tự thiết kế bó hoa của riêng mình với Dear, Chérie</p>
+              <p>Lời kết</p>
+            </div>
+          </article>
 
-        <h2 className="text-2xl font-bold font-['Geologica'] text-slate-800 mt-12 mb-6">
-          Tại sao nên tự thiết kế bó hoa?
-        </h2>
-        <p>
-          Tự thiết kế giúp bạn chủ động chọn loại hoa, tông màu, số lượng và cả phong cách gói phù hợp với người nhận. Không chỉ là thao tác
-          chọn sản phẩm, đó còn là một quá trình sáng tạo. Bạn nhìn thấy món quà dần hoàn thiện theo từng quyết định nhỏ, và chính điều này làm
-          cho khoảnh khắc trao tặng trở nên ý nghĩa hơn.
-        </p>
+          <aside className="bg-slate-500 rounded-[30px] border border-red-50 p-6 md:p-7 flex flex-col justify-center text-center">
+            <h3 className="text-white text-2xl md:text-3xl font-bold font-['Geologica'] leading-tight">
+              Bạn muốn chọn một bó hoa độc đáo để tặng cho người thương?
+            </h3>
+            <p className="mt-4 text-white text-sm md:text-base font-thin font-['Geologica'] leading-5">
+              Tự tay tạo bó hoa của chính mình cùng Dear, Chérie
+            </p>
+            <a
+              href="/booth"
+              className="mt-6 inline-flex items-center justify-center bg-white rounded-[30px] px-8 py-3 text-slate-500 text-xl md:text-2xl font-bold font-['Geologica'] hover:bg-rose-50 transition"
+            >
+              TẠO NGAY
+            </a>
+          </aside>
+        </section>
 
-        <h2 className="text-2xl font-bold font-['Geologica'] text-slate-800 mt-12 mb-6">
-          Trải nghiệm chọn túi hoa theo phong cách riêng
-        </h2>
-        <p>
-          Ở bước chọn túi hoa, quá trình thiết kế trở nên trực quan hơn nhờ hình ảnh minh họa rõ ràng. Mỗi mẫu túi mang một tinh thần riêng,
-          từ nhẹ nhàng, đáng yêu cho đến thanh lịch, tối giản. Bên cạnh đó, phần tạm tính giúp người dùng theo dõi ngân sách theo thời gian thực,
-          từ đó dễ so sánh các lựa chọn và kiểm soát chi phí tốt hơn.
-        </p>
+        <section className="mt-8">
+          <h2 className="text-slate-500 text-2xl md:text-4xl font-bold font-['Google_Sans_Flex'] leading-tight">
+            Khi việc tặng hoa không chỉ dừng lại ở bó hoa
+          </h2>
+          <div className="h-[2px] bg-slate-500 mt-3 mb-5 max-w-[760px]"></div>
+          <p className="text-black text-base md:text-2xl font-thin font-['Geologica'] leading-7 md:leading-8 text-justify">
+            Một bó hoa luôn mang theo cảm xúc, đó có thể là tình yêu, sự trân trọng, hay đơn giản là một lời quan tâm nhẹ nhàng. Thế nhưng,
+            trải nghiệm tặng hoa thực tế không chỉ nằm ở khoảnh khắc trao hoa, mà bắt đầu từ rất sớm, từ lúc chọn hoa, chuẩn bị hoa, cho đến khi
+            mang bó hoa theo mình trên suốt quãng đường di chuyển. Trong nhịp sống đô thị, nhiều người phải mang hoa khi đi xe máy, vừa giữ hoa
+            vừa cầm túi xách hay đồ cá nhân, và không khỏi lo lắng hoa bị dập cánh hay mất form.
+          </p>
+        </section>
 
-        <h2 className="text-2xl font-bold font-['Geologica'] text-slate-800 mt-12 mb-6">
-          Lời kết
-        </h2>
-        <p>
-          Một bó hoa đáng nhớ không nằm ở số lượng bông hoa, mà nằm ở câu chuyện và sự chăm chút trong từng chi tiết. Khi bạn tự tay thiết kế,
-          món quà trở thành một thông điệp cá nhân hóa trọn vẹn, và người nhận sẽ cảm nhận được điều đó ngay từ khoảnh khắc đầu tiên.
-        </p>
-      </article>
+        <section className="mt-8 rounded-[30px] overflow-hidden border border-red-50">
+          <img src="/images/blog2/anh1.png" alt="Các mẫu túi hoa tự thiết kế" className="w-full h-auto object-cover" />
+        </section>
 
-      <div className="mt-16 bg-rose-700 text-white p-8 md:p-12 rounded-[40px] text-center shadow-[0_10px_30px_rgba(225,29,72,0.3)]">
-        <h3 className="text-3xl font-['Italianno'] mb-4 text-rose-100">Lời muốn nói, gói trong hoa</h3>
-        <p className="font-light mb-8 max-w-lg mx-auto">
-          Tự tay tạo bó hoa của chính mình cùng Dear, Chérie ngay hôm nay để gửi gắm lời yêu thương hoàn hảo nhất.
-        </p>
-        <a href="/booth" className="inline-block px-10 py-4 bg-white text-rose-700 font-bold uppercase tracking-widest rounded-full hover:bg-rose-50 transition shadow-lg">
-          Tạo Ngay
-        </a>
+        <section className="mt-10">
+          <h2 className="text-slate-500 text-2xl md:text-4xl font-bold font-['Google_Sans_Flex'] leading-tight">
+            Tại sao nên tự thiết kế bó hoa của riêng mình?
+          </h2>
+          <div className="h-[2px] bg-slate-500 mt-3 mb-5 max-w-[760px]"></div>
+          <p className="text-black text-base md:text-2xl font-thin font-['Geologica'] leading-7 md:leading-8 text-justify">
+            Ngày nay, hành vi tặng hoa đã dần thay đổi, người tặng không chỉ muốn mua một bó hoa đẹp có sẵn, mà mong muốn tạo ra một bó hoa
+            mang dấu ấn riêng của mình. Bởi lẽ, mỗi mối quan hệ đều là một câu chuyện khác nhau. Việc tự thiết kế bó hoa cho phép người tặng lựa
+            chọn loại hoa phù hợp với từng mối quan hệ, phối màu theo ý nghĩa riêng và tạo nên một món quà chứa đựng câu chuyện cá nhân.
+          </p>
+        </section>
+
+        <section className="mt-10">
+          <h2 className="text-slate-500 text-2xl md:text-4xl font-bold font-['Google_Sans_Flex'] leading-tight">
+            Các bước tự thiết kế bó hoa của riêng mình với Dear, Chérie
+          </h2>
+          <div className="h-[2px] bg-slate-500 mt-3 mb-5 max-w-[760px]"></div>
+          <p className="text-black text-base md:text-2xl font-thin font-['Geologica'] leading-7 md:leading-8 text-justify">
+            Ở bước lựa chọn túi hoa, quá trình thiết kế bó hoa trở nên sinh động và mang tính cá nhân hóa rõ rệt hơn. Người dùng sẽ được hiển thị
+            nhiều mẫu túi khác nhau với hình ảnh minh họa trực quan, giúp dễ dàng hình dung kiểu dáng và phong cách của từng lựa chọn. Bên cạnh đó,
+            khu vực hiển thị tạm tính giúp người dùng theo dõi sự thay đổi về chi phí theo từng lựa chọn, tạo cảm giác chủ động và dễ kiểm soát ngân sách.
+            Chính quá trình lựa chọn này không chỉ là thao tác kỹ thuật, mà còn là một phần của trải nghiệm sáng tạo.
+          </p>
+        </section>
+
+        <section className="mt-8 rounded-[30px] overflow-hidden border border-red-50">
+          <img src="/images/blog2/anh2.png" alt="Các mẫu hoa với bình thủy tinh" className="w-full h-auto object-cover" />
+        </section>
+
+        <section className="mt-10">
+          <h2 className="text-slate-500 text-2xl md:text-4xl font-bold font-['Google_Sans_Flex'] leading-tight">Lời kết</h2>
+          <div className="h-[2px] bg-slate-500 mt-3 mb-5 max-w-[760px]"></div>
+          <p className="text-black text-base md:text-2xl font-thin font-['Geologica'] leading-7 md:leading-8 text-justify">
+            Cuối cùng, điều làm nên giá trị của một bó hoa không chỉ nằm ở những bông hoa được lựa chọn, mà còn ở cách chúng được chuẩn bị,
+            nâng niu trên suốt hành trình và trao đi với trọn vẹn cảm xúc. Việc tự thiết kế bó hoa vì thế không chỉ đơn thuần là một lựa chọn tiện lợi,
+            mà còn là cách để mỗi món quà trở nên ý nghĩa hơn, phản ánh sự quan tâm và tinh tế của người tặng trong từng chi tiết nhỏ.
+          </p>
+        </section>
+
+        <div className="mt-8 text-right text-black text-xl md:text-2xl font-bold font-['Geologica']">24/2/2026</div>
       </div>
     </div>
   );
