@@ -245,7 +245,7 @@ export default function Story() {
               {overviewStories.map((item, index) => (
                 <article
                   key={item._id || `${item.slug}-${index}`}
-                  className="relative min-h-[330px] md:min-h-[360px] border-[6px] border-[#C26A74] rounded-sm overflow-hidden"
+                  className="relative h-[340px] md:h-[380px] border-[6px] border-[#C26A74] rounded-sm overflow-hidden"
                   style={{
                     backgroundImage: "url('/images/story/anhnen.png')",
                     backgroundSize: "cover",
@@ -257,10 +257,10 @@ export default function Story() {
                   <img
                     src={item.heroImage || defaultStory.heroImage}
                     alt={item.title || 'Story'}
-                    className="absolute left-3 bottom-0 z-10 w-[118px] md:w-[145px] h-auto object-contain"
+                    className="absolute left-0 top-0 z-10 h-full w-[132px] md:w-[164px] object-cover object-bottom"
                   />
 
-                  <div className="relative z-20 h-full pl-[130px] md:pl-[162px] pr-4 md:pr-5 py-4 md:py-5 flex flex-col">
+                  <div className="relative z-20 h-full pl-[142px] md:pl-[176px] pr-4 md:pr-5 py-4 md:py-5 flex flex-col">
                     <h3 className="text-3xl md:text-4xl text-black font-normal font-['Geologica'] italic">
                       {item.title || 'Story'}
                     </h3>
