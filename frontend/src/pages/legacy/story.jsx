@@ -90,6 +90,27 @@ const overviewBlogs = [
     date: "20/12/2026",
     image: "/images/blog3/anh1.png",
     link: "/blog-3"
+  },
+  {
+    title: "Hoa Tulip: 7 sắc màu - 7 bản tình ca - Bạn đã biết cách chọn màu thay lời muốn nói?",
+    excerpt: "Khám phá ngôn ngữ diệu kỳ ẩn sau vẻ đẹp thanh cao của Hoa Tulip tại Dear, Chérie. Không chỉ là loài hoa đại diện cho sự khởi đầu mới...",
+    date: "12/3/2026",
+    image: "https://images.unsplash.com/photo-1516478177764-9fe5bd7e9717?w=900&h=520&fit=crop",
+    link: "/blog-1"
+  },
+  {
+    title: "Hoa dành cho từng mối quan hệ: người yêu, bạn thân, gia đình",
+    excerpt: "Hoa hồng được mệnh danh là nữ hoàng của các loài hoa. Theo thần thoại Hy Lạp, hoa hồng không chỉ là một loài hoa bình thường...",
+    date: "12/3/2026",
+    image: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=900&h=520&fit=crop",
+    link: "/blog-2"
+  },
+  {
+    title: "Ý nghĩa các loài hoa trong ngày Valentine: Chọn hoa tặng người thương sao cho đúng?",
+    excerpt: "Hoa hồng được mệnh danh là nữ hoàng của các loài hoa. Theo thần thoại Hy Lạp, hoa hồng không chỉ là một loài hoa bình thường...",
+    date: "12/3/2026",
+    image: "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=900&h=520&fit=crop",
+    link: "/blog-1"
   }
 ];
 
@@ -191,13 +212,13 @@ export default function Story() {
           </div>
 
           <div className="rounded-[30px] bg-gradient-to-r from-[#fbe8e1] via-[#f7f4ff] to-[#e8f3ff] p-4 md:p-6 border border-white shadow-[0_25px_60px_-45px_rgba(2,6,23,0.85)]">
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-              {exhibitionImages.map((image, index) => (
+            <div className="max-w-[560px] mx-auto grid grid-cols-1 gap-5 md:gap-6">
+              {exhibitionImages.slice(0, 4).map((image, index) => (
                 <img
                   key={`${image}-${index}`}
                   src={image}
                   alt={`Triển lãm ${index + 1}`}
-                  className="w-full h-44 sm:h-56 lg:h-72 object-cover rounded-2xl shadow-md"
+                  className="w-full h-72 md:h-[430px] object-cover rounded-2xl shadow-md"
                 />
               ))}
             </div>
@@ -212,35 +233,46 @@ export default function Story() {
           </div>
         </section>
 
-        <section className="max-w-[1180px] mx-auto px-4 md:px-8 lg:px-10 mt-24">
+        <section className="max-w-[1280px] mx-auto px-4 md:px-8 lg:px-10 mt-20">
           <div className="text-center mb-10">
-            <h2 className="text-5xl md:text-6xl text-rose-700 font-['Italianno'] leading-none">Ý Nghĩa</h2>
+            <h2 className="text-6xl md:text-7xl text-rose-700 font-normal font-['Goudy_Bookletter_1911'] leading-tight">Ý Nghĩa</h2>
           </div>
 
           {overviewLoading ? (
             <div className="text-center text-slate-600 font-['Geologica']">Đang tải danh sách ý nghĩa...</div>
           ) : overviewStories.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10">
               {overviewStories.map((item, index) => (
-                <article key={item._id || `${item.slug}-${index}`} className="bg-white rounded-[28px] border border-rose-100 overflow-hidden shadow-sm">
-                  <div className="grid grid-cols-1 sm:grid-cols-[180px_1fr]">
-                    <img
-                      src={item.heroImage || defaultStory.heroImage}
-                      alt={item.title || "Story"}
-                      className="w-full h-56 sm:h-full object-cover"
-                    />
-                    <div className="p-5 md:p-6 flex flex-col">
-                      <h3 className="text-2xl text-black font-normal font-['Geologica']">{item.title || "Story"}</h3>
-                      <p className="mt-3 text-black/75 text-base font-extralight font-['Geologica'] leading-7 line-clamp-5">
-                        {item.subtitle || item.storyBody || "Khám phá ý nghĩa của loài hoa này."}
-                      </p>
-                      <Link
-                        to={`/story/${item.slug}`}
-                        className="mt-5 inline-flex self-start rounded-full px-5 py-2 bg-rose-700 text-white font-semibold font-['Geologica'] hover:bg-rose-800 transition"
-                      >
-                        Đọc thêm
-                      </Link>
-                    </div>
+                <article
+                  key={item._id || `${item.slug}-${index}`}
+                  className="relative min-h-[330px] md:min-h-[360px] border-[6px] border-[#C26A74] rounded-sm overflow-hidden"
+                  style={{
+                    backgroundImage: "url('/images/story/anhnen.png')",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center"
+                  }}
+                >
+                  <div className="absolute inset-0 bg-white/35"></div>
+
+                  <img
+                    src={item.heroImage || defaultStory.heroImage}
+                    alt={item.title || 'Story'}
+                    className="absolute left-3 bottom-0 z-10 w-[118px] md:w-[145px] h-auto object-contain"
+                  />
+
+                  <div className="relative z-20 h-full pl-[130px] md:pl-[162px] pr-4 md:pr-5 py-4 md:py-5 flex flex-col">
+                    <h3 className="text-3xl md:text-4xl text-black font-normal font-['Geologica'] italic">
+                      {item.title || 'Story'}
+                    </h3>
+                    <p className="mt-3 text-black text-xl md:text-2xl font-extralight font-['Geologica'] leading-8 text-justify line-clamp-5 md:line-clamp-6">
+                      {item.subtitle || item.storyBody || 'Khám phá ý nghĩa của loài hoa này.'}
+                    </p>
+                    <Link
+                      to={`/story/${item.slug}`}
+                      className="mt-4 inline-flex self-start items-center justify-center rounded-full border-2 border-slate-500 bg-white/50 px-7 py-2 text-black text-2xl font-extralight font-['Geologica'] hover:bg-rose-700 hover:text-white hover:border-rose-700 transition"
+                    >
+                      Đọc thêm
+                    </Link>
                   </div>
                 </article>
               ))}
@@ -248,6 +280,15 @@ export default function Story() {
           ) : (
             <div className="text-center text-slate-600 font-['Geologica']">Chưa có dữ liệu story để hiển thị.</div>
           )}
+
+          <div className="mt-8 md:mt-10 text-center">
+            <button
+              type="button"
+              className="rounded-full bg-rose-700 border-[5px] border-white px-8 md:px-12 py-3 text-white text-2xl md:text-3xl font-semibold font-['Geologica']"
+            >
+              Chi tiết những hoa khác
+            </button>
+          </div>
         </section>
 
         <section className="max-w-[1180px] mx-auto px-4 md:px-8 lg:px-10 mt-24">

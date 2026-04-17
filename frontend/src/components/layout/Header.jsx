@@ -26,7 +26,7 @@ export default function Header() {
 
         {/* Left Links - Desktop */}
         <nav className="hidden lg:flex flex-1 space-x-8 text-Color font-medium uppercase text-[13px] xl:text-sm font-sans tracking-wider">
-          <Link to="/" className="hover:text-rose-700 transition">Trang Chủ</Link>
+          <Link to="/" className="hover:text-rose-700 transition whitespace-nowrap">Trang Chủ</Link>
           <Link to="/about" className="hover:text-rose-700 transition whitespace-nowrap">Về Chúng Tôi</Link>
           <Link to="/custom-flowers" className="hover:text-rose-700 transition whitespace-nowrap">Thiết Kế Túi</Link>
         </nav>

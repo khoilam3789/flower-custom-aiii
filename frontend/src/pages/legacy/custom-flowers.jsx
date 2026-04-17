@@ -111,7 +111,7 @@ export default function Customhoa(){
   };
 
   return (
-<div className="w-[1440px] h-[1000px] px-10 relative bg-Color-3 inline-flex flex-col justify-start items-center overflow-hidden">
+<div className="w-[1440px] h-[1000px] px-10 relative left-1/2 -translate-x-1/2 bg-Color-3 inline-flex flex-col justify-start items-center overflow-hidden">
   
   {/* Panel Tạm tính (Bên phải) */}
   <div className="w-[525px] h-[532px] left-[816px] top-[280px] absolute bg-white rounded-[10px] outline outline-1 outline-offset-[-1px] outline-[#AF2E38] overflow-hidden">
