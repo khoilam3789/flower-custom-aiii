@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { API_BASE } from '../../api';
+import { API_BASE, fetchJson } from '../../api';
 
 export default function Customhoa(){
   const FLOWER_STORAGE_KEY = 'flowerSelection';
@@ -42,19 +42,16 @@ export default function Customhoa(){
 
     const fetchFlowers = async () => {
       try {
-        const res = await fetch(`${backendUrl}/api/products?category=flower`);
-        if (res.ok) {
-          const data = await res.json();
-          setProducts(data);
-          if (isBack) {
-            // Quay lại từ trang lá → restore lựa chọn cũ
-            restoreCart(data);
-          } else {
-            // Phiên mới → counts = 0
-            const initCounts = {};
-            data.forEach(p => initCounts[p._id] = 0);
-            setCounts(initCounts);
-          }
+        const data = await fetchJson('/api/products?category=flower');
+        setProducts(data);
+        if (isBack) {
+          // Quay lại từ trang lá → restore lựa chọn cũ
+          restoreCart(data);
+        } else {
+          // Phiên mới → counts = 0
+          const initCounts = {};
+          data.forEach(p => initCounts[p._id] = 0);
+          setCounts(initCounts);
         }
       } catch (e) {
         console.error("Lỗi lấy nguyên liệu hoa:", e);
