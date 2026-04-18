@@ -5,12 +5,12 @@ export default function AboutUs() {
       <section className="max-w-[1280px] mx-auto px-12 md:px-24 py-24 flex flex-col md:flex-row items-center gap-12">
         <div className="md:w-1/2 flex flex-col space-y-8">
           <h1 className="text-4xl md:text-5xl lg:text-6xl text-rose-700 font-['Gowun_Batang'] uppercase drop-shadow-sm">VỀ CHÚNG TÔI</h1>
-          <p className="text-xl font-light leading-relaxed text-justify">
+          <p className="text-xl font-light leading-relaxed text-justify font-['Geologica']">
             <span className="font-bold">“Dear Chérie”</span> được lấy cảm hứng từ sự kết hợp giữa 
             <span className="font-bold"> “Dear”</span> thường xuất hiện ở đầu những lá thư như một lời chào đầy trân trọng và gần gũi trong khi 
             <span className="font-bold"> “Chérie”</span> mang nghĩa “người yêu dấu” hay “người thân thương” trong tiếng Pháp, được dùng để gọi những người mà ta dành nhiều tình cảm đặc biệt.
           </p>
-          <p className="text-xl font-light leading-relaxed text-justify">
+          <p className="text-xl font-light leading-relaxed text-justify font-['Geologica']">
             <span className="font-bold">Dear Chérie</span> được tạo ra với mong muốn rằng mỗi bó hoa không chỉ là một món quà mà như 
             <span className="font-bold"> một lá thư đầy cảm xúc được gửi đến người thân yêu</span>. Bạn có thể tự tay lựa chọn từng loài hoa dựa trên ý nghĩa biểu tượng của chúng, từng loại túi đựng tiện dụng để người nhận có thể nhẹ nhàng mang theo bên mình và viết nên những tấm thiệp mang những câu chuyện riêng.
           </p>

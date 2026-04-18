@@ -161,7 +161,11 @@ export default function Customcards() {
       <div className="w-[703px] h-[260px] left-[61px] top-[260px] absolute bg-[#AF2E38] rounded-[20px] outline outline-1 outline-offset-[-1px] outline-[#AF2E38] overflow-x-auto overflow-y-hidden scrollbar-hide py-4 px-4">
          <div className="flex gap-4 h-full items-center">
           {products.map((card) => (
-             <div key={card._id} className="relative w-[180px] min-w-[180px] h-[220px] bg-white rounded-[10px] flex-none flex flex-col items-center shadow-md overflow-hidden">
+             <div
+               key={card._id}
+               className="relative w-[180px] min-w-[180px] h-[220px] bg-white rounded-[10px] flex-none flex flex-col items-center shadow-md overflow-hidden cursor-pointer"
+               onClick={() => toggleSelection(card._id)}
+             >
                 {/* Price */}
                 <div className="pointer-events-auto absolute top-2 right-2 text-[#AF2E38] text-[11px] font-bold italic">
                   {new Intl.NumberFormat('vi-VN').format(card.price)}đ
@@ -169,7 +173,10 @@ export default function Customcards() {
                 
                 {/* Radio Checkbox */}
                 <div
-                  onClick={() => toggleSelection(card._id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleSelection(card._id);
+                  }}
                   className="pointer-events-auto absolute top-2 left-2 w-[20px] h-[20px] rounded-full cursor-pointer flex items-center justify-center transition-all duration-200"
                   style={{
                     border: counts[card._id] ? '2px solid #3B73A9' : '2px solid #ccc',

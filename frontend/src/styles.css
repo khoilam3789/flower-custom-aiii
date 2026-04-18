@@ -27,6 +27,12 @@ body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: var(--ink);
   background: radial-gradient(circle at top right, #ffe3cf, var(--bg) 55%);
+  overflow-x: auto;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
 }
 
 .top-nav {
@@ -129,5 +135,64 @@ button {
 @media (max-width: 960px) {
   .grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/*
+  Legacy Figma pages use fixed 1440px absolute layouts.
+  Scale them down on small screens to keep structure intact.
+*/
+@media (max-width: 1500px) {
+  :root {
+    --legacy-canvas-scale: min(1, calc((100vw - 12px) / 1440));
+  }
+
+  [class*="w-[1440px]"][class*="h-[1000px]"],
+  [class*="w-[1440px]"][class*="h-[1200px]"],
+  [class*="w-[1440px]"][class*="h-[1400px]"],
+  [class*="w-[1440px]"][class*="h-[1958px]"] {
+    width: 1440px !important;
+    max-width: none !important;
+    left: 50% !important;
+    transform: translateX(-50%) scale(var(--legacy-canvas-scale)) !important;
+    transform-origin: top center !important;
+  }
+
+  [class*="w-[1440px]"][class*="h-[1000px]"] {
+    height: calc(1000px * var(--legacy-canvas-scale)) !important;
+  }
+
+  [class*="w-[1440px]"][class*="h-[1200px]"] {
+    height: calc(1200px * var(--legacy-canvas-scale)) !important;
+  }
+
+  [class*="w-[1440px]"][class*="h-[1400px]"] {
+    height: calc(1400px * var(--legacy-canvas-scale)) !important;
+  }
+
+  [class*="w-[1440px]"][class*="h-[1958px]"] {
+    height: calc(1958px * var(--legacy-canvas-scale)) !important;
+  }
+}
+
+@media (max-width: 900px) {
+  :root {
+    /* Keep UI readable on phones/tablets, then allow horizontal pan */
+    --legacy-canvas-scale: 0.62;
+  }
+
+  main {
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  [class*="w-[1440px]"][class*="h-[1000px]"],
+  [class*="w-[1440px]"][class*="h-[1200px]"],
+  [class*="w-[1440px]"][class*="h-[1400px]"],
+  [class*="w-[1440px]"][class*="h-[1958px]"] {
+    left: 0 !important;
+    transform: scale(var(--legacy-canvas-scale)) !important;
+    transform-origin: top left !important;
   }
 }

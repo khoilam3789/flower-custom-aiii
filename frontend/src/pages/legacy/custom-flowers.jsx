@@ -145,24 +145,24 @@ export default function Customhoa(){
             <img className="absolute top-0 w-[256px] h-[320px] drop-shadow-md z-0" src="/images/CustomizeHoa/nenhoa.png" alt="nen" />
             
             {/* Inner Content */}
-            <div className="absolute inset-0 flex flex-col z-10 pointer-events-none" style={{ padding: '32px 24px 24px 24px', gap: '6px', overflow: 'hidden' }}>
+            <div className="absolute inset-0 flex flex-col z-10 pointer-events-none" style={{ padding: '24px 20px 20px 20px', gap: '8px', overflow: 'hidden' }}>
                {/* Price */}
-               <div className="pointer-events-auto" style={{ fontSize: '11px', fontWeight: '700', fontStyle: 'italic', color: '#AF2E38', paddingLeft: '20px' }}>
+               <div className="pointer-events-auto" style={{ fontSize: '12px', fontWeight: '700', fontStyle: 'italic', color: '#AF2E38', paddingLeft: '14px' }}>
                  {new Intl.NumberFormat('vi-VN').format(flower.price)} VNĐ/cành
                </div>
                
                {/* Image */}
-               <div className="flex justify-center items-center pointer-events-auto" style={{ height: '130px' }}>
-                 <img className="object-contain hover:scale-105 transition" style={{ height: '125px', width: 'auto' }} src={flower.imageUrl} alt={flower.name} />
+               <div className="flex justify-center items-center pointer-events-auto" style={{ height: '152px' }}>
+                 <img className="object-contain hover:scale-105 transition" style={{ height: '150px', width: 'auto' }} src={flower.imageUrl} alt={flower.name} />
                </div>
                
                {/* Name */}
-               <div className="text-center pointer-events-auto" style={{ color: '#3B73A9', fontSize: '13px', fontWeight: '700', fontFamily: 'Geologica', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+               <div className="text-center pointer-events-auto" style={{ color: '#3B73A9', fontSize: '15px', fontWeight: '700', fontFamily: 'Geologica', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                  {flower.name}
                </div>
                
                {/* Description */}
-               <div style={{ color: '#444', fontSize: '10px', fontStyle: 'italic', fontFamily: 'Geologica', lineHeight: '1.3', wordBreak: 'break-all', overflowWrap: 'break-word', overflow: 'hidden', textAlign: 'center', maxHeight: '28px', width: '100%', boxSizing: 'border-box', padding: '0 28px' }}>
+               <div style={{ color: '#444', fontSize: '11px', fontStyle: 'italic', fontFamily: 'Geologica', lineHeight: '1.35', wordBreak: 'break-word', overflowWrap: 'break-word', overflow: 'hidden', textAlign: 'center', maxHeight: '42px', width: '100%', boxSizing: 'border-box', padding: '0 18px' }}>
                  {flower.description?.substring(0, 25)}{flower.description?.length > 25 ? '...' : ''}
                </div>
 

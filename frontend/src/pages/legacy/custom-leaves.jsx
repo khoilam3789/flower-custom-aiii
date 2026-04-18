@@ -146,34 +146,42 @@ export default function Customleaves(){
   <div className="w-[623px] h-[621px] left-[120px] top-[280px] absolute bg-[#AF2E38] rounded-[20px] outline outline-1 outline-offset-[-1px] outline-[#AF2E38] overflow-y-auto overflow-x-hidden scrollbar-hide p-6">
     <div className="flex flex-wrap justify-center gap-x-1 gap-y-2 w-full">
       {products.map((leaf) => (
-         <div key={leaf._id} className="relative w-[256px] min-w-[256px] h-[320px] flex-none flex flex-col items-center" style={{ overflow: 'hidden' }}>
+         <div
+           key={leaf._id}
+           className="relative w-[256px] min-w-[256px] h-[320px] flex-none flex flex-col items-center cursor-pointer"
+           style={{ overflow: 'hidden' }}
+           onClick={() => toggleSelection(leaf._id)}
+         >
             {/* Background base */}
             <img className="absolute top-0 w-[256px] h-[320px] drop-shadow-md z-0" src="/images/Customizela/nenhoa.png" alt="nen" />
             
             {/* Inner Content - natural top-to-bottom flow */}
-            <div className="absolute inset-0 flex flex-col z-10 pointer-events-none" style={{ padding: '32px 24px 24px 24px', gap: '6px', overflow: 'hidden' }}>
+            <div className="absolute inset-0 flex flex-col z-10 pointer-events-none" style={{ padding: '24px 20px 20px 20px', gap: '8px', overflow: 'hidden' }}>
                {/* Price */}
-               <div className="pointer-events-auto" style={{ fontSize: '11px', fontWeight: '700', fontStyle: 'italic', color: '#AF2E38', paddingLeft: '20px' }}>
+               <div className="pointer-events-auto" style={{ fontSize: '12px', fontWeight: '700', fontStyle: 'italic', color: '#AF2E38', paddingLeft: '14px' }}>
                  {new Intl.NumberFormat('vi-VN').format(leaf.price)} VNĐ/lá
                </div>
                
                {/* Image */}
-               <div className="flex justify-center items-center pointer-events-auto" style={{ height: '130px' }}>
-                 <img className="object-contain hover:scale-105 transition" style={{ height: '125px', width: 'auto' }} src={leaf.imageUrl} alt={leaf.name} />
+               <div className="flex justify-center items-center pointer-events-auto" style={{ height: '152px' }}>
+                 <img className="object-contain hover:scale-105 transition" style={{ height: '150px', width: 'auto' }} src={leaf.imageUrl} alt={leaf.name} />
                </div>
                
                {/* Name */}
-               <div className="text-center pointer-events-auto" style={{ color: '#3B73A9', fontSize: '13px', fontWeight: '700', fontFamily: 'Geologica', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+               <div className="text-center pointer-events-auto" style={{ color: '#3B73A9', fontSize: '15px', fontWeight: '700', fontFamily: 'Geologica', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                  {leaf.name}
                </div>
                
                {/* Description */}
-               <div style={{ color: '#444', fontSize: '10px', fontStyle: 'italic', fontFamily: 'Geologica', lineHeight: '1.3', wordBreak: 'break-all', overflowWrap: 'break-word', overflow: 'hidden', textAlign: 'center', maxHeight: '28px', width: '100%', boxSizing: 'border-box', padding: '0 28px' }}>
+               <div style={{ color: '#444', fontSize: '11px', fontStyle: 'italic', fontFamily: 'Geologica', lineHeight: '1.35', wordBreak: 'break-word', overflowWrap: 'break-word', overflow: 'hidden', textAlign: 'center', maxHeight: '42px', width: '100%', boxSizing: 'border-box', padding: '0 18px' }}>
                  {leaf.description?.substring(0, 25)}{leaf.description?.length > 25 ? '...' : ''}
                </div>
 
                <div
-                 onClick={() => toggleSelection(leaf._id)}
+                 onClick={(e) => {
+                   e.stopPropagation();
+                   toggleSelection(leaf._id);
+                 }}
                  className="pointer-events-auto"
                  style={{
                    position: 'absolute', top: '52px', left: '62px',

@@ -1,15 +1,26 @@
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 
 export default function Home() {
+  const flowerSliderRef = useRef(null);
+
   const flowerLanguages = [
+    { name: "Hoa Hồng", desc: "Tình yêu, sự lãng mạn và sắc đẹp", img: "/images/home/hoahong.png" },
+    { name: "Hoa Ly", desc: "Lòng chung thuỷ & cao thượng", img: "/images/home/hoaly.png" },
     { name: "Hướng Dương", desc: "Sự trung thành, kiên định & sức sống mãnh liệt", img: "/images/home/huongduong.png" },
     { name: "Cẩm Tú Cầu", desc: "Lòng biết ơn, sự chân thành & lời xin lỗi", img: "/images/home/camtucau.png" },
     { name: "Cúc Đồng Tiền", desc: "Khởi đầu mới & tình yêu thật sự", img: "/images/home/hoadongtien.png" },
     { name: "Mẫu Đơn", desc: "Hạnh phúc, hoàn mỹ & thịnh vượng", img: "/images/home/maudon.png" },
-    { name: "Hoa Ly", desc: "Lòng chung thuỷ & cao thượng", img: "/images/home/hoaly.png" },
-    { name: "Hoa Sen", desc: "Sự thanh cao, kiên cường và giác ngộ", img: "/images/home/sen.png" },
+    { name: "Hoa Tulip", desc: "Lời tỏ tình tinh tế", img: "/images/home/tulip.png" },
     { name: "Linh Lan", desc: "Sự trở lại của hạnh phúc", img: "/images/home/linhlan.png" },
+    { name: "Hoa Sen", desc: "Sự thanh cao, kiên cường và giác ngộ", img: "/images/home/hoasen.png" },
   ];
+
+  const scrollFlowerSlider = (direction) => {
+    if (!flowerSliderRef.current) return;
+    const amount = direction === "left" ? -360 : 360;
+    flowerSliderRef.current.scrollBy({ left: amount, behavior: "smooth" });
+  };
 
   return (
     <div className="w-full flex-col">
@@ -54,17 +65,41 @@ export default function Home() {
             Tại Pháp, trước khi lời yêu kịp cất tiếng, cảm xúc đã được gửi thông qua những đóa hoa
           </p>
           {/* Flower Horizontal Scroll */}
-          <div className="w-full max-w-[1280px] mx-auto px-12 md:px-24 mb-16">
-            <div className="flex overflow-x-auto gap-x-12 pb-8 scroll-smooth scrollbar-hide snap-x">
+          <div className="w-full max-w-[1280px] mx-auto px-2 md:px-10 mb-16">
+            <div className="flex items-center gap-2 md:gap-4">
+              <button
+                type="button"
+                aria-label="Kéo sang trái"
+                onClick={() => scrollFlowerSlider("left")}
+                className="shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-slate-500 text-white text-2xl leading-none hover:bg-slate-600 transition"
+              >
+                ‹
+              </button>
+
+              <div
+                ref={flowerSliderRef}
+                className="flex-1 flex overflow-x-auto gap-x-8 md:gap-x-12 pb-8 scroll-smooth scrollbar-hide snap-x"
+              >
               {flowerLanguages.map((f, i) => (
-                <div key={i} className="flex-none flex flex-col items-center group cursor-pointer w-32 snap-center">
-                  <div className="w-32 h-32 bg-zinc-100 rounded-full shadow-md group-hover:scale-105 transition-transform overflow-hidden border border-slate-300">
+                <div key={i} className="flex-none flex flex-col items-center group cursor-pointer w-40 md:w-44 snap-center">
+                  <div className="w-40 h-40 md:w-44 md:h-44 bg-zinc-100 rounded-full shadow-md group-hover:scale-105 transition-transform overflow-hidden border border-slate-300">
                     <img src={f.img} alt={f.name} className="w-full h-full object-cover" />
                   </div>
-                  <h3 className="text-slate-500 text-sm font-black font-['Geologica'] leading-5 mt-4 text-center">{f.name}</h3>
-                  <p className="text-black text-xs font-thin font-['Geologica'] leading-4 mt-2 text-center whitespace-normal">{f.desc}</p>
+                  <h3 className="text-slate-500 text-base font-black font-['Geologica'] leading-5 mt-4 text-center">{f.name}</h3>
+                  <p className="text-black text-sm font-thin font-['Geologica'] leading-5 mt-2 text-center whitespace-normal">{f.desc}</p>
                 </div>
               ))}
+
+              </div>
+
+              <button
+                type="button"
+                aria-label="Kéo sang phải"
+                onClick={() => scrollFlowerSlider("right")}
+                className="shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-slate-500 text-white text-2xl leading-none hover:bg-slate-600 transition"
+              >
+                ›
+              </button>
             </div>
           </div>
           <Link to="/story" className="px-8 py-4 bg-slate-500 text-white rounded-[100px] text-lg font-extralight font-['Geologica'] leading-7 transition hover:bg-slate-500/80 inline-block shadow-md uppercase">
