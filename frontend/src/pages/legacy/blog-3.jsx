@@ -34,7 +34,7 @@ export default function Blog3() {
               Tự tay tạo bó hoa của chính mình cùng Dear, Chérie
             </p>
             <a
-              href="/booth"
+              href="/custom-flowers"
               className="mt-6 inline-flex items-center justify-center bg-white rounded-[30px] px-8 py-3 text-slate-500 text-xl md:text-2xl font-bold font-['Geologica'] hover:bg-rose-50 transition"
             >
               TẠO NGAY

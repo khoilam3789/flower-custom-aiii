@@ -88,27 +88,6 @@ const overviewBlogs = [
     date: "20/12/2026",
     image: "/images/blog3/anh1.png",
     link: "/blog-3"
-  },
-  {
-    title: "Hoa Tulip: 7 sắc màu - 7 bản tình ca - Bạn đã biết cách chọn màu thay lời muốn nói?",
-    excerpt: "Khám phá ngôn ngữ diệu kỳ ẩn sau vẻ đẹp thanh cao của Hoa Tulip tại Dear, Chérie. Không chỉ là loài hoa đại diện cho sự khởi đầu mới...",
-    date: "12/3/2026",
-    image: "https://images.unsplash.com/photo-1516478177764-9fe5bd7e9717?w=900&h=520&fit=crop",
-    link: "/blog-1"
-  },
-  {
-    title: "Hoa dành cho từng mối quan hệ: người yêu, bạn thân, gia đình",
-    excerpt: "Hoa hồng được mệnh danh là nữ hoàng của các loài hoa. Theo thần thoại Hy Lạp, hoa hồng không chỉ là một loài hoa bình thường...",
-    date: "12/3/2026",
-    image: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=900&h=520&fit=crop",
-    link: "/blog-2"
-  },
-  {
-    title: "Ý nghĩa các loài hoa trong ngày Valentine: Chọn hoa tặng người thương sao cho đúng?",
-    excerpt: "Hoa hồng được mệnh danh là nữ hoàng của các loài hoa. Theo thần thoại Hy Lạp, hoa hồng không chỉ là một loài hoa bình thường...",
-    date: "12/3/2026",
-    image: "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=900&h=520&fit=crop",
-    link: "/blog-1"
   }
 ];
 
