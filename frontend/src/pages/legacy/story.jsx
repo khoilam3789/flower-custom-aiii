@@ -95,6 +95,7 @@ export default function Story() {
   const { slug } = useParams();
   const [story, setStory] = useState(defaultStory);
   const [overviewStories, setOverviewStories] = useState([]);
+  const [visibleOverviewCount, setVisibleOverviewCount] = useState(4);
   const [overviewLoading, setOverviewLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -169,6 +170,10 @@ export default function Story() {
     fetchStory();
   }, [storySlug, slug]);
 
+  useEffect(() => {
+    setVisibleOverviewCount(4);
+  }, [overviewStories.length]);
+
   if (loading) {
     return (
       <div className="w-full min-h-screen bg-Color-3 flex items-center justify-center px-6">
@@ -202,12 +207,12 @@ export default function Story() {
               </div>
             </div>
             <div className="mt-6 text-center">
-              <button
-                type="button"
-                className="rounded-full bg-rose-700 text-white px-8 py-3 md:px-10 md:py-4 text-base md:text-xl font-semibold font-['Geologica'] border-4 border-white"
+              <Link
+                to="/bag-gallery"
+                className="inline-flex rounded-full bg-rose-700 text-white px-8 py-3 md:px-10 md:py-4 text-base md:text-xl font-semibold font-['Geologica'] border-4 border-white"
               >
                 Khám phá khu vườn đa sắc màu
-              </button>
+              </Link>
             </div>
           </div>
         </section>
@@ -221,7 +226,7 @@ export default function Story() {
             <div className="text-center text-slate-600 font-['Geologica']">Đang tải danh sách ý nghĩa...</div>
           ) : overviewStories.length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10">
-              {overviewStories.map((item, index) => (
+              {overviewStories.slice(0, visibleOverviewCount).map((item, index) => (
                 <article
                   key={item._id || `${item.slug}-${index}`}
                   className="relative h-[340px] md:h-[380px] border-[6px] border-[#C26A74] rounded-sm overflow-hidden"
@@ -260,14 +265,17 @@ export default function Story() {
             <div className="text-center text-slate-600 font-['Geologica']">Chưa có dữ liệu story để hiển thị.</div>
           )}
 
-          <div className="mt-8 md:mt-10 text-center">
-            <button
-              type="button"
-              className="rounded-full bg-rose-700 border-[5px] border-white px-8 md:px-12 py-3 text-white text-2xl md:text-3xl font-semibold font-['Geologica']"
-            >
-              Chi tiết những hoa khác
-            </button>
-          </div>
+          {overviewStories.length > visibleOverviewCount && (
+            <div className="mt-8 md:mt-10 text-center">
+              <button
+                type="button"
+                onClick={() => setVisibleOverviewCount((prev) => prev + 4)}
+                className="rounded-full bg-rose-700 border-[5px] border-white px-8 md:px-12 py-3 text-white text-2xl md:text-3xl font-semibold font-['Geologica']"
+              >
+                Chi tiết những hoa khác
+              </button>
+            </div>
+          )}
         </section>
 
         <section className="max-w-[1180px] mx-auto px-4 md:px-8 lg:px-10 mt-24">

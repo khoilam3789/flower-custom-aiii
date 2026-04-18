@@ -12,6 +12,7 @@ import Register from "./pages/legacy/register";
 import Payment from "./pages/legacy/payment";
 import PaymentSuccessPage from "./pages/legacy/payment-success";
 import StoryPage from "./pages/legacy/story";
+import BagGalleryPage from "./pages/legacy/bag-gallery";
 
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
@@ -40,7 +41,8 @@ const figmaRoutes = [
   ["/register", "Register", Register],
   ["/payment", "Payment", Payment],
   ["/payment-success", "Payment Success", PaymentSuccessPage],
-  ["/story", "Story", StoryPage]
+  ["/story", "Story", StoryPage],
+  ["/bag-gallery", "Bag Gallery", BagGalleryPage]
 ];
 
 export default function App() {
