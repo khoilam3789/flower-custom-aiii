@@ -63,34 +63,50 @@ export default function CustomPreview() {
         if (!resProd.ok) throw new Error("Coud not fetch products");
         const allProducts = await resProd.json();
 
-        const getUrlFromStorage = (storageKey) => {
+        const getUrlsFromStorage = (storageKey) => {
           const raw = localStorage.getItem(storageKey);
-          if (!raw) return null;
+          if (!raw) return [];
           const parsed = JSON.parse(raw);
-          if (parsed && parsed.items && parsed.items.length > 0) {
-            const firstItem = parsed.items[0];
-            if (firstItem.imageUrl) return firstItem.imageUrl;
+          if (!parsed || !Array.isArray(parsed.items) || parsed.items.length === 0) return [];
 
-            // Backward compatibility for old localStorage payloads only storing product id
-            const prodId = firstItem.key;
-            const product = allProducts.find(p => p._id === prodId);
-            return product ? product.imageUrl : null;
-          }
-          return null;
+          const urls = [];
+          parsed.items.forEach((entry) => {
+            const quantity = Math.max(0, Number(entry?.quantity) || 0);
+            if (quantity <= 0) return;
+
+            let resolvedUrl = entry?.imageUrl || null;
+            if (!resolvedUrl && entry?.key) {
+              const product = allProducts.find((p) => p._id === entry.key);
+              resolvedUrl = product?.imageUrl || null;
+            }
+
+            if (resolvedUrl) {
+              for (let i = 0; i < quantity; i += 1) {
+                urls.push(resolvedUrl);
+              }
+            }
+          });
+
+          return urls;
         };
 
-        const flowerUrl = getUrlFromStorage('flowerSelection');
-        const leafUrl = getUrlFromStorage('leafSelection');
-        const bagUrl = getUrlFromStorage('bagSelection');
+        const flowerUrls = getUrlsFromStorage('flowerSelection');
+        const leafUrls = getUrlsFromStorage('leafSelection');
+        const bagUrls = getUrlsFromStorage('bagSelection');
+        const bagUrl = bagUrls[0] || null;
 
-        if (!flowerUrl) {
+        if (flowerUrls.length === 0) {
           console.warn("No flower selected, AI preview needs at least a flower.");
           setLoading(false);
           return;
         }
 
         // Kiểm tra xem tổ hợp Hoa + Lá + Túi hiện tại đã được sinh ảnh trước đó chưa (Cache hit)
-        const currentComboKey = `${flowerUrl}_${leafUrl}_${bagUrl}`;
+        const currentComboKey = [
+          flowerUrls.join('|'),
+          leafUrls.join('|'),
+          bagUrl || ''
+        ].join('__');
         const cachedComboKey = localStorage.getItem('aiGeneratedComboKey');
         const cachedImage = localStorage.getItem('aiGeneratedImage');
         const cachedVersion = localStorage.getItem('aiGeneratedCacheVersion');
@@ -105,7 +121,7 @@ export default function CustomPreview() {
         // Call our AI Backend
         const resAi = await requestPreviewWithRetry(
           `${backendUrl}/api/ai/preview`,
-          { flowerUrl, leafUrl, bagUrl },
+          { flowerUrls, leafUrls, bagUrl },
           1
         );
 

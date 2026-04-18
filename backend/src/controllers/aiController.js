@@ -120,10 +120,30 @@ const urlToGenerativePart = async (url) => {
 
 export const generatePreview = async (req, res) => {
   try {
-    const { flowerUrl, leafUrl, bagUrl } = req.body;
+    const {
+      flowerUrl,
+      leafUrl,
+      bagUrl,
+      flowerUrls: incomingFlowerUrls,
+      leafUrls: incomingLeafUrls
+    } = req.body;
     const { imageProvider, geminiApiKey } = await resolveAiConfig();
 
-    if (!flowerUrl) {
+    const normalizeUrlList = (listValue, fallbackSingle) => {
+      if (Array.isArray(listValue)) {
+        return listValue
+          .map((item) => String(item || "").trim())
+          .filter(Boolean);
+      }
+      const single = String(fallbackSingle || "").trim();
+      return single ? [single] : [];
+    };
+
+    const flowerUrls = normalizeUrlList(incomingFlowerUrls, flowerUrl);
+    const leafUrls = normalizeUrlList(incomingLeafUrls, leafUrl);
+    const trimmedBagUrl = String(bagUrl || "").trim();
+
+    if (flowerUrls.length === 0) {
       return res.status(400).json({ message: "Thiếu ảnh hoa." });
     }
 
@@ -141,21 +161,48 @@ export const generatePreview = async (req, res) => {
       "gemini-2.5-flash",        // mạnh hơn nhưng hay bị 503
     ];
 
-    const promptInstructions = `You are a professional floral photographer. I'm providing images of: a flower (required), optional leaf/greenery, and an optional bag/vase.
-Analyze the exact colors, shapes, and textures of each item provided.
-Write ONE single detailed English text-to-image prompt for a hyper-realistic studio photograph of a beautiful bouquet.
-The bouquet must use EXACTLY these specific flowers and leaves, arranged inside this specific bag/vase.
-CRITICAL: The prompt MUST specify a "wide angle, zoomed out, full body shot" ensuring the ENTIRE bag/vase and ALL flowers are fully visible in the frame with plenty of negative space around them. Do not crop the image.
-Style requirements: high-end commercial product photography, soft warm studio lighting, bokeh background, photorealistic 8K.
-Return ONLY the prompt text, no quotes, no explanation.`;
+    const promptInstructions = `You are a professional floral photographer.
+I provide reference images in this order:
+- first: flowers (can contain duplicates to indicate quantity)
+- then: leaves/greenery (can contain duplicates to indicate quantity)
+- last: optional bag/vase
+
+Your task:
+1) Analyze exact color, texture, petal/leaf shape, and silhouette of EACH reference.
+2) Write ONE single detailed English prompt for a hyper-realistic studio photo.
+3) The bouquet must match these references EXACTLY. Do not invent extra flower species, extra leaves, extra accessories, ribbons, cards, or fillers.
+4) Preserve quantity impression: repeated references mean that item should appear more times.
+5) Keep full bouquet and full bag/vase visible in frame (wide angle, zoomed out, no crop).
+6) Neutral clean background, soft studio lighting, realistic product-photo style.
+
+Return ONLY the prompt text, no explanation.`;
+
+    const quantitySummary = [
+      `Flowers image count: ${flowerUrls.length}`,
+      `Leaves image count: ${leafUrls.length}`,
+      `Has bag image: ${trimmedBagUrl ? "yes" : "no"}`
+    ].join("\n");
 
     const imageParts = [];
-    const fPart = await urlToGenerativePart(flowerUrl);
-    if (fPart) imageParts.push(fPart);
-    if (leafUrl) { const lPart = await urlToGenerativePart(leafUrl); if (lPart) imageParts.push(lPart); }
-    if (bagUrl)  { const bPart = await urlToGenerativePart(bagUrl);  if (bPart) imageParts.push(bPart); }
+    for (const url of flowerUrls.slice(0, 12)) {
+      const fPart = await urlToGenerativePart(url);
+      if (fPart) imageParts.push(fPart);
+    }
+    for (const url of leafUrls.slice(0, 8)) {
+      const lPart = await urlToGenerativePart(url);
+      if (lPart) imageParts.push(lPart);
+    }
+    if (trimmedBagUrl) {
+      const bPart = await urlToGenerativePart(trimmedBagUrl);
+      if (bPart) imageParts.push(bPart);
+    }
+
+    if (imageParts.length === 0) {
+      return res.status(400).json({ message: "Không đọc được ảnh nguyên liệu từ payload." });
+    }
 
     let generatedPrompt = null;
+    let usedVisionModel = null;
     for (const vModel of VISION_MODELS) {
       const MAX_VISION_RETRIES = 2;
       const BASE_DELAY_MS = 1200;
@@ -164,8 +211,13 @@ Return ONLY the prompt text, no quotes, no explanation.`;
         try {
           console.log(`🧠 Vision thử model: ${vModel} (lần ${attempt})`);
           const visionModel = genAI.getGenerativeModel({ model: vModel });
-          const visionResult = await visionModel.generateContent([promptInstructions, ...imageParts]);
+          const visionResult = await visionModel.generateContent([
+            promptInstructions,
+            quantitySummary,
+            ...imageParts
+          ]);
           generatedPrompt = visionResult.response.text().trim();
+          usedVisionModel = vModel;
           console.log(`✅ Vision OK (${vModel}):`, generatedPrompt.substring(0, 80) + "...");
           break;
         } catch (ve) {
@@ -195,6 +247,8 @@ Return ONLY the prompt text, no quotes, no explanation.`;
 
     // ── BƯỚC 2: sinh ảnh với các model có hỗ trợ image output ──
     let base64Image = null;
+    let usedImageModel = null;
+    let usedImageBackend = null;
     const shouldTryGeminiImage = imageProvider !== "pollinations-only";
     const shouldTryPollinations = imageProvider !== "gemini-only";
 
@@ -214,6 +268,8 @@ Return ONLY the prompt text, no quotes, no explanation.`;
           const imgPart = result.response.candidates?.[0]?.content?.parts?.find((p) => p.inlineData);
           if (imgPart?.inlineData?.data && imgPart?.inlineData?.mimeType) {
             console.log(`✅ ${modelName} thành công!`);
+            usedImageModel = modelName;
+            usedImageBackend = "gemini";
             return `data:${imgPart.inlineData.mimeType};base64,${imgPart.inlineData.data}`;
           }
 
@@ -259,6 +315,8 @@ Return ONLY the prompt text, no quotes, no explanation.`;
         const buffer = Buffer.from(polliResp.data, 'binary');
         
         base64Image = `data:image/jpeg;base64,${buffer.toString('base64')}`;
+        usedImageModel = "pollinations";
+        usedImageBackend = "pollinations";
         console.log("✅ Pollinations AI thành công rực rỡ!");
       } catch (e4) {
         console.warn("⚠️ Pollinations AI cũng thất bại:", e4.message);
@@ -274,7 +332,17 @@ Return ONLY the prompt text, no quotes, no explanation.`;
       });
     }
 
-    res.json({ imageBase64: base64Image, prompt: generatedPrompt, provider: imageProvider });
+    res.json({
+      imageBase64: base64Image,
+      prompt: generatedPrompt,
+      provider: imageProvider,
+      usedVisionModel,
+      usedImageModel,
+      usedImageBackend,
+      flowerCount: flowerUrls.length,
+      leafCount: leafUrls.length,
+      hasBag: Boolean(trimmedBagUrl)
+    });
 
   } catch (error) {
     const details = error.response?.data || error.message;
