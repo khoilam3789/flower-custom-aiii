@@ -125,7 +125,11 @@ export const generatePreview = async (req, res) => {
       leafUrl,
       bagUrl,
       flowerUrls: incomingFlowerUrls,
-      leafUrls: incomingLeafUrls
+      leafUrls: incomingLeafUrls,
+      flowerItems: incomingFlowerItems,
+      leafItems: incomingLeafItems,
+      bagItem: incomingBagItem,
+      strictReference
     } = req.body;
     const { imageProvider, geminiApiKey } = await resolveAiConfig();
 
@@ -142,6 +146,42 @@ export const generatePreview = async (req, res) => {
     const flowerUrls = normalizeUrlList(incomingFlowerUrls, flowerUrl);
     const leafUrls = normalizeUrlList(incomingLeafUrls, leafUrl);
     const trimmedBagUrl = String(bagUrl || "").trim();
+    const useStrictReference = strictReference !== false;
+
+    const normalizeItemList = (items, fallbackUrls = []) => {
+      if (!Array.isArray(items) || items.length === 0) {
+        return fallbackUrls.map((url, index) => ({
+          key: `fallback-${index + 1}`,
+          label: `item-${index + 1}`,
+          quantity: 1,
+          imageUrl: url
+        }));
+      }
+
+      return items
+        .map((item, index) => {
+          const imageUrl = String(item?.imageUrl || "").trim();
+          const quantity = Math.max(1, Number(item?.quantity) || 1);
+          return {
+            key: String(item?.key || `item-${index + 1}`).trim(),
+            label: String(item?.label || `item-${index + 1}`).trim(),
+            quantity,
+            imageUrl
+          };
+        })
+        .filter((item) => item.imageUrl);
+    };
+
+    const normalizedFlowerItems = normalizeItemList(incomingFlowerItems, flowerUrls);
+    const normalizedLeafItems = normalizeItemList(incomingLeafItems, leafUrls);
+    const normalizedBagItem = incomingBagItem && String(incomingBagItem?.imageUrl || "").trim()
+      ? {
+          key: String(incomingBagItem?.key || "bag").trim(),
+          label: String(incomingBagItem?.label || "bag").trim(),
+          quantity: Math.max(1, Number(incomingBagItem?.quantity) || 1),
+          imageUrl: String(incomingBagItem.imageUrl).trim()
+        }
+      : null;
 
     if (flowerUrls.length === 0) {
       return res.status(400).json({ message: "Thiếu ảnh hoa." });
@@ -171,16 +211,29 @@ Your task:
 1) Analyze exact color, texture, petal/leaf shape, and silhouette of EACH reference.
 2) Write ONE single detailed English prompt for a hyper-realistic studio photo.
 3) The bouquet must match these references EXACTLY. Do not invent extra flower species, extra leaves, extra accessories, ribbons, cards, or fillers.
-4) Preserve quantity impression: repeated references mean that item should appear more times.
+4) Enforce exact counts for each selected flower/leaf type. Example: if selected quantity is 3, output must show exactly 3 stems of that selected type.
 5) Keep full bouquet and full bag/vase visible in frame (wide angle, zoomed out, no crop).
+6) The bag/vase must match the reference image silhouette and structure (opening shape, handle form, body proportions, material feel, and dominant color).
 6) Neutral clean background, soft studio lighting, realistic product-photo style.
 
 Return ONLY the prompt text, no explanation.`;
 
+    const formatItemSummaryLine = (item) =>
+      `- ${item.label || item.key}: exactly ${item.quantity}`;
+
     const quantitySummary = [
       `Flowers image count: ${flowerUrls.length}`,
       `Leaves image count: ${leafUrls.length}`,
-      `Has bag image: ${trimmedBagUrl ? "yes" : "no"}`
+      `Has bag image: ${trimmedBagUrl ? "yes" : "no"}`,
+      "",
+      "Exact flower requirements:",
+      ...(normalizedFlowerItems.length > 0 ? normalizedFlowerItems.map(formatItemSummaryLine) : ["- none"]),
+      "",
+      "Exact leaf requirements:",
+      ...(normalizedLeafItems.length > 0 ? normalizedLeafItems.map(formatItemSummaryLine) : ["- none"]),
+      "",
+      `Bag reference label: ${normalizedBagItem?.label || "none"}`,
+      `Strict mode: ${useStrictReference ? "ON" : "OFF"}`
     ].join("\n");
 
     const imageParts = [];
@@ -245,12 +298,30 @@ Return ONLY the prompt text, no explanation.`;
       return res.status(503).json({ message: "Tất cả Vision model đang bận. Vui lòng thử lại sau 30 giây." });
     }
 
+    const hardConstraints = [
+      "MANDATORY CONSTRAINTS:",
+      "- Preserve exact flower and leaf type counts listed below.",
+      "- No additional flowers/leaves/fillers/ribbons/props.",
+      "- Keep bag/vase silhouette and structure close to the provided bag reference.",
+      "- If any conflict occurs, prioritize these constraints over artistic choices.",
+      "",
+      "Flower exact counts:",
+      ...(normalizedFlowerItems.length > 0 ? normalizedFlowerItems.map(formatItemSummaryLine) : ["- none"]),
+      "",
+      "Leaf exact counts:",
+      ...(normalizedLeafItems.length > 0 ? normalizedLeafItems.map(formatItemSummaryLine) : ["- none"]),
+      "",
+      `Bag shape lock: ${normalizedBagItem ? `match ${normalizedBagItem.label}` : "none"}`
+    ].join("\n");
+
+    const finalImagePrompt = `${generatedPrompt}\n\n${hardConstraints}`;
+
     // ── BƯỚC 2: sinh ảnh với các model có hỗ trợ image output ──
     let base64Image = null;
     let usedImageModel = null;
     let usedImageBackend = null;
     const shouldTryGeminiImage = imageProvider !== "pollinations-only";
-    const shouldTryPollinations = imageProvider !== "gemini-only";
+    const shouldTryPollinations = imageProvider !== "gemini-only" && !useStrictReference;
 
     const generateWithImageModel = async (modelName) => {
       const MAX_IMAGE_RETRIES = 1;
@@ -261,7 +332,7 @@ Return ONLY the prompt text, no explanation.`;
           console.log(`🎨 Thử ${modelName} (lần ${attempt})...`);
           const model = genAI.getGenerativeModel({ model: modelName });
           const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: generatedPrompt }] }],
+            contents: [{ role: "user", parts: [{ text: finalImagePrompt }] }],
             generationConfig: { responseModalities: ["image", "text"] }
           });
 
@@ -307,7 +378,7 @@ Return ONLY the prompt text, no explanation.`;
       try {
         console.log("🔄 Thử Pollinations AI (Free Open Source Image Gen)...");
         // Mã hoá prompt để đưa lên URL
-        const encodedPrompt = encodeURIComponent(generatedPrompt);
+        const encodedPrompt = encodeURIComponent(finalImagePrompt);
         // Gọi Pollinations tạo ảnh tỷ lệ 1:1, không có logo (nologo=true)
         const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=800&height=800&nologo=true`;
         
@@ -334,14 +405,15 @@ Return ONLY the prompt text, no explanation.`;
 
     res.json({
       imageBase64: base64Image,
-      prompt: generatedPrompt,
+        prompt: finalImagePrompt,
       provider: imageProvider,
       usedVisionModel,
       usedImageModel,
       usedImageBackend,
       flowerCount: flowerUrls.length,
       leafCount: leafUrls.length,
-      hasBag: Boolean(trimmedBagUrl)
+        hasBag: Boolean(trimmedBagUrl),
+        strictReference: useStrictReference
     });
 
   } catch (error) {

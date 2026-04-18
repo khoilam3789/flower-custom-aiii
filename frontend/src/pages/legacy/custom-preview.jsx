@@ -63,16 +63,15 @@ export default function CustomPreview() {
         if (!resProd.ok) throw new Error("Coud not fetch products");
         const allProducts = await resProd.json();
 
-        const getUrlsFromStorage = (storageKey) => {
+        const getItemsFromStorage = (storageKey) => {
           const raw = localStorage.getItem(storageKey);
           if (!raw) return [];
           const parsed = JSON.parse(raw);
           if (!parsed || !Array.isArray(parsed.items) || parsed.items.length === 0) return [];
 
-          const urls = [];
-          parsed.items.forEach((entry) => {
+          return parsed.items.reduce((acc, entry) => {
             const quantity = Math.max(0, Number(entry?.quantity) || 0);
-            if (quantity <= 0) return;
+            if (quantity <= 0) return acc;
 
             let resolvedUrl = entry?.imageUrl || null;
             if (!resolvedUrl && entry?.key) {
@@ -81,19 +80,28 @@ export default function CustomPreview() {
             }
 
             if (resolvedUrl) {
-              for (let i = 0; i < quantity; i += 1) {
-                urls.push(resolvedUrl);
-              }
+              acc.push({
+                key: entry?.key || "",
+                label: String(entry?.label || "").trim(),
+                imageUrl: resolvedUrl,
+                quantity
+              });
             }
-          });
-
-          return urls;
+            return acc;
+          }, []);
         };
 
-        const flowerUrls = getUrlsFromStorage('flowerSelection');
-        const leafUrls = getUrlsFromStorage('leafSelection');
-        const bagUrls = getUrlsFromStorage('bagSelection');
+        const expandUrlsByQuantity = (items) =>
+          items.flatMap((entry) => Array.from({ length: entry.quantity }).map(() => entry.imageUrl));
+
+        const flowerItems = getItemsFromStorage('flowerSelection');
+        const leafItems = getItemsFromStorage('leafSelection');
+        const bagItems = getItemsFromStorage('bagSelection');
+        const flowerUrls = expandUrlsByQuantity(flowerItems);
+        const leafUrls = expandUrlsByQuantity(leafItems);
+        const bagUrls = expandUrlsByQuantity(bagItems);
         const bagUrl = bagUrls[0] || null;
+        const bagItem = bagItems[0] || null;
 
         if (flowerUrls.length === 0) {
           console.warn("No flower selected, AI preview needs at least a flower.");
@@ -103,9 +111,9 @@ export default function CustomPreview() {
 
         // Kiểm tra xem tổ hợp Hoa + Lá + Túi hiện tại đã được sinh ảnh trước đó chưa (Cache hit)
         const currentComboKey = [
-          flowerUrls.join('|'),
-          leafUrls.join('|'),
-          bagUrl || ''
+          flowerItems.map((item) => `${item.key}:${item.quantity}`).join('|'),
+          leafItems.map((item) => `${item.key}:${item.quantity}`).join('|'),
+          bagItem ? `${bagItem.key}:${bagItem.quantity}` : ''
         ].join('__');
         const cachedComboKey = localStorage.getItem('aiGeneratedComboKey');
         const cachedImage = localStorage.getItem('aiGeneratedImage');
@@ -121,7 +129,15 @@ export default function CustomPreview() {
         // Call our AI Backend
         const resAi = await requestPreviewWithRetry(
           `${backendUrl}/api/ai/preview`,
-          { flowerUrls, leafUrls, bagUrl },
+          {
+            flowerUrls,
+            leafUrls,
+            bagUrl,
+            flowerItems,
+            leafItems,
+            bagItem,
+            strictReference: true
+          },
           1
         );
 
