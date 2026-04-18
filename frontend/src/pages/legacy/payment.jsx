@@ -21,38 +21,81 @@ export default function Payment() {
   };
 
   useEffect(() => {
-    const selectionKeys = ["flowerSelection", "leafSelection", "bagSelection", "cardSelection"];
-    const blocks = selectionKeys
-      .map((key) => {
-        const raw = localStorage.getItem(key);
-        if (!raw) return null;
-        const parsed = JSON.parse(raw);
-        return {
-          key,
-          label: selectionLabels[key],
-          subtotal: Number(parsed?.subtotal) || 0,
-          items: Array.isArray(parsed?.items) ? parsed.items : [],
-          message: typeof parsed?.message === "string" ? parsed.message : ""
-        };
-      })
-      .filter(Boolean);
+    const hydrateSelections = async () => {
+      const selectionKeys = ["flowerSelection", "leafSelection", "bagSelection", "cardSelection"];
+      const blocks = selectionKeys
+        .map((key) => {
+          const raw = localStorage.getItem(key);
+          if (!raw) return null;
+          const parsed = JSON.parse(raw);
+          return {
+            key,
+            label: selectionLabels[key],
+            subtotal: Number(parsed?.subtotal) || 0,
+            items: Array.isArray(parsed?.items) ? parsed.items : [],
+            message: typeof parsed?.message === "string" ? parsed.message : ""
+          };
+        })
+        .filter(Boolean);
 
-    const flattened = blocks.flatMap((block) =>
-      block.items.map((item, index) => ({
-        id: `${block.key}-${index}-${item.key || item.label || "item"}`,
-        group: block.label,
-        label: item.label || "Sản phẩm tùy chọn",
-        quantity: Number(item.quantity) || 0,
-        lineTotal: Number(item.lineTotal) || 0,
-        imageUrl: item.imageUrl || ""
-      }))
-    );
+      let normalizedBlocks = blocks;
+      const cardBlock = blocks.find((block) => block.key === "cardSelection");
+      const missingCardImage = cardBlock?.items?.some((item) => !item.imageUrl);
 
-    setSelectionBlocks(blocks);
-    setSummaryItems(flattened);
+      if (cardBlock && missingCardImage) {
+        try {
+          const res = await fetch(`${API_BASE}/api/products?category=card`);
+          if (res.ok) {
+            const cards = await res.json();
+            const imageById = Object.fromEntries(cards.map((card) => [card._id, card.imageUrl]));
 
-    const cardBlock = blocks.find((block) => block.key === "cardSelection");
-    setCardMessage(cardBlock?.message || "");
+            normalizedBlocks = blocks.map((block) => {
+              if (block.key !== "cardSelection") return block;
+              return {
+                ...block,
+                items: block.items.map((item) => ({
+                  ...item,
+                  imageUrl: item.imageUrl || imageById[item.key] || ""
+                }))
+              };
+            });
+
+            const fixedCardBlock = normalizedBlocks.find((block) => block.key === "cardSelection");
+            if (fixedCardBlock) {
+              const rawCardSelection = localStorage.getItem("cardSelection");
+              if (rawCardSelection) {
+                const parsed = JSON.parse(rawCardSelection);
+                localStorage.setItem(
+                  "cardSelection",
+                  JSON.stringify({ ...parsed, items: fixedCardBlock.items })
+                );
+              }
+            }
+          }
+        } catch (_error) {
+          // Keep existing data if reconciliation fails.
+        }
+      }
+
+      const flattened = normalizedBlocks.flatMap((block) =>
+        block.items.map((item, index) => ({
+          id: `${block.key}-${index}-${item.key || item.label || "item"}`,
+          group: block.label,
+          label: item.label || "Sản phẩm tùy chọn",
+          quantity: Number(item.quantity) || 0,
+          lineTotal: Number(item.lineTotal) || 0,
+          imageUrl: item.imageUrl || ""
+        }))
+      );
+
+      setSelectionBlocks(normalizedBlocks);
+      setSummaryItems(flattened);
+
+      const normalizedCardBlock = normalizedBlocks.find((block) => block.key === "cardSelection");
+      setCardMessage(normalizedCardBlock?.message || "");
+    };
+
+    hydrateSelections();
   }, []);
 
   const subTotal = useMemo(
@@ -66,13 +109,16 @@ export default function Payment() {
 
   const buildCustomDetails = () => ({
     source: "payment-page",
+    aiImage: localStorage.getItem("aiGeneratedImage") || "",
     message: cardMessage,
     blocks: selectionBlocks.map((block) => ({
       key: block.key,
       label: block.label,
       subtotal: block.subtotal,
       items: block.items.map((item) => ({
+        key: item.key,
         label: item.label,
+        imageUrl: item.imageUrl || "",
         quantity: item.quantity,
         lineTotal: item.lineTotal
       }))

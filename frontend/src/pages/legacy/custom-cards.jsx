@@ -88,6 +88,7 @@ export default function Customcards() {
     .map((item) => ({
       key: item._id,
       label: item.name,
+      imageUrl: item.imageUrl,
       price: item.price,
       quantity: counts[item._id] || 0,
       lineTotal: (counts[item._id] || 0) * item.price
