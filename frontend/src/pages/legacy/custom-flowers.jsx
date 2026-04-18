@@ -138,7 +138,10 @@ export default function Customhoa(){
 
   {/* Panel Chọn Hoa (Bên trái) - Đã tái cấu trúc CSS */}
   <div className="w-[623px] h-[621px] left-[120px] top-[280px] absolute bg-[#AF2E38] rounded-[20px] outline outline-1 outline-offset-[-1px] outline-[#AF2E38] overflow-y-auto overflow-x-hidden scrollbar-hide scroll-smooth py-6 px-5">
-    <div className="grid grid-cols-2 justify-items-center gap-x-6 gap-y-6 w-full">
+    <div
+      className="grid justify-center justify-items-center gap-x-6 gap-y-6 w-full"
+      style={{ gridTemplateColumns: 'repeat(2, minmax(0, 260px))' }}
+    >
       {products.map((flower) => (
          <div key={flower._id} className="relative w-[260px] h-[330px] flex flex-col items-center" style={{ overflow: 'hidden' }}>
             {/* Background base */}
