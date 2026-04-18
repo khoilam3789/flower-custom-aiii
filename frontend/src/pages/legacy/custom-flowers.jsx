@@ -140,37 +140,37 @@ export default function Customhoa(){
   <div className="w-[623px] h-[621px] left-[120px] top-[280px] absolute bg-[#AF2E38] rounded-[20px] outline outline-1 outline-offset-[-1px] outline-[#AF2E38] overflow-y-auto overflow-x-hidden scrollbar-hide scroll-smooth py-6 px-4">
     <div className="flex flex-wrap justify-center gap-x-1 gap-y-2 w-full">
       {products.map((flower) => (
-         <div key={flower._id} className="relative w-[256px] min-w-[256px] h-[320px] flex-none flex flex-col items-center" style={{ overflow: 'hidden' }}>
+         <div key={flower._id} className="relative w-[340px] min-w-[340px] h-[430px] flex-none flex flex-col items-center" style={{ overflow: 'hidden' }}>
             {/* Background base */}
-            <img className="absolute top-0 w-[256px] h-[320px] drop-shadow-md z-0" src="/images/CustomizeHoa/nenhoa.png" alt="nen" />
+            <img className="absolute top-0 w-[340px] h-[430px] drop-shadow-md z-0" src="/images/CustomizeHoa/nenhoa.png" alt="nen" />
             
             {/* Inner Content */}
-            <div className="absolute inset-0 flex flex-col z-10 pointer-events-none" style={{ padding: '24px 20px 20px 20px', gap: '8px', overflow: 'hidden' }}>
+            <div className="absolute inset-0 flex flex-col z-10 pointer-events-none" style={{ padding: '32px 28px 24px 28px', gap: '12px', overflow: 'hidden' }}>
                {/* Price */}
-               <div className="pointer-events-auto" style={{ fontSize: '12px', fontWeight: '700', fontStyle: 'italic', color: '#AF2E38', paddingLeft: '14px' }}>
+               <div className="pointer-events-auto" style={{ fontSize: '16px', fontWeight: '700', fontStyle: 'italic', color: '#AF2E38', paddingLeft: '14px' }}>
                  {new Intl.NumberFormat('vi-VN').format(flower.price)} VNĐ/cành
                </div>
                
                {/* Image */}
-               <div className="flex justify-center items-center pointer-events-auto" style={{ height: '152px' }}>
-                 <img className="object-contain hover:scale-105 transition" style={{ height: '150px', width: 'auto' }} src={flower.imageUrl} alt={flower.name} />
+               <div className="flex justify-center items-center pointer-events-auto" style={{ height: '200px' }}>
+                 <img className="object-contain hover:scale-105 transition" style={{ height: '195px', width: 'auto' }} src={flower.imageUrl} alt={flower.name} />
                </div>
                
                {/* Name */}
-               <div className="text-center pointer-events-auto" style={{ color: '#3B73A9', fontSize: '15px', fontWeight: '700', fontFamily: 'Geologica', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+               <div className="text-center pointer-events-auto" style={{ color: '#3B73A9', fontSize: '20px', fontWeight: '700', fontFamily: 'Geologica', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                  {flower.name}
                </div>
                
                {/* Description */}
-               <div style={{ color: '#444', fontSize: '11px', fontStyle: 'italic', fontFamily: 'Geologica', lineHeight: '1.35', wordBreak: 'break-word', overflowWrap: 'break-word', overflow: 'hidden', textAlign: 'center', maxHeight: '42px', width: '100%', boxSizing: 'border-box', padding: '0 18px' }}>
+               <div style={{ color: '#444', fontSize: '14px', fontStyle: 'italic', fontFamily: 'Geologica', lineHeight: '1.35', wordBreak: 'break-word', overflowWrap: 'break-word', overflow: 'hidden', textAlign: 'center', maxHeight: '56px', width: '100%', boxSizing: 'border-box', padding: '0 18px' }}>
                  {flower.description?.substring(0, 25)}{flower.description?.length > 25 ? '...' : ''}
                </div>
 
                {/* Buttons */}
                <div className="flex items-center justify-center gap-5 pointer-events-auto">
-                 <button onClick={() => decrease(flower._id)} style={{ background: 'transparent', border: 'none', color: '#AF2E38', fontSize: '20px', fontWeight: '500', width: '30px', height: '30px', padding: 0, cursor: 'pointer' }}>-</button>
-                 <span style={{ color: '#AF2E38', fontSize: '15px', fontWeight: '700', fontStyle: 'italic', width: '16px', textAlign: 'center' }}>{counts[flower._id] || 0}</span>
-                 <button onClick={() => increase(flower._id)} style={{ background: 'transparent', border: 'none', color: '#AF2E38', fontSize: '20px', fontWeight: '500', width: '30px', height: '30px', padding: 0, cursor: 'pointer' }}>+</button>
+                 <button onClick={() => decrease(flower._id)} style={{ background: 'transparent', border: 'none', color: '#AF2E38', fontSize: '26px', fontWeight: '500', width: '40px', height: '40px', padding: 0, cursor: 'pointer' }}>-</button>
+                 <span style={{ color: '#AF2E38', fontSize: '18px', fontWeight: '700', fontStyle: 'italic', width: '20px', textAlign: 'center' }}>{counts[flower._id] || 0}</span>
+                 <button onClick={() => increase(flower._id)} style={{ background: 'transparent', border: 'none', color: '#AF2E38', fontSize: '26px', fontWeight: '500', width: '40px', height: '40px', padding: 0, cursor: 'pointer' }}>+</button>
                </div>
             </div>
          </div>

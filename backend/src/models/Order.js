@@ -32,7 +32,7 @@ const orderSchema = new mongoose.Schema(
     items: [orderItemSchema],
     status: {
       type: String,
-      enum: ['Đang xử lý', 'Đang giao hàng', 'Hoàn thành'],
+      enum: ['Đang xử lý', 'Đang giao hàng', 'Hoàn thành', 'Đã hủy'],
       default: 'Đang xử lý',
     },
     shippingFee: {

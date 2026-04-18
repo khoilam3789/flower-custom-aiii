@@ -34,6 +34,20 @@ export const checkoutCart = async (req, res) => {
   }
 };
 
+// @desc    Get user's own orders
+// @route   GET /api/orders/my-orders
+// @access  Private
+export const getUserOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({ userId: req.user._id })
+      .populate('userId', 'id name email')
+      .sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // @desc    Get all orders (Admin)
 // @route   GET /api/orders/all
 // @access  Private/Admin
@@ -62,6 +76,38 @@ export const updateOrderStatus = async (req, res) => {
     const updatedOrder = await order.save();
     
     res.json(updatedOrder);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Cancel order (User can cancel their own order)
+// @route   PUT /api/orders/:id/cancel
+// @access  Private
+export const cancelOrder = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+    }
+
+    // Check if user owns this order
+    if (order.userId.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: 'Không có quyền hủy đơn hàng này' });
+    }
+
+    // Only allow cancellation for "Đang xử lý" status
+    if (order.status !== 'Đang xử lý') {
+      return res.status(400).json({ 
+        message: 'Chỉ có thể hủy đơn hàng ở trạng thái "Đang xử lý"' 
+      });
+    }
+
+    order.status = 'Đã hủy';
+    const updatedOrder = await order.save();
+    
+    res.json({ message: 'Đơn hàng đã được hủy', order: updatedOrder });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

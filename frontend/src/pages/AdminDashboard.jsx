@@ -554,12 +554,14 @@ export default function AdminDashboard() {
                       className={`text-xs font-bold px-3 py-2 rounded-full border outline-none ${
                         o.status === 'Đang xử lý' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
                         o.status === 'Đang giao hàng' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                        'bg-green-50 text-green-700 border-green-200'
+                        o.status === 'Hoàn thành' ? 'bg-green-50 text-green-700 border-green-200' :
+                        'bg-red-50 text-red-700 border-red-200'
                       }`}
                     >
                       <option value="Đang xử lý">Đang xử lý</option>
                       <option value="Đang giao hàng">Đang giao hàng</option>
                       <option value="Hoàn thành">Hoàn thành</option>
+                      <option value="Đã hủy">Đã hủy</option>
                     </select>
                   </td>
                   <td className="p-4 text-right">

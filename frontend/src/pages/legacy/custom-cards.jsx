@@ -152,14 +152,14 @@ export default function Customcards() {
         <div className="w-52 h-10 left-[296px] top-[472px] absolute text-right justify-center text-white text-3xl font-light font-['Geologica'] leading-10">{formatPrice(totalSubtotal)}</div>
       </div>
 
-      <button onClick={handleContinue} className="w-80 h-24 left-[1000px] top-[830px] absolute overflow-hidden block z-10 cursor-pointer bg-transparent border-none">
+      <button onClick={handleContinue} className="w-80 h-24 left-[1000px] top-[830px] absolute block z-10 cursor-pointer bg-transparent border-none">
         <div className="w-48 h-12 left-[152px] top-[24px] absolute bg-[#B8DAFF] rounded-[10px]" />
         <div className="left-[192px] top-[35px] absolute text-center justify-center text-[#AF2E38] text-2xl font-normal font-['Geologica'] leading-7 z-20">TIẾP TỤC</div>
       </button>
 
       {/* Left Pane Part 1: Top Cards Area */}
       <div className="w-[703px] h-[260px] left-[61px] top-[260px] absolute bg-[#AF2E38] rounded-[20px] outline outline-1 outline-offset-[-1px] outline-[#AF2E38] overflow-x-auto overflow-y-hidden scrollbar-hide py-4 px-4">
-         <div className="flex gap-4 h-full items-center">
+         <div className="flex gap-4 h-full items-center justify-center">
           {products.map((card) => (
              <div
                key={card._id}
