@@ -315,6 +315,10 @@ Return ONLY the prompt text, no explanation.`;
     ].join("\n");
 
     const finalImagePrompt = `${generatedPrompt}\n\n${hardConstraints}`;
+    const imageGenerationParts = [
+      { text: finalImagePrompt },
+      ...imageParts
+    ];
 
     // ── BƯỚC 2: sinh ảnh với các model có hỗ trợ image output ──
     let base64Image = null;
@@ -332,7 +336,7 @@ Return ONLY the prompt text, no explanation.`;
           console.log(`🎨 Thử ${modelName} (lần ${attempt})...`);
           const model = genAI.getGenerativeModel({ model: modelName });
           const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: finalImagePrompt }] }],
+            contents: [{ role: "user", parts: imageGenerationParts }],
             generationConfig: { responseModalities: ["image", "text"] }
           });
 
