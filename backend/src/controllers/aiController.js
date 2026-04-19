@@ -22,6 +22,24 @@ const isTransientModelError = (error) => {
 
 const ALLOWED_IMAGE_PROVIDERS = ["auto", "gemini-only", "pollinations-only"];
 
+const splitModelList = (value = "") =>
+  String(value)
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+const DEFAULT_VISION_MODELS = [
+  "gemini-3.1-pro",
+  "gemini-3.1-flash",
+  "gemini-2.5-flash"
+];
+
+const DEFAULT_IMAGE_MODELS = [
+  "gemini-3-flash-image",
+  "gemini-3.1-flash-image-preview",
+  "gemini-2.5-flash-image"
+];
+
 const maskApiKey = (key = "") => {
   if (!key) return "";
   if (key.length <= 8) return "********";
@@ -195,11 +213,8 @@ export const generatePreview = async (req, res) => {
     const genAI = new GoogleGenerativeAI(API_KEY);
 
     // ── BƯỚC 1: Vision → tạo prompt (cascade fallback) ──
-    const VISION_MODELS = [
-      "gemini-2.0-flash-lite",   // nhẹ nhất, ít bị overload nhất
-      "gemini-2.0-flash-001",    // ổn định, versioned
-      "gemini-2.5-flash",        // mạnh hơn nhưng hay bị 503
-    ];
+    const VISION_MODELS = splitModelList(process.env.GEMINI_VISION_MODELS);
+    const visionModelsToTry = VISION_MODELS.length > 0 ? VISION_MODELS : DEFAULT_VISION_MODELS;
 
     const promptInstructions = `You are a professional floral photographer.
 I provide reference images in this order:
@@ -256,7 +271,7 @@ Return ONLY the prompt text, no explanation.`;
 
     let generatedPrompt = null;
     let usedVisionModel = null;
-    for (const vModel of VISION_MODELS) {
+    for (const vModel of visionModelsToTry) {
       const MAX_VISION_RETRIES = 2;
       const BASE_DELAY_MS = 1200;
 
@@ -324,6 +339,8 @@ Return ONLY the prompt text, no explanation.`;
     let base64Image = null;
     let usedImageModel = null;
     let usedImageBackend = null;
+    const imageModelsFromEnv = splitModelList(process.env.GEMINI_IMAGE_MODELS);
+    const imageModelsToTry = imageModelsFromEnv.length > 0 ? imageModelsFromEnv : DEFAULT_IMAGE_MODELS;
     const shouldTryGeminiImage = imageProvider !== "pollinations-only";
     const shouldTryPollinations = imageProvider !== "gemini-only" && !useStrictReference;
 
@@ -368,12 +385,9 @@ Return ONLY the prompt text, no explanation.`;
     };
 
     if (shouldTryGeminiImage) {
-      // Thử 1: gemini-2.5-flash-image (hỗ trợ image generation, có trong ListModels)
-      base64Image = await generateWithImageModel("gemini-2.5-flash-image");
-
-      // Thử 2: gemini-3.1-flash-image-preview (fallback)
-      if (!base64Image) {
-        base64Image = await generateWithImageModel("gemini-3.1-flash-image-preview");
+      for (const modelName of imageModelsToTry) {
+        base64Image = await generateWithImageModel(modelName);
+        if (base64Image) break;
       }
     }
 
