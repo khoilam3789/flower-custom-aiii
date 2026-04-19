@@ -8,7 +8,7 @@ export default {
     extend: {
       colors: {
         slate: {
-          500: '#5985BC',
+          500: '#598CBC',
         },
         indigo: {
           400: '#7AA5DA',
@@ -29,6 +29,8 @@ export default {
         'Color': '#AF2E38',
         'Color-2': '#598CBC',
         'Color-3': '#FBFAF7',
+        'Color-4': '#F9EEEC',
+        'Color-5': '#F2BEBE',
       },
       fontFamily: {
         'sans': ['Geologica', 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif'],
