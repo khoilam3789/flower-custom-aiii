@@ -9,6 +9,7 @@ export default function Payment() {
   const [summaryItems, setSummaryItems] = useState([]);
   const [selectionBlocks, setSelectionBlocks] = useState([]);
   const [cardMessage, setCardMessage] = useState("");
+  const [fallbackCartItems, setFallbackCartItems] = useState([]);
   const navigate = useNavigate();
   const { addToCart, clearCart } = useCart();
   const { user, token } = useAuth();
@@ -93,15 +94,49 @@ export default function Payment() {
 
       const normalizedCardBlock = normalizedBlocks.find((block) => block.key === "cardSelection");
       setCardMessage(normalizedCardBlock?.message || "");
+
+      if (flattened.length === 0 && user && token) {
+        try {
+          const cartRes = await fetch(`${API_BASE}/api/cart`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+
+          if (cartRes.ok) {
+            const cartData = await cartRes.json();
+            const mappedCartItems = (cartData.items || []).map((item, index) => ({
+              id: item._id || `cart-item-${index}`,
+              group: "Giỏ hàng",
+              label:
+                item?.customDetails?.blocks?.flatMap((block) => block.items || [])?.[0]?.label ||
+                item?.customDetails?.message ||
+                "Sản phẩm tùy chọn",
+              quantity: Number(item.totalQuantity) || 0,
+              lineTotal: Number(item.subTotal) || 0,
+              imageUrl:
+                item?.customDetails?.aiImage ||
+                item?.customDetails?.blocks?.flatMap((block) => block.items || [])?.find((entry) => entry?.imageUrl)?.imageUrl ||
+                ""
+            }));
+
+            setFallbackCartItems(mappedCartItems);
+            setSummaryItems(mappedCartItems);
+          }
+        } catch (_error) {
+          setFallbackCartItems([]);
+        }
+      }
     };
 
     hydrateSelections();
-  }, []);
+  }, [user, token]);
 
-  const subTotal = useMemo(
-    () => selectionBlocks.reduce((sum, block) => sum + block.subtotal, 0),
-    [selectionBlocks]
-  );
+  const subTotal = useMemo(() => {
+    if (selectionBlocks.length > 0) {
+      return selectionBlocks.reduce((sum, block) => sum + block.subtotal, 0);
+    }
+    return fallbackCartItems.reduce((sum, item) => sum + item.lineTotal, 0);
+  }, [selectionBlocks, fallbackCartItems]);
+  const hasCardSelection = selectionBlocks.some((block) => block.key === "cardSelection" && block.items.length > 0);
   const shippingFee = subTotal > 0 ? 30000 : 0;
   const totalPrice = subTotal + shippingFee;
 
@@ -144,6 +179,12 @@ export default function Payment() {
       return;
     }
 
+    if (!hasCardSelection) {
+      alert("Vui lòng chọn thiệp trước khi thanh toán.");
+      navigate("/custom-cards");
+      return;
+    }
+
     if (!user || !token) {
       alert("Vui lòng đăng nhập để thanh toán đơn hàng.");
       navigate("/login");
@@ -151,7 +192,9 @@ export default function Payment() {
     }
 
     try {
-      await addToCart(buildCustomDetails(), 1, subTotal);
+      if (selectionBlocks.length > 0) {
+        await addToCart(buildCustomDetails(), 1, subTotal);
+      }
 
       const res = await fetch(`${API_BASE}/api/orders/checkout`, {
         method: "POST",

@@ -95,6 +95,8 @@ export default function Customcards() {
     }))
     .filter((item) => item.quantity > 0);
 
+  const hasCardSelection = selectedItems.length > 0;
+
   const cardSubtotal = selectedItems.reduce((sum, item) => sum + item.lineTotal, 0);
   const totalSubtotal = previousSubtotal + cardSubtotal;
 
@@ -115,6 +117,11 @@ export default function Customcards() {
   }, [totalSubtotal, counts, message]);
 
   const handleContinue = () => {
+    if (!hasCardSelection) {
+      alert("Vui lòng chọn ít nhất một mẫu thiệp trước khi thanh toán.");
+      return;
+    }
+
     persistSelection();
     navigate('/payment');
   };
@@ -153,7 +160,11 @@ export default function Customcards() {
         <div className="w-52 h-10 left-[296px] top-[472px] absolute text-right justify-center text-white text-3xl font-light font-['Geologica'] leading-10">{formatPrice(totalSubtotal)}</div>
       </div>
 
-      <button onClick={handleContinue} className="w-80 h-24 left-[1000px] top-[830px] absolute block z-10 cursor-pointer bg-transparent border-none">
+      <button
+        onClick={handleContinue}
+        disabled={!hasCardSelection}
+        className={`w-80 h-24 left-[1000px] top-[830px] absolute block z-10 bg-transparent border-none ${hasCardSelection ? "cursor-pointer" : "cursor-not-allowed opacity-60"}`}
+      >
         <div className="w-48 h-12 left-[152px] top-[24px] absolute bg-[#B8DAFF] rounded-[10px]" />
         <div className="left-[192px] top-[35px] absolute text-center justify-center text-[#AF2E38] text-2xl font-normal font-['Geologica'] leading-7 z-20">TIẾP TỤC</div>
       </button>

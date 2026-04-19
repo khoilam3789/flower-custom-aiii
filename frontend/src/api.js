@@ -1,5 +1,21 @@
 const envApiBase = import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_URL;
-export const API_BASE = (envApiBase || (import.meta.env.DEV ? "http://localhost:5000" : "")).replace(/\/$/, "");
+const isBrowser = typeof window !== "undefined";
+const browserOrigin = isBrowser ? window.location.origin : "";
+const browserHostname = isBrowser ? window.location.hostname : "";
+const isLocalHostName = /^(localhost|127\.0\.0\.1)$/i.test(browserHostname);
+const isLocalApiBase = typeof envApiBase === "string" && /^(https?:\/\/)?(localhost|127\.0\.0\.1)(:\d+)?/i.test(envApiBase);
+
+let resolvedApiBase = envApiBase || (import.meta.env.DEV ? "http://localhost:5000" : "");
+
+if (isBrowser && !isLocalHostName && isLocalApiBase) {
+  resolvedApiBase = browserOrigin;
+}
+
+if (isBrowser && !resolvedApiBase) {
+  resolvedApiBase = browserOrigin;
+}
+
+export const API_BASE = resolvedApiBase.replace(/\/$/, "");
 
 export const buildApiUrl = (path) => {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
