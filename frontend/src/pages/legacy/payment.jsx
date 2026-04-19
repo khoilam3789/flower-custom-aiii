@@ -144,6 +144,7 @@ export default function Payment() {
 
   const buildCustomDetails = () => ({
     source: "payment-page",
+    previewImage: localStorage.getItem("customPreviewImage") || localStorage.getItem("aiGeneratedImage") || "",
     aiImage: localStorage.getItem("aiGeneratedImage") || "",
     message: cardMessage,
     blocks: selectionBlocks.map((block) => ({

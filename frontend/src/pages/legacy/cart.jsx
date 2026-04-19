@@ -17,6 +17,9 @@ export default function Cart() {
   };
 
   const resolveItemImage = (item) => {
+    const previewImage = item?.customDetails?.previewImage;
+    if (previewImage) return previewImage;
+
     const aiImage = item?.customDetails?.aiImage;
     if (aiImage) return aiImage;
 
@@ -31,6 +34,9 @@ export default function Cart() {
 
     const latestAiImage = localStorage.getItem("aiGeneratedImage");
     if (latestAiImage) return latestAiImage;
+
+    const latestPreviewImage = localStorage.getItem("customPreviewImage");
+    if (latestPreviewImage) return latestPreviewImage;
 
     return "https://images.unsplash.com/photo-1591886960571-74d43a9d4166?q=80&w=400&auto=format&fit=crop";
   };

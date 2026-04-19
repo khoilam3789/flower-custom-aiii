@@ -145,6 +145,7 @@ export default function CustomPreview() {
           const aiData = await resAi.json();
           if (aiData.imageBase64) {
             setAiImage(aiData.imageBase64);
+            localStorage.setItem('customPreviewImage', aiData.imageBase64);
             localStorage.setItem('aiGeneratedImage', aiData.imageBase64);
             localStorage.setItem('aiGeneratedComboKey', currentComboKey);
             localStorage.setItem('aiGeneratedCacheVersion', previewCacheVersion);
