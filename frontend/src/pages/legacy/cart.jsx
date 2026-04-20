@@ -109,8 +109,8 @@ export default function Cart() {
                 
                 <div className="col-span-6 flex flex-col items-center md:items-start text-sm text-slate-600">
                   <div className="font-bold text-slate-800 mb-2">Gói thiết kế tuỳ chọn</div>
-                  <div className="w-full max-w-[120px] rounded-lg overflow-hidden border border-slate-200 shadow-sm relative pt-[100%] mx-auto md:mx-0">
-                    <img src={resolveItemImage(item)} className="absolute top-0 left-0 w-full h-full object-cover" alt="Gói thiết kế" />
+                  <div className="w-full max-w-[120px] aspect-square rounded-lg overflow-hidden border border-slate-200 shadow-sm mx-auto md:mx-0">
+                    <img src={resolveItemImage(item)} className="w-full h-full object-cover" alt="Gói thiết kế" />
                   </div>
                 </div>
                 

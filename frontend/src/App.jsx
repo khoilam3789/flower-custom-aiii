@@ -48,11 +48,10 @@ const figmaRoutes = [
 export default function App() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin");
-  const isBagGalleryRoute = location.pathname === "/bag-gallery";
 
   return (
     <div className={`min-h-screen flex flex-col font-sans text-ink ${isAdminRoute ? "bg-slate-100" : "bg-Color-3"}`}>
-      {!isAdminRoute && !isBagGalleryRoute && <Header />}
+      {!isAdminRoute && <Header />}
       <main className="flex-grow">
         <Routes>
           <Route path="/admin" element={<AdminDashboard />} />
@@ -63,7 +62,7 @@ export default function App() {
           ))}
         </Routes>
       </main>
-      {!isAdminRoute && !isBagGalleryRoute && <Footer />}
+      {!isAdminRoute && <Footer />}
     </div>
   );
 }
