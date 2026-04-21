@@ -188,7 +188,7 @@ export default function Payment() {
 
     if (!user || !token) {
       alert("Vui lòng đăng nhập để thanh toán đơn hàng.");
-      navigate("/login");
+      navigate("/login?redirect=/payment");
       return;
     }
 

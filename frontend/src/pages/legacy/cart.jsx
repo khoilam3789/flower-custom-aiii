@@ -47,7 +47,7 @@ export default function Cart() {
   const handleCheckout = async () => {
     if (!user) {
       alert("Vui lòng đăng nhập để thanh toán!");
-      navigate('/login');
+      navigate('/login?redirect=/cart');
       return;
     }
     

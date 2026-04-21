@@ -95,7 +95,7 @@ export default function Custombags() {
         quantity: item.quantity,
         lineTotal: item.lineTotal
       })),
-      subtotal: totalSubtotal,
+      subtotal: bagSubtotal,
       updatedAt: Date.now()
     };
     localStorage.setItem(BAG_STORAGE_KEY, JSON.stringify(payload));

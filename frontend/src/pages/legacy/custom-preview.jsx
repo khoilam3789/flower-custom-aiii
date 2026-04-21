@@ -40,23 +40,30 @@ export default function CustomPreview() {
   const [aiImage, setAiImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [totalSubtotal, setTotalSubtotal] = useState(0);
+  const [previewError, setPreviewError] = useState("");
 
   const location = useLocation();
 
   useEffect(() => {
     // 1. Calculate combined subtotal for displaying "Tạm tính"
     let subtotal = 0;
-    const bagRaw = localStorage.getItem('bagSelection');
-    if (bagRaw) {
+    const selectionKeys = ['flowerSelection', 'leafSelection', 'bagSelection'];
+    selectionKeys.forEach((key) => {
+      const raw = localStorage.getItem(key);
+      if (!raw) return;
       try {
-        subtotal = JSON.parse(bagRaw).subtotal || 0;
-      } catch (e) {}
-    }
+        const parsed = JSON.parse(raw);
+        subtotal += Number(parsed?.subtotal) || 0;
+      } catch (_e) {
+        // Ignore malformed data from storage and keep remaining selections.
+      }
+    });
     setTotalSubtotal(subtotal);
 
     // 2. Prepare to fetch AI Preview or load from cache
       const fetchAIImage = async () => {
       setLoading(true);
+      setPreviewError("");
       try {
         // Fetch all products to resolve IDs to ImageUrls
         const resProd = await fetch(`${backendUrl}/api/products`);
@@ -105,6 +112,7 @@ export default function CustomPreview() {
 
         if (flowerUrls.length === 0) {
           console.warn("No flower selected, AI preview needs at least a flower.");
+          setPreviewError("Chưa có dữ liệu hoa để tạo preview.");
           setLoading(false);
           return;
         }
@@ -122,6 +130,7 @@ export default function CustomPreview() {
         if (cachedImage && cachedComboKey === currentComboKey && cachedVersion === previewCacheVersion) {
             console.log("Combo chưa đổi, dùng lại ảnh AI cũ tự động.");
             setAiImage(cachedImage);
+          setPreviewError("");
             setLoading(false);
             return;
         }
@@ -145,16 +154,27 @@ export default function CustomPreview() {
           const aiData = await resAi.json();
           if (aiData.imageBase64) {
             setAiImage(aiData.imageBase64);
+            setPreviewError("");
             localStorage.setItem('customPreviewImage', aiData.imageBase64);
             localStorage.setItem('aiGeneratedImage', aiData.imageBase64);
             localStorage.setItem('aiGeneratedComboKey', currentComboKey);
             localStorage.setItem('aiGeneratedCacheVersion', previewCacheVersion);
           }
         } else {
-          console.error("AI Generation failed:", resAi ? await resAi.text() : "No response from preview API after retries");
+          const rawError = resAi ? await resAi.text() : "No response from preview API after retries";
+          console.error("AI Generation failed:", rawError);
+          setPreviewError("Không thể tạo preview lúc này. Vui lòng thử lại sau ít phút.");
+
+          try {
+            const parsed = JSON.parse(rawError);
+            if (parsed?.message) {
+              setPreviewError(parsed.message);
+            }
+          } catch (_parseError) {}
         }
       } catch (error) {
         console.error("Error setting up AI Preview:", error);
+        setPreviewError("Không thể kết nối server để tạo preview.");
       }
       setLoading(false);
     };
@@ -183,7 +203,7 @@ export default function CustomPreview() {
                <img className="w-full h-full object-contain rounded-[20px]" src={aiImage} alt="AI Bouquet Output" />
             ) : (
                <div className="text-white text-xl font-['Geologica'] pr-8 pl-8 text-center">
-                 Chưa có dữ liệu Hoa để dựng hình AI.<br/>Hãy quay lại chọn Hoa/Lá/Túi trước nhé.
+                 {previewError || "Chưa có dữ liệu Hoa để dựng hình AI."}<br/>Hãy quay lại chọn Hoa/Lá/Túi trước nhé.
                </div>
             )}
         </div>

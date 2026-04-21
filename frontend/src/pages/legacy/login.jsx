@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { API_BASE } from '../../api';
 
@@ -10,6 +10,7 @@ export default function Login() {
 
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const backendUrl = API_BASE;
 
   const handleSubmit = async (e) => {
@@ -24,8 +25,12 @@ export default function Login() {
       const data = await res.json();
       if (res.ok) {
         login(data);
+        const redirectPath = searchParams.get('redirect');
+
         if (data.role === 'admin') {
           navigate('/admin');
+        } else if (redirectPath && redirectPath.startsWith('/')) {
+          navigate(redirectPath);
         } else {
           navigate('/');
         }

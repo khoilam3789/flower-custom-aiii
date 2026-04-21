@@ -29,35 +29,71 @@ export const CartProvider = ({ children }) => {
     }
   }, [user, token]);
 
+  const fetchCartFromServer = async (currentToken = token) => {
+    const res = await fetch(`${backendUrl}/api/cart`, {
+      headers: { Authorization: `Bearer ${currentToken}` },
+    });
+
+    if (!res.ok) {
+      throw new Error('Không thể lấy giỏ hàng từ server');
+    }
+
+    const data = await res.json();
+    return data.items || [];
+  };
+
   const fetchUserCart = async () => {
     try {
-      const res = await fetch(`${backendUrl}/api/cart`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        
-        // Merge giỏ hàng local vào giỏ hàng online nếu có
-        const localCart = JSON.parse(localStorage.getItem('localCart') || '[]');
-        if (localCart.length > 0) {
-          await mergeLocalCartToOnline(localCart, data, token);
+      const serverItems = await fetchCartFromServer(token);
+
+      // Merge giỏ hàng local vào giỏ hàng online nếu có
+      const localCart = JSON.parse(localStorage.getItem('localCart') || '[]');
+      if (localCart.length > 0) {
+        const mergeOk = await mergeLocalCartToOnline(localCart, token);
+
+        if (mergeOk) {
           localStorage.removeItem('localCart');
+          const refreshedItems = await fetchCartFromServer(token);
+          setCartItems(refreshedItems);
         } else {
-          setCartItems(data.items || []);
+          // Giữ localCart để không mất dữ liệu nếu merge thất bại.
+          setCartItems(serverItems);
         }
+      } else {
+        setCartItems(serverItems);
       }
     } catch (error) {
       console.error('Lỗi khi fetch giỏ hàng:', error);
     }
   };
 
-  const mergeLocalCartToOnline = async (localCart, onlineCartData, currentToken) => {
+  const mergeLocalCartToOnline = async (localCart, currentToken) => {
+    let mergedCount = 0;
+
     for (const item of localCart) {
-      await addToCart(item.customDetails, item.totalQuantity, item.itemPrice);
+      try {
+        const res = await fetch(`${backendUrl}/api/cart/add`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${currentToken}`,
+          },
+          body: JSON.stringify({
+            customDetails: item.customDetails,
+            totalQuantity: item.totalQuantity,
+            itemPrice: item.itemPrice,
+          }),
+        });
+
+        if (res.ok) {
+          mergedCount += 1;
+        }
+      } catch (_error) {
+        // Keep going; we only clear local cart when all items are merged.
+      }
     }
-    // Set after merge loop finishes (addToCart updates cartItems)
-    // Actually, calling fetchUserCart again would be better, but we will just fetch again.
-    setTimeout(fetchUserCart, 500); 
+
+    return mergedCount === localCart.length;
   };
 
   const addToCart = async (customDetails, totalQuantity = 1, itemPrice) => {

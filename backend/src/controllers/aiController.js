@@ -187,12 +187,16 @@ export const generatePreview = async (req, res) => {
       return res.status(400).json({ message: "Thiếu ảnh hoa." });
     }
 
-    const API_KEY = geminiApiKey || process.env.GEMINI_API_KEY;
-    if (!API_KEY) {
-      return res.status(500).json({ message: "Thiếu GEMINI_API_KEY trên server." });
+    const API_KEY = String(geminiApiKey || process.env.GEMINI_API_KEY || "").trim();
+    const hasGeminiApiKey = Boolean(API_KEY);
+
+    if (imageProvider === "gemini-only" && !hasGeminiApiKey) {
+      return res.status(500).json({
+        message: "Đang để gemini-only nhưng thiếu GEMINI_API_KEY. Hãy set API key hoặc đổi provider sang auto."
+      });
     }
 
-    const genAI = new GoogleGenerativeAI(API_KEY);
+    const genAI = hasGeminiApiKey ? new GoogleGenerativeAI(API_KEY) : null;
 
     // ── BƯỚC 1: Vision → tạo prompt (cascade fallback) ──
     const VISION_MODELS = [
@@ -236,6 +240,18 @@ Return ONLY the prompt text, no explanation.`;
       `Strict mode: ${useStrictReference ? "ON" : "OFF"}`
     ].join("\n");
 
+    const deterministicFallbackPrompt = [
+      "Hyper-realistic studio product photo of a handcrafted bouquet arrangement.",
+      "Use only the provided flower/leaf/bag references. Do not add extra species, fillers, props, ribbons, or cards.",
+      "Keep full bouquet and full bag visible in frame, wide composition, soft neutral background.",
+      "Flower exact counts:",
+      ...(normalizedFlowerItems.length > 0 ? normalizedFlowerItems.map(formatItemSummaryLine) : ["- none"]),
+      "Leaf exact counts:",
+      ...(normalizedLeafItems.length > 0 ? normalizedLeafItems.map(formatItemSummaryLine) : ["- none"]),
+      `Bag reference: ${normalizedBagItem?.label || "none"}`,
+      `Strict mode: ${useStrictReference ? "ON" : "OFF"}`
+    ].join("\n");
+
     const imageParts = [];
     for (const url of flowerUrls.slice(0, 12)) {
       const fPart = await urlToGenerativePart(url);
@@ -256,7 +272,8 @@ Return ONLY the prompt text, no explanation.`;
 
     let generatedPrompt = null;
     let usedVisionModel = null;
-    for (const vModel of VISION_MODELS) {
+    if (genAI) {
+      for (const vModel of VISION_MODELS) {
       const MAX_VISION_RETRIES = 2;
       const BASE_DELAY_MS = 1200;
 
@@ -288,14 +305,16 @@ Return ONLY the prompt text, no explanation.`;
         }
       }
 
-      if (generatedPrompt) {
-        break;
+        if (generatedPrompt) {
+          break;
+        }
       }
     }
 
     if (!generatedPrompt) {
-      res.set("Retry-After", "30");
-      return res.status(503).json({ message: "Tất cả Vision model đang bận. Vui lòng thử lại sau 30 giây." });
+      generatedPrompt = deterministicFallbackPrompt;
+      usedVisionModel = "deterministic-fallback";
+      console.warn("⚠️ Vision unavailable. Switched to deterministic fallback prompt.");
     }
 
     const hardConstraints = [
@@ -324,8 +343,8 @@ Return ONLY the prompt text, no explanation.`;
     let base64Image = null;
     let usedImageModel = null;
     let usedImageBackend = null;
-    const shouldTryGeminiImage = imageProvider !== "pollinations-only";
-    const shouldTryPollinations = imageProvider !== "gemini-only" && !useStrictReference;
+    const shouldTryGeminiImage = imageProvider !== "pollinations-only" && Boolean(genAI);
+    const shouldTryPollinations = imageProvider !== "gemini-only";
 
     const generateWithImageModel = async (modelName) => {
       const MAX_IMAGE_RETRIES = 1;
@@ -374,6 +393,11 @@ Return ONLY the prompt text, no explanation.`;
       // Thử 2: gemini-3.1-flash-image-preview (fallback)
       if (!base64Image) {
         base64Image = await generateWithImageModel("gemini-3.1-flash-image-preview");
+      }
+
+      // Thử 3: model ổn định hơn cho nhiều project cũ
+      if (!base64Image) {
+        base64Image = await generateWithImageModel("gemini-1.5-flash");
       }
     }
 
