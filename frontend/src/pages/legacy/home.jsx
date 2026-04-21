@@ -204,57 +204,55 @@ export default function Home() {
             
             <div className="flex flex-col space-y-12 md:space-y-6 max-w-5xl mx-auto">
               {/* Review 1 */}
-              <div className="relative w-full max-w-4xl mx-auto mb-10">
-                <div className="text-center md:text-right mb-2 md:w-[85%] md:pr-20">
+              <div className="relative w-full max-w-4xl mx-auto mb-16">
+                <div className="text-center md:text-right mb-4 md:w-4/5 md:pr-12 lg:pr-20">
                   <h4 className="text-rose-700 text-lg md:text-xl font-bold font-['Geologica']">Đỗ Thị Hà - 22 tuổi</h4>
                 </div>
-                <div className="relative flex flex-col md:flex-row items-center justify-start">
-                  <div className="bg-[#E5E5E5] rounded-xl p-6 md:p-8 pt-16 md:pt-8 md:pr-36 w-full md:w-[85%] shadow-sm order-last md:order-first mt-[-40px] md:mt-0 relative z-0">
-                    <p className="text-[#444] text-sm md:text-[15px] font-light font-['Geologica'] italic leading-loose text-justify md:text-left">
+                <div className="relative w-full flex flex-col md:flex-row items-center md:justify-start">
+                  <div className="relative z-10 flex flex-col items-center md:absolute md:right-0 lg:right-4 md:top-1/2 md:-translate-y-1/2">
+                    <img src="/images/anhnguoi/1.jpg" className="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover border-[4px] border-[#FBFAF7] shadow-sm mb-2" alt="Review 1" />
+                    <span className="text-rose-700 text-xs md:text-[15px] font-bold font-['Geologica']">Sinh viên</span>
+                  </div>
+                  <div className="bg-zinc-100/90 backdrop-blur-md rounded-2xl p-6 md:p-8 md:pr-40 w-full md:w-4/5 shadow-md -mt-12 md:mt-0 relative z-0 border border-zinc-200/50">
+                    <p className="text-slate-700 text-sm md:text-base font-light font-['Geologica'] italic leading-loose text-justify md:text-left pt-14 md:pt-0">
                       Túi giữ form hoa rất tốt, nhìn gọn gàng và tinh tế hơn nhiều. Mình mang đi chụp ảnh thấy tổng thể đẹp hơn hẳn, không còn cảm giác cầm bó hoa bị “lạc quẻ” nữa. Quan trọng là bó hoa vẫn giữ được vẻ đẹp ban đầu, nhìn lúc nào cũng chỉn chu.
                     </p>
-                  </div>
-                  <div className="md:absolute right-0 md:right-4 flex flex-col items-center relative z-10 mb-4 md:mb-0">
-                    <img src="/images/anhnguoi/1.jpg" className="w-[80px] h-[80px] md:w-[130px] md:h-[130px] rounded-full object-cover border-[4px] md:border-[6px] border-[#FBFAF7] shadow-sm mb-2" />
-                    <span className="text-rose-700 text-xs md:text-[15px] font-bold font-['Geologica'] mt-1 hidden md:block">Sinh viên</span>
                   </div>
                 </div>
               </div>
 
               {/* Review 2 */}
-              <div className="relative w-full max-w-4xl mx-auto mb-10">
-                <div className="text-center md:text-left mb-2 md:flex md:justify-end">
-                  <div className="md:w-[85%] md:pl-20 text-center md:text-left">
-                    <h4 className="text-rose-700 text-lg md:text-xl font-bold font-['Geologica']">Trần Thanh Tú - 25 tuổi</h4>
-                  </div>
+              <div className="relative w-full max-w-4xl mx-auto mb-16">
+                <div className="text-center md:text-left mb-4 md:w-4/5 md:ml-auto md:pl-12 lg:pl-20">
+                  <h4 className="text-rose-700 text-lg md:text-xl font-bold font-['Geologica']">Trần Thanh Tú - 25 tuổi</h4>
                 </div>
-                <div className="relative flex flex-col md:flex-row items-center justify-end">
-                  <div className="bg-[#E5E5E5] rounded-xl p-6 md:p-8 pt-16 md:pt-8 md:pl-36 w-full md:w-[85%] shadow-sm order-last md:order-last mt-[-40px] md:mt-0 relative z-0">
-                    <p className="text-[#444] text-sm md:text-[15px] font-light font-['Geologica'] italic leading-loose text-center md:text-left">
+                <div className="relative w-full flex flex-col md:flex-row items-center md:justify-end">
+                  <div className="relative z-10 flex flex-col items-center md:absolute md:left-0 lg:left-4 md:top-1/2 md:-translate-y-1/2">
+                    <img src="/images/anhnguoi/2.jpg" className="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover border-[4px] border-[#FBFAF7] shadow-sm mb-2" alt="Review 2" />
+                    <span className="text-rose-700 text-xs md:text-[15px] font-bold font-['Geologica']">Lập trình viên</span>
+                  </div>
+                  <div className="bg-zinc-100/90 backdrop-blur-md rounded-2xl p-6 md:p-8 md:pl-40 w-full md:w-4/5 shadow-md -mt-12 md:mt-0 relative z-0 border border-zinc-200/50">
+                    <p className="text-slate-700 text-sm md:text-base font-light font-['Geologica'] italic leading-loose text-justify md:text-left pt-14 md:pt-0">
                       Lần đầu tặng hoa mà thấy thật sự có ý nghĩa. Mình chọn hoa hồng đỏ vì muốn nói điều mà bình thường khó nói thành lời. Lúc trao hoa, thấy người ấy hiểu ngay ý mình mà không cần nói nhiều. Có thêm túi nên mọi thứ gọn gàng, tinh tế hơn với bạn ấy, không cần cầm cả bó vướng víu.
                     </p>
-                  </div>
-                  <div className="md:absolute left-0 md:left-4 flex flex-col items-center relative z-10 mb-4 md:mb-0 order-first md:order-first">
-                    <img src="/images/anhnguoi/2.jpg" className="w-[80px] h-[80px] md:w-[130px] md:h-[130px] rounded-full object-cover border-[4px] md:border-[6px] border-[#FBFAF7] shadow-sm mb-2" />
-                    <span className="text-rose-700 text-xs md:text-[15px] font-bold font-['Geologica'] mt-1 hidden md:block">Lập trình viên</span>
                   </div>
                 </div>
               </div>
 
               {/* Review 3 */}
               <div className="relative w-full max-w-4xl mx-auto mb-10">
-                <div className="text-center md:text-right mb-2 md:w-[85%] md:pr-20">
+                <div className="text-center md:text-right mb-4 md:w-4/5 md:pr-12 lg:pr-20">
                   <h4 className="text-rose-700 text-lg md:text-xl font-bold font-['Geologica']">Ngô Thuỳ Linh - 30 tuổi</h4>
                 </div>
-                <div className="relative flex flex-col md:flex-row items-center justify-start">
-                  <div className="bg-[#E5E5E5] rounded-xl p-6 md:p-8 pt-16 md:pt-8 md:pr-36 w-full md:w-[85%] shadow-sm order-last md:order-first mt-[-40px] md:mt-0 relative z-0">
-                    <p className="text-[#444] text-sm md:text-[15px] font-light font-['Geologica'] italic leading-loose text-justify md:text-left">
+                <div className="relative w-full flex flex-col md:flex-row items-center md:justify-start">
+                  <div className="relative z-10 flex flex-col items-center md:absolute md:right-0 lg:right-4 md:top-1/2 md:-translate-y-1/2">
+                    <img src="/images/anhnguoi/3.jpg" className="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover border-[4px] border-[#FBFAF7] shadow-sm mb-2" alt="Review 3" />
+                    <span className="text-rose-700 text-xs md:text-[15px] font-bold font-['Geologica']">Doanh nhân</span>
+                  </div>
+                  <div className="bg-zinc-100/90 backdrop-blur-md rounded-2xl p-6 md:p-8 md:pr-40 w-full md:w-4/5 shadow-md -mt-12 md:mt-0 relative z-0 border border-zinc-200/50">
+                    <p className="text-slate-700 text-sm md:text-base font-light font-['Geologica'] italic leading-loose text-justify md:text-left pt-14 md:pt-0">
                       Ban đầu mình chỉ định đặt nhanh một bó hoa thôi, nhưng lúc được tự mình chọn từng loại hoa, màu sắc với ý nghĩa, tự nhiên thấy rất thú vị. Cảm giác như mình đang tự tay “thiết kế” một bó hoa mang đúng thông điệp của mình vậy.
                     </p>
-                  </div>
-                  <div className="md:absolute right-0 md:right-4 flex flex-col items-center relative z-10 mb-4 md:mb-0">
-                    <img src="/images/anhnguoi/3.jpg" className="w-[80px] h-[80px] md:w-[130px] md:h-[130px] rounded-full object-cover border-[4px] md:border-[6px] border-[#FBFAF7] shadow-sm mb-2" />
-                    <span className="text-rose-700 text-xs md:text-[15px] font-bold font-['Geologica'] mt-1 hidden md:block">Doanh nhân</span>
                   </div>
                 </div>
               </div>

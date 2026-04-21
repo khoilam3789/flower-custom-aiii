@@ -115,7 +115,7 @@ export default function Custombags() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-Color-3 flex flex-col font-['Geologica']">
+    <div className="w-full min-h-screen bg-Color-3 flex flex-col font-['Geologica'] overflow-x-hidden">
       <StepBar currentStep={3} />
 
       {/* Main Content Area */}

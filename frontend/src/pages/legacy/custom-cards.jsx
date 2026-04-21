@@ -128,7 +128,7 @@ export default function Customcards() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-Color-3 flex flex-col font-['Geologica']">
+    <div className="w-full min-h-screen bg-Color-3 flex flex-col font-['Geologica'] overflow-x-hidden">
       <StepBar currentStep={5} />
 
       {/* Main Content Area */}
