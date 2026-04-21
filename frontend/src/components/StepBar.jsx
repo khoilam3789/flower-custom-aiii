@@ -12,13 +12,12 @@ export default function StepBar({ currentStep }) {
   ];
 
   return (
-    <div className="w-full py-6 md:py-10 mt-2 md:mt-0 relative overflow-hidden">
-      {/* Container có thể cuộn ngang trên mobile */}
-      <div className="max-w-[1000px] mx-auto relative overflow-x-auto scrollbar-hide px-6 md:px-12">
-        <div className="min-w-[600px] md:min-w-0 w-full relative">
+    <div className="w-full py-4 md:py-10 mt-2 md:mt-0 relative">
+      <div className="max-w-[1000px] mx-auto relative px-2 md:px-12">
+        <div className="w-full relative">
           
           {/* Horizontal Line Connecting All Steps */}
-          <div className="absolute top-[20px] md:top-[28px] left-[5%] right-[5%] h-[1px] bg-black z-0"></div>
+          <div className="absolute top-[16px] md:top-[28px] left-[8%] right-[8%] h-[1px] bg-black z-0"></div>
 
           <div className="flex flex-row justify-between items-start md:items-center relative z-10 w-full">
             {steps.map((step, index) => {
@@ -33,11 +32,11 @@ export default function StepBar({ currentStep }) {
               const wrapperProps = (isCompleted || isActive) ? { to: step.path } : {};
 
               return (
-                <StepWrapper key={step.id} {...wrapperProps} className="flex flex-col items-center gap-2 group cursor-pointer w-16 md:w-24">
-                  <div className="flex flex-col items-center relative h-12 md:h-16 justify-center">
+                <StepWrapper key={step.id} {...wrapperProps} className="flex flex-col items-center gap-1 md:gap-2 group cursor-pointer flex-1">
+                  <div className="flex flex-col items-center relative h-8 md:h-16 justify-center">
                     {step.isAI ? (
-                        <div className={`w-10 h-10 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-transform ${isActive ? 'scale-110 shadow-md ring-2 ring-offset-2 ring-[#AF2E38]' : ''}`} style={{ backgroundColor: circleBg }}>
-                          <svg width="20" height="20" className="md:w-[26px] md:h-[26px]" viewBox="0 0 24 24" fill="none" stroke={isActive || isCompleted ? "white" : "#4A90C4"} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+                        <div className={`w-8 h-8 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-transform ${isActive ? 'scale-110 shadow-md ring-2 ring-offset-2 ring-[#AF2E38]' : ''}`} style={{ backgroundColor: circleBg }}>
+                          <svg width="16" height="16" className="md:w-[26px] md:h-[26px]" viewBox="0 0 24 24" fill="none" stroke={isActive || isCompleted ? "white" : "#4A90C4"} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
                             <circle cx="12" cy="12" r="2"/>
                             <ellipse cx="12" cy="6" rx="1.8" ry="3"/>
                             <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(60 12 12)"/>
@@ -48,11 +47,11 @@ export default function StepBar({ currentStep }) {
                           </svg>
                         </div>
                       ) : (
-                        <div className={`w-10 h-10 md:w-14 md:h-14 rounded-full transition-transform ${isActive ? 'scale-110 shadow-md ring-2 ring-offset-2 ring-[#AF2E38]' : ''}`} style={{ backgroundColor: circleBg }}></div>
+                        <div className={`w-8 h-8 md:w-14 md:h-14 rounded-full transition-transform ${isActive ? 'scale-110 shadow-md ring-2 ring-offset-2 ring-[#AF2E38]' : ''}`} style={{ backgroundColor: circleBg }}></div>
                       )
                     }
                   </div>
-                  <div className={`text-sm md:text-xl font-extralight font-['Geologica'] transition-colors text-center mt-1 md:mt-2 -ml-4 -mr-4 ${isActive ? 'font-medium' : ''}`} style={{ color: isActive ? '#AF2E38' : 'black' }}>
+                  <div className={`text-[10px] sm:text-xs md:text-xl font-extralight font-['Geologica'] transition-colors text-center mt-1 md:mt-2 -ml-2 -mr-2 md:-ml-4 md:-mr-4 leading-tight ${isActive ? 'font-medium' : ''}`} style={{ color: isActive ? '#AF2E38' : 'black' }}>
                     {step.name}
                   </div>
                 </StepWrapper>
