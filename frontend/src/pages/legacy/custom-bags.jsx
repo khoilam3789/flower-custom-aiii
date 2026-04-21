@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { API_BASE } from '../../api';
+import StepBar from '../../components/StepBar';
 
 export default function Custombags() {
   const LEAF_STORAGE_KEY = 'leafSelection';
@@ -114,164 +115,116 @@ export default function Custombags() {
   };
 
   return (
-<div className="w-full overflow-x-auto overflow-y-visible py-4">
-<div
-  className="relative mx-auto inline-flex flex-col justify-start items-center overflow-hidden bg-Color-3 px-10"
-  style={{ width: 1440, minWidth: 1440, height: 1000 }}
->
-  
-  <div className="w-[525px] h-[532px] left-[816px] top-[280px] absolute bg-white rounded-[10px] outline outline-1 outline-offset-[-1px] outline-[#AF2E38] overflow-hidden">
-    <div className="w-[477px] h-[340px] left-[24px] top-[26px] absolute overflow-y-auto overflow-x-hidden scrollbar-hide pr-3">
-      {previousItems.length === 0 && selectedItems.length === 0 ? (
-        <div className="h-full flex items-center justify-center text-center text-zinc-400 text-base font-light font-['Geologica'] leading-6">
-          Chưa có gì được chọn
-        </div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {/* Hiển thị hoa + lá đã chọn từ trang trước */}
-          {previousItems.map((item) => (
-            <div key={item.key} className="w-full px-4 py-3 bg-[#FAF9F5] rounded-lg flex items-center justify-between">
-              <span className="text-[#AF2E38] text-lg font-normal font-['Geologica'] leading-6">x{item.quantity} {item.label}</span>
-              <span className="text-[#AF2E38] text-lg font-semibold font-['Geologica'] leading-6">{formatPrice(item.lineTotal)}</span>
-            </div>
-          ))}
-          {/* Hiển thị túi đã chọn */}
-          {selectedItems.map((item) => (
-            <div key={item.key} className="w-full px-4 py-3 bg-[#FAF9F5] rounded-lg flex items-center justify-between">
-              <span className="text-[#AF2E38] text-lg font-normal font-['Geologica'] leading-6">x{item.quantity} {item.label}</span>
-              <span className="text-[#AF2E38] text-lg font-semibold font-['Geologica'] leading-6">{formatPrice(item.lineTotal)}</span>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-    <div className="w-[619px] h-36 left-0 top-[404px] absolute bg-[#AF2E38] rounded-[10px]" />
-    <div className="w-40 h-10 left-[16px] top-[472px] absolute text-center justify-center text-white text-xl font-semibold font-['Geologica'] leading-10">Tạm tính</div>
-    <div className="w-52 h-10 left-[296px] top-[472px] absolute text-right justify-center text-white text-3xl font-light font-['Geologica'] leading-10">{formatPrice(totalSubtotal)}</div>
-  </div>
+    <div className="w-full min-h-screen bg-Color-3 flex flex-col font-['Geologica']">
+      <StepBar currentStep={3} />
 
-  <div className="w-[623px] h-[621px] left-[120px] top-[280px] absolute bg-[#AF2E38] rounded-[20px] outline outline-1 outline-offset-[-1px] outline-[#AF2E38] overflow-y-auto overflow-x-hidden scrollbar-hide scroll-smooth py-6 px-4">
-    <div className="flex flex-wrap justify-center gap-x-1 gap-y-2 w-full">
-      {products.map((bag) => (
-         <div
-           key={bag._id}
-           className="relative w-[256px] min-w-[256px] h-[320px] flex-none flex flex-col items-center cursor-pointer"
-           style={{ overflow: 'hidden' }}
-           onClick={() => toggleSelection(bag._id)}
-         >
-            {/* Background base */}
-            <img className="absolute top-0 w-[256px] h-[320px] drop-shadow-md z-0" src="/images/CustomizeHoa/nenhoa.png" alt="nen" />
-            
-            {/* Inner Content - natural top-to-bottom flow */}
-            <div className="absolute inset-0 flex flex-col z-10 pointer-events-none" style={{ padding: '24px 20px 20px 20px', gap: '8px', overflow: 'hidden' }}>
-               {/* Price */}
-               <div className="pointer-events-auto" style={{ fontSize: '12px', fontWeight: '700', fontStyle: 'italic', color: '#AF2E38', paddingLeft: '14px' }}>
-                 {new Intl.NumberFormat('vi-VN').format(bag.price)} VNĐ
-               </div>
-               
-               {/* Image */}
-               <div className="flex justify-center items-center pointer-events-auto" style={{ height: '152px' }}>
-                 <img className="object-contain hover:scale-105 transition" style={{ height: '150px', width: 'auto' }} src={bag.imageUrl} alt={bag.name} />
-               </div>
-               
-               {/* Name */}
-               <div className="text-center pointer-events-auto" style={{ color: '#3B73A9', fontSize: '15px', fontWeight: '700', fontFamily: 'Geologica', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                 {bag.name}
-               </div>
-               
-               {/* Description */}
-               <div style={{ color: '#444', fontSize: '11px', fontStyle: 'italic', fontFamily: 'Geologica', lineHeight: '1.35', whiteSpace: 'normal', wordBreak: 'break-word', overflowWrap: 'break-word', overflow: 'hidden', textAlign: 'center', maxHeight: '42px', width: '100%', boxSizing: 'border-box', padding: '0 18px' }}>
-                 {bag.description?.substring(0, 25)}{bag.description?.length > 25 ? '...' : ''}
-               </div>
-               
-               {/* Radio Checkbox - góc trên trái giống trang lá */}
-               <div
-                 onClick={(e) => {
-                   e.stopPropagation();
-                   toggleSelection(bag._id);
-                 }}
-                 className="pointer-events-auto"
-                 style={{
-                   position: 'absolute', top: '52px', left: '62px',
-                   width: '22px', height: '22px', borderRadius: '50%', cursor: 'pointer',
-                   border: counts[bag._id] ? '2px solid #3B73A9' : '2px solid #ccc',
-                   background: 'white',
-                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                   transition: 'all 0.2s',
-                   boxShadow: counts[bag._id] ? '0 0 0 3px rgba(59,115,169,0.15)' : 'none',
-                   zIndex: 30
-                 }}
-               >
-                 {counts[bag._id] && (
-                   <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#3B73A9' }}></div>
-                 )}
-               </div>
-            </div>
-         </div>
-      ))}
-    </div>
-  </div>
+      {/* Main Content Area */}
+      <div className="flex flex-col lg:flex-row gap-6 p-4 md:p-8 lg:p-12 max-w-[1280px] mx-auto w-full flex-grow">
+        
+        {/* Panel Chọn Túi (Bên trái) */}
+        <div className="w-full lg:w-[60%] bg-[#AF2E38] rounded-[20px] p-4 md:p-6 overflow-y-auto max-h-[60vh] md:max-h-[70vh] scrollbar-hide shadow-inner">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 justify-items-center">
+            {products.map((bag) => (
+              <div 
+                key={bag._id} 
+                className="relative w-full max-w-[260px] aspect-[260/330] flex flex-col items-center overflow-hidden rounded-xl bg-white shadow-md transition-transform hover:shadow-lg cursor-pointer"
+                onClick={() => toggleSelection(bag._id)}
+              >
+                {/* Background base */}
+                <img className="absolute top-0 w-full h-full object-cover z-0" src="/images/CustomizeHoa/nenhoa.png" alt="nen" />
+                
+                {/* Inner Content */}
+                <div className="absolute inset-0 flex flex-col z-10 p-4 gap-2">
+                   {/* Price */}
+                   <div className="text-[13px] font-bold italic text-[#AF2E38] pl-2 z-20">
+                     {new Intl.NumberFormat('vi-VN').format(bag.price)} VNĐ
+                   </div>
+                   
+                   {/* Image */}
+                   <div className="flex justify-center items-center h-[40%] md:h-[45%] z-20">
+                     <img className="object-contain hover:scale-105 transition h-full" src={bag.imageUrl} alt={bag.name} />
+                   </div>
+                   
+                   {/* Name */}
+                   <div className="text-center text-[#3B73A9] text-base md:text-[17px] font-bold truncate px-2 z-20">
+                     {bag.name}
+                   </div>
+                   
+                   {/* Description */}
+                   <div className="text-[#444] text-xs italic leading-tight text-center line-clamp-2 px-2 z-20">
+                     {bag.description}
+                   </div>
 
-  <div className="w-[1131px] h-28 left-[150px] top-[135px] absolute overflow-hidden">
-    <div className="w-[982px] h-[1px] left-[70px] top-[47px] absolute bg-black"></div>
-    {/* Bước 1: Hoa (Completed) */}
-    <Link to="/custom-flowers" state={{ back: true }} className="absolute left-[50px] top-[27px]">
-      <div className="w-10 h-10 bg-[#AF2E38] rounded-full cursor-pointer"></div>
-    </Link>
-    <Link to="/custom-flowers" state={{ back: true }} className="absolute left-[39px] top-[75px]">
-      <div className="w-16 h-6 text-center text-black text-2xl font-extralight font-['Geologica'] leading-9 cursor-pointer">Hoa</div>
-    </Link>
-    {/* Bước 2: Lá (Completed) */}
-    <Link to="/custom-leaves" state={{ back: true }} className="absolute left-[290px] top-[25px]">
-      <div className="w-10 h-10 bg-[#AF2E38] rounded-full cursor-pointer"></div>
-    </Link>
-    <Link to="/custom-leaves" state={{ back: true }} className="absolute left-[281px] top-[75px]">
-      <div className="w-16 h-6 text-center text-black text-2xl font-extralight font-['Geologica'] leading-9 cursor-pointer">Lá</div>
-    </Link>
-    {/* Bước 3: Túi (active) */}
-    <Link to="/custom-bags" className="absolute left-[538px] top-[25px]">
-      <div className="w-10 h-10 bg-[#AF2E38] rounded-full cursor-pointer"></div>
-    </Link>
-    <Link to="/custom-bags" className="absolute left-[526px] top-[75px]">
-      <div className="w-16 h-6 text-center text-[#AF2E38] text-2xl font-extralight font-['Geologica'] leading-9 cursor-pointer">Túi</div>
-    </Link>
-    {/* Bước 4: Xem trước (AI) */}
-    <div className="absolute left-[620px] top-[15px] z-20">
-      <div className="w-16 h-16 bg-[#B8DAFF] rounded-full flex items-center justify-center">
-        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#4A90C4" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="2"/>
-          <ellipse cx="12" cy="6" rx="1.8" ry="3"/>
-          <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(60 12 12)"/>
-          <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(120 12 12)"/>
-          <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(180 12 12)"/>
-          <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(240 12 12)"/>
-          <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(300 12 12)"/>
-        </svg>
+                   {/* Custom Checkbox */}
+                   <div
+                     onClick={(e) => {
+                       e.stopPropagation();
+                       toggleSelection(bag._id);
+                     }}
+                     className="absolute top-[52px] left-[62px] w-[22px] h-[22px] rounded-full cursor-pointer flex items-center justify-center transition-all duration-200 z-30"
+                     style={{
+                       border: counts[bag._id] ? '2px solid #3B73A9' : '2px solid #ccc',
+                       background: 'white',
+                       boxShadow: counts[bag._id] ? '0 0 0 3px rgba(59,115,169,0.15)' : 'none',
+                     }}
+                   >
+                     {counts[bag._id] === 1 && (
+                       <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#3B73A9' }}></div>
+                     )}
+                   </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Panel Tạm tính (Bên phải) */}
+        <div className="w-full lg:w-[40%] bg-white rounded-[10px] border border-[#AF2E38] flex flex-col overflow-hidden shadow-sm h-[400px] lg:h-auto">
+          {/* List Items */}
+          <div className="flex-grow overflow-y-auto scrollbar-hide p-4 md:p-6">
+            {previousItems.length === 0 && selectedItems.length === 0 ? (
+              <div className="h-full flex items-center justify-center text-center text-zinc-400 text-base font-light">
+                Chưa có gì được chọn
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {/* Hiển thị hoa + lá đã chọn từ trang trước */}
+                {previousItems.map((item) => (
+                  <div key={item.key} className="w-full px-4 py-3 bg-[#FAF9F5] rounded-lg flex items-center justify-between border border-rose-50 shadow-sm opacity-80">
+                    <span className="text-[#AF2E38] text-base md:text-lg font-normal break-words max-w-[60%]">x{item.quantity} {item.label}</span>
+                    <span className="text-[#AF2E38] text-base md:text-lg font-semibold whitespace-nowrap">{formatPrice(item.lineTotal)}</span>
+                  </div>
+                ))}
+                {/* Hiển thị túi đã chọn */}
+                {selectedItems.map((item) => (
+                  <div key={item.key} className="w-full px-4 py-3 bg-[#FAF9F5] rounded-lg flex items-center justify-between border border-rose-50 shadow-sm">
+                    <span className="text-[#AF2E38] text-base md:text-lg font-normal break-words max-w-[60%]">x{item.quantity} {item.label}</span>
+                    <span className="text-[#AF2E38] text-base md:text-lg font-semibold whitespace-nowrap">{formatPrice(item.lineTotal)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          {/* Total Bar */}
+          <div className="bg-[#AF2E38] p-4 md:p-6 text-white flex justify-between items-center rounded-b-lg">
+            <span className="text-xl md:text-3xl font-semibold">Tạm tính</span>
+            <span className="text-xl md:text-3xl font-light">{new Intl.NumberFormat('vi-VN').format(totalSubtotal)}đ</span>
+          </div>
+        </div>
+
       </div>
-    </div>
-    <div className="w-24 h-6 left-[600px] top-[75px] absolute text-center justify-center text-black text-xl font-extralight font-['Geologica'] leading-9">Xem Trước</div>
 
-    {/* Bước 5: Thiệp */}
-    <div className="absolute left-[785px] top-[25px]">
-      <div className="w-10 h-10 bg-[#B8DAFF] rounded-full"></div>
-    </div>
-    <div className="absolute left-[770px] top-[75px]">
-      <div className="w-16 h-6 text-center text-black text-2xl font-extralight font-['Geologica'] leading-9">Thiệp</div>
-    </div>
-    {/* Bước 6: Thanh toán */}
-    <div className="absolute left-[1032px] top-[25px]">
-      <div className="w-10 h-10 bg-[#B8DAFF] rounded-full"></div>
-    </div>
-    <div className="absolute left-[982px] top-[75px]">
-      <div className="w-32 h-6 text-center text-black text-2xl font-extralight font-['Geologica'] leading-9">Thanh toán</div>
-    </div>
-  </div>
+      {/* Continue Button */}
+      <div className="flex justify-center md:justify-end px-4 md:px-12 pb-12 pt-4">
+        <button 
+          onClick={handleContinue} 
+          className="bg-[#B8DAFF] text-[#AF2E38] text-xl md:text-2xl font-normal py-3 px-8 rounded-[10px] hover:bg-blue-200 transition-colors shadow-md w-full md:w-auto text-center"
+        >
+          TIẾP TỤC
+        </button>
+      </div>
 
-  <button onClick={handleContinue} className="absolute" style={{ right: '60px', top: '830px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', cursor: 'pointer' }}>
-    <div style={{ background: '#B8DAFF', borderRadius: '10px', padding: '12px 28px', color: '#AF2E38', fontSize: '24px', fontFamily: 'Geologica', fontWeight: '400', whiteSpace: 'nowrap' }}>TIẾP TỤC</div>
-  </button>
-  
-</div>
-</div>
+    </div>
   );
 }

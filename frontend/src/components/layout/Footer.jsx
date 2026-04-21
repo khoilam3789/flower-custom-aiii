@@ -6,10 +6,10 @@ export default function Footer() {
 
   return (
     <footer id="contact-footer" className="w-full bg-slate-500 pb-12 pt-12 md:pt-16">
-      <div className="max-w-[1280px] mx-auto px-6 md:px-12 lg:px-24 flex flex-col lg:flex-row justify-between text-white gap-10 lg:gap-8 border-[10px] border-slate-500 rounded-lg">
+      <div className="max-w-[1280px] mx-auto px-6 md:px-12 lg:px-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 text-white gap-10 lg:gap-8 border-[10px] border-slate-500 rounded-lg">
         
         {/* Branch 1: Logo & Mission */}
-        <div className="flex flex-col space-y-6 w-full lg:w-1/4 pr-0 lg:pr-8">
+        <div className="flex flex-col space-y-6 pr-0 lg:pr-8">
           <div className="flex items-center space-x-4">
             <img src="/images/home/temfooter.png" alt="Dear Cherie Stamp" className="w-24 md:w-28 h-auto object-contain" />
           </div>
@@ -20,7 +20,7 @@ export default function Footer() {
         </div>
 
         {/* Branch 2: Contact Info */}
-        <div className="flex flex-col space-y-4 w-full lg:w-1/4">
+        <div className="flex flex-col space-y-4">
           <h3 className="font-bold text-lg md:text-xl uppercase tracking-wider mb-2">Thông Tin Liên Hệ</h3>
           <div>
             <p className="text-rose-700 font-bold text-sm">HOTLINE:</p>
@@ -38,7 +38,7 @@ export default function Footer() {
         </div>
 
         {/* Branch 3: Quick Links */}
-        <div className="flex flex-col space-y-4 w-full lg:w-1/4">
+        <div className="flex flex-col space-y-4">
           <h3 className="font-bold text-lg md:text-xl uppercase tracking-wider mb-2">Trang Chủ</h3>
           <Link to="/about" className="font-light hover:underline">Về Chúng Tôi</Link>
           <Link to="/custom-flowers" className="font-light hover:underline">Thiết Kế Túi</Link>
@@ -49,7 +49,7 @@ export default function Footer() {
         </div>
 
         {/* Branch 4: Newsletter & Addr */}
-        <div className="flex flex-col space-y-6 w-full lg:w-1/4">
+        <div className="flex flex-col space-y-6">
           <h3 className="font-bold text-lg md:text-xl uppercase tracking-wider mb-2">Đăng Ký</h3>
           <p className="font-light text-sm opacity-90 leading-relaxed">
             Nhận ngay ưu đãi 10% cho đơn hàng đầu tiên khi đăng ký bản tin của chúng tôi

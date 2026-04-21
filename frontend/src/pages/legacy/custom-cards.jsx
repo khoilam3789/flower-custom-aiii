@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { API_BASE } from '../../api';
+import StepBar from '../../components/StepBar';
 
 export default function Customcards() {
   const FLOWER_STORAGE_KEY = 'flowerSelection';
@@ -127,192 +128,150 @@ export default function Customcards() {
   };
 
   return (
-    <div className="w-full overflow-x-auto overflow-y-visible py-4">
-      <div
-        className="relative mx-auto inline-flex flex-col justify-start items-center overflow-hidden bg-Color-3 px-10"
-        style={{ width: 1440, minWidth: 1440, height: 1200 }}
-      >
-      
-      {/* Right Pane Summary */}
-      <div className="w-[525px] h-[532px] left-[816px] top-[280px] absolute bg-white rounded-[10px] outline outline-1 outline-offset-[-1px] outline-[#AF2E38] overflow-hidden">
-        <div className="w-[477px] h-[340px] left-[24px] top-[26px] absolute overflow-y-auto overflow-x-hidden scrollbar-hide pr-3">
-          {previousItems.length === 0 && selectedItems.length === 0 ? (
-            <div className="h-full flex items-center justify-center text-center text-zinc-400 text-base font-light font-['Geologica'] leading-6">
-              Chưa có gì được chọn
-            </div>
-          ) : (
-            <div className="flex flex-col gap-3">
-              {/* Hiển thị các mục đã chọn từ trang trước */}
-              {previousItems.map((item) => (
-                <div key={item.key} className="w-full px-4 py-3 bg-[#FAF9F5] rounded-lg flex items-center justify-between">
-                  <span className="text-[#AF2E38] text-lg font-normal font-['Geologica'] leading-6">x{item.quantity} {item.label}</span>
-                  <span className="text-[#AF2E38] text-lg font-semibold font-['Geologica'] leading-6">{formatPrice(item.lineTotal)}</span>
-                </div>
-              ))}
-              {/* Hiển thị thiệp đã chọn */}
-              {selectedItems.map((item) => (
-                <div key={item.key} className="w-full px-4 py-3 bg-[#FAF9F5] rounded-lg flex items-center justify-between">
-                  <span className="text-[#AF2E38] text-lg font-normal font-['Geologica'] leading-6">x{item.quantity} {item.label}</span>
-                  <span className="text-[#AF2E38] text-lg font-semibold font-['Geologica'] leading-6">{formatPrice(item.lineTotal)}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="w-[619px] h-36 left-0 top-[404px] absolute bg-[#AF2E38] rounded-[10px]" />
-        <div className="w-40 h-10 left-[16px] top-[472px] absolute text-center justify-center text-white text-xl font-semibold font-['Geologica'] leading-10">Tạm tính</div>
-        <div className="w-52 h-10 left-[296px] top-[472px] absolute text-right justify-center text-white text-3xl font-light font-['Geologica'] leading-10">{formatPrice(totalSubtotal)}</div>
-      </div>
+    <div className="w-full min-h-screen bg-Color-3 flex flex-col font-['Geologica']">
+      <StepBar currentStep={5} />
 
-      <button
-        onClick={handleContinue}
-        disabled={!hasCardSelection}
-        className={`w-80 h-24 left-[1000px] top-[830px] absolute block z-10 bg-transparent border-none ${hasCardSelection ? "cursor-pointer" : "cursor-not-allowed opacity-60"}`}
-      >
-        <div className="w-48 h-12 left-[152px] top-[24px] absolute bg-[#B8DAFF] rounded-[10px]" />
-        <div className="left-[192px] top-[35px] absolute text-center justify-center text-[#AF2E38] text-2xl font-normal font-['Geologica'] leading-7 z-20">TIẾP TỤC</div>
-      </button>
-
-      {/* Left Pane Part 1: Top Cards Area */}
-      <div className="w-[703px] h-[260px] left-[61px] top-[260px] absolute bg-[#AF2E38] rounded-[20px] outline outline-1 outline-offset-[-1px] outline-[#AF2E38] overflow-x-auto overflow-y-hidden scrollbar-hide py-4 px-4">
-         <div className="flex gap-4 h-full items-center justify-center">
-          {products.map((card) => (
-             <div
-               key={card._id}
-               className="relative w-[180px] min-w-[180px] h-[220px] bg-white rounded-[10px] flex-none flex flex-col items-center shadow-md overflow-hidden cursor-pointer"
-               onClick={() => toggleSelection(card._id)}
-             >
-                {/* Price */}
-                <div className="pointer-events-auto absolute top-2 right-2 text-[#AF2E38] text-[11px] font-bold italic">
-                  {new Intl.NumberFormat('vi-VN').format(card.price)}đ
-                </div>
-                
-                {/* Radio Checkbox */}
-                <div
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleSelection(card._id);
-                  }}
-                  className="pointer-events-auto absolute top-2 left-2 w-[20px] h-[20px] rounded-full cursor-pointer flex items-center justify-center transition-all duration-200"
-                  style={{
-                    border: counts[card._id] ? '2px solid #3B73A9' : '2px solid #ccc',
-                    background: 'white',
-                    boxShadow: counts[card._id] ? '0 0 0 3px rgba(59,115,169,0.15)' : 'none'
-                  }}
-                >
-                  {counts[card._id] && (
-                    <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#3B73A9' }}></div>
-                  )}
-                </div>
-
-                {/* Image */}
-                <div className="flex justify-center items-center mt-8 h-[90px]">
-                  <img className="object-contain h-[90px] w-auto hover:scale-105 transition" src={card.imageUrl} alt={card.name} />
-                </div>
-                
-                {/* Name */}
-                <div className="text-center mt-3 text-[#3B73A9] text-[13px] font-bold font-['Geologica'] truncate w-full px-2">
-                  {card.name}
-                </div>
-                
-                {/* Description */}
-                <div className="text-center text-[#444] text-[10px] italic font-['Geologica'] px-3 mt-1 leading-[1.2] line-clamp-2">
-                  {card.description}
-                </div>
-             </div>
-          ))}
-         </div>
-      </div>
-
-      {/* Left Pane Part 2: Custom Message Area */}
-      <div className="w-[703px] h-[400px] left-[61px] top-[540px] absolute bg-[#AF2E38] rounded-[20px] outline outline-1 outline-offset-[-1px] outline-[#AF2E38] overflow-hidden flex flex-col items-center">
-        <div className="w-full text-center mt-4 mb-4 text-white text-3xl font-semibold font-['Geologica']">Thêm lời nhắn gửi</div>
+      {/* Main Content Area */}
+      <div className="flex flex-col lg:flex-row gap-6 p-4 md:p-8 lg:p-12 max-w-[1280px] mx-auto w-full flex-grow">
         
-        <div className="w-[638px] h-64 bg-white rounded-[20px] p-5 flex flex-col justify-between">
-          <div className="flex flex-col gap-1 h-32">
-            <span className="text-[#215E98] text-base font-black font-['Geologica']">Nội dung lời nhắn</span>
-            <textarea 
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Viết lời nhắn gửi của bạn tại đây..."
-              className="flex-1 bg-[#FCE5EB] rounded-[10px] p-3 text-neutral-600 font-['Geologica'] focus:outline-none resize-none"
-            />
+        {/* Panel Chọn Thiệp & Lời Nhắn (Bên trái) */}
+        <div className="w-full lg:w-[60%] flex flex-col gap-6">
+
+          {/* Cards Section */}
+          <div className="bg-[#AF2E38] rounded-[20px] p-4 md:p-6 overflow-x-auto scrollbar-hide shadow-inner flex gap-4 w-full">
+            {products.map((card) => (
+               <div
+                 key={card._id}
+                 className="relative w-[180px] min-w-[180px] h-[220px] bg-white rounded-[10px] flex-none flex flex-col items-center shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-transform"
+                 onClick={() => toggleSelection(card._id)}
+               >
+                  {/* Price */}
+                  <div className="pointer-events-auto absolute top-2 right-2 text-[#AF2E38] text-[11px] font-bold italic z-20">
+                    {new Intl.NumberFormat('vi-VN').format(card.price)}đ
+                  </div>
+                  
+                  {/* Radio Checkbox */}
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleSelection(card._id);
+                    }}
+                    className="pointer-events-auto absolute top-2 left-2 w-[20px] h-[20px] rounded-full cursor-pointer flex items-center justify-center transition-all duration-200 z-20"
+                    style={{
+                      border: counts[card._id] ? '2px solid #3B73A9' : '2px solid #ccc',
+                      background: 'white',
+                      boxShadow: counts[card._id] ? '0 0 0 3px rgba(59,115,169,0.15)' : 'none'
+                    }}
+                  >
+                    {counts[card._id] === 1 && (
+                      <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#3B73A9' }}></div>
+                    )}
+                  </div>
+
+                  {/* Image */}
+                  <div className="flex justify-center items-center mt-8 h-[90px] z-10 w-full px-2">
+                    <img className="object-contain h-full w-auto hover:scale-105 transition" src={card.imageUrl} alt={card.name} />
+                  </div>
+                  
+                  {/* Name */}
+                  <div className="text-center mt-3 text-[#3B73A9] text-[13px] font-bold truncate w-full px-2 z-10">
+                    {card.name}
+                  </div>
+                  
+                  {/* Description */}
+                  <div className="text-center text-[#444] text-[10px] italic px-3 mt-1 leading-[1.2] line-clamp-2 z-10 w-full">
+                    {card.description}
+                  </div>
+               </div>
+            ))}
           </div>
 
-          <div className="flex flex-col gap-2 mt-2 h-auto">
-            <span className="text-[#215E98] text-base font-black font-['Geologica']">Lời nhắn nhanh</span>
-            <div className="flex flex-wrap gap-2">
-              {["Congratuations!", "Happy Birthday!", "Anh yêu em!", "Happy Anniversary", "Đừng giận tớ nữa nhé!", "I miss you"].map((msg, idx) => (
-                 <button 
-                   key={idx}
-                   onClick={() => setMessage(prev => prev ? prev + "\n" + msg : msg)}
-                   className="px-3 py-1.5 bg-white border border-[#f0c2cd] rounded-[10px] shadow-sm text-black text-[13px] font-bold font-['Geologica'] hover:bg-[#FCE5EB] transition cursor-pointer"
-                 >
-                   {msg}
-                 </button>
-              ))}
+          {/* Message Section */}
+          <div className="bg-[#AF2E38] rounded-[20px] p-4 md:p-6 shadow-inner flex flex-col items-center w-full">
+            <h2 className="text-center text-white text-xl md:text-3xl font-semibold mb-6">Thêm lời nhắn gửi</h2>
+            
+            <div className="w-full bg-white rounded-[20px] p-4 flex flex-col md:flex-row gap-6 shadow-md">
+              <div className="flex flex-col gap-2 flex-grow w-full md:w-1/2">
+                <label className="text-[#215E98] text-base font-black">Nội dung lời nhắn</label>
+                <textarea 
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Viết lời nhắn gửi của bạn tại đây..."
+                  className="w-full h-32 md:h-full min-h-[120px] bg-[#FCE5EB] rounded-[10px] p-4 text-neutral-600 focus:outline-none resize-none shadow-inner"
+                />
+              </div>
+
+              <div className="flex flex-col gap-2 w-full md:w-1/2">
+                <span className="text-[#215E98] text-base font-black">Lời nhắn nhanh</span>
+                <div className="flex flex-wrap gap-2">
+                  {["Congratuations!", "Happy Birthday!", "Anh yêu em!", "Happy Anniversary", "Đừng giận tớ nữa nhé!", "I miss you"].map((msg, idx) => (
+                     <button 
+                       key={idx}
+                       onClick={() => setMessage(prev => prev ? prev + "\n" + msg : msg)}
+                       className="px-3 py-2 md:py-1.5 bg-white border border-[#f0c2cd] rounded-[10px] shadow-sm text-black text-[13px] font-bold hover:bg-[#FCE5EB] hover:border-[#AF2E38] hover:text-[#AF2E38] transition-all cursor-pointer text-left"
+                     >
+                       {msg}
+                     </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
+
         </div>
+
+        {/* Panel Tạm tính (Bên phải) */}
+        <div className="w-full lg:w-[40%] bg-white rounded-[10px] border border-[#AF2E38] flex flex-col overflow-hidden shadow-sm h-[400px] lg:h-auto">
+          {/* List Items */}
+          <div className="flex-grow overflow-y-auto scrollbar-hide p-4 md:p-6">
+            {previousItems.length === 0 && selectedItems.length === 0 ? (
+              <div className="h-full flex items-center justify-center text-center text-zinc-400 text-base font-light">
+                Chưa có gì được chọn
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {/* Hiển thị các mục đã chọn từ trang trước */}
+                {previousItems.map((item) => (
+                  <div key={item.key} className="w-full px-4 py-3 bg-[#FAF9F5] rounded-lg flex items-center justify-between border border-rose-50 shadow-sm opacity-80">
+                    <span className="text-[#AF2E38] text-base md:text-lg font-normal break-words max-w-[60%]">x{item.quantity} {item.label}</span>
+                    <span className="text-[#AF2E38] text-base md:text-lg font-semibold whitespace-nowrap">{formatPrice(item.lineTotal)}</span>
+                  </div>
+                ))}
+                {/* Hiển thị thiệp đã chọn */}
+                {selectedItems.map((item) => (
+                  <div key={item.key} className="w-full px-4 py-3 bg-[#FAF9F5] rounded-lg flex items-center justify-between border border-rose-50 shadow-sm">
+                    <span className="text-[#AF2E38] text-base md:text-lg font-normal break-words max-w-[60%]">x{item.quantity} {item.label}</span>
+                    <span className="text-[#AF2E38] text-base md:text-lg font-semibold whitespace-nowrap">{formatPrice(item.lineTotal)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          {/* Total Bar */}
+          <div className="bg-[#AF2E38] p-4 md:p-6 text-white flex justify-between items-center rounded-b-lg">
+            <span className="text-xl md:text-3xl font-semibold">Tạm tính</span>
+            <span className="text-xl md:text-3xl font-light">{new Intl.NumberFormat('vi-VN').format(totalSubtotal)}đ</span>
+          </div>
+        </div>
+
       </div>
 
-      {/* Navigation Progress bar */}
-      <div className="w-[1131px] h-28 left-[150px] top-[135px] absolute overflow-hidden pointer-events-none">
-        <div className="w-[982px] h-[1px] left-[70px] top-[47px] absolute bg-black"></div>
-        {/* Bước 1: Hoa (Completed) */}
-        <Link to="/custom-flowers" className="absolute left-[50px] top-[27px] pointer-events-auto">
-          <div className="w-10 h-10 bg-[#AF2E38] rounded-full cursor-pointer"></div>
-        </Link>
-        <Link to="/custom-flowers" className="absolute left-[39px] top-[75px] pointer-events-auto">
-          <div className="w-16 h-6 text-center text-black text-2xl font-extralight font-['Geologica'] leading-9 cursor-pointer">Hoa</div>
-        </Link>
-        {/* Bước 2: Lá (Completed) */}
-        <Link to="/custom-leaves" className="absolute left-[290px] top-[27px] pointer-events-auto">
-          <div className="w-10 h-10 bg-[#AF2E38] rounded-full cursor-pointer"></div>
-        </Link>
-        <Link to="/custom-leaves" className="absolute left-[281px] top-[75px] pointer-events-auto">
-          <div className="w-16 h-6 text-center text-black text-2xl font-extralight font-['Geologica'] leading-9 cursor-pointer">Lá</div>
-        </Link>
-        {/* Bước 3: Túi (Completed) */}
-        <Link to="/custom-bags" className="absolute left-[538px] top-[27px] pointer-events-auto">
-          <div className="w-10 h-10 bg-[#AF2E38] rounded-full cursor-pointer"></div>
-        </Link>
-        <Link to="/custom-bags" className="absolute left-[526px] top-[75px] pointer-events-auto">
-          <div className="w-16 h-6 text-center text-black text-2xl font-extralight font-['Geologica'] leading-9 cursor-pointer">Túi</div>
-        </Link>
-        {/* Bước 4: Xem trước (Completed) */}
-        <Link to="/custom-preview" className="absolute left-[620px] top-[15px] pointer-events-auto">
-          <div className="w-16 h-16 bg-[#AF2E38] rounded-full flex items-center justify-center cursor-pointer">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="2"/>
-              <ellipse cx="12" cy="6" rx="1.8" ry="3"/>
-              <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(60 12 12)"/>
-              <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(120 12 12)"/>
-              <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(180 12 12)"/>
-              <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(240 12 12)"/>
-              <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(300 12 12)"/>
-            </svg>
-          </div>
-        </Link>
-        <Link to="/custom-preview" className="absolute left-[605px] top-[75px] pointer-events-auto">
-          <div className="w-24 h-6 text-center text-black text-xl font-extralight font-['Geologica'] leading-9 cursor-pointer">Xem Trước</div>
-        </Link>
-        {/* Bước 5: Thiệp (Active) */}
-        <Link to="/custom-cards" className="absolute left-[785px] top-[27px] pointer-events-auto">
-          <div className="w-10 h-10 bg-[#AF2E38] rounded-full cursor-pointer"></div>
-        </Link>
-        <Link to="/custom-cards" className="absolute left-[770px] top-[75px] pointer-events-auto">
-          <div className="w-16 h-6 text-center text-[#AF2E38] text-2xl font-extralight font-['Geologica'] leading-9 cursor-pointer">Thiệp</div>
-        </Link>
-        {/* Bước 6: Thanh toán */}
-        <div className="absolute left-[1032px] top-[27px]">
-          <div className="w-10 h-10 bg-[#B8DAFF] rounded-full"></div>
-        </div>
-        <div className="absolute left-[982px] top-[75px]">
-          <div className="w-32 h-6 text-center text-black text-2xl font-extralight font-['Geologica'] leading-9">Thanh toán</div>
-        </div>
+      {/* Continue Button */}
+      <div className="flex justify-center md:justify-end px-4 md:px-12 pb-12 pt-4">
+        <button
+          onClick={handleContinue}
+          disabled={!hasCardSelection}
+          className={`bg-[#B8DAFF] text-[#AF2E38] text-xl md:text-2xl font-normal py-3 px-8 rounded-[10px] transition-all shadow-md w-full md:w-auto text-center ${
+            hasCardSelection 
+              ? "hover:bg-blue-200 cursor-pointer" 
+              : "opacity-60 cursor-not-allowed"
+          }`}
+        >
+          TIẾP TỤC
+        </button>
       </div>
-      </div>
+
     </div>
   );
 }

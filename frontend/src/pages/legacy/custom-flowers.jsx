@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { API_BASE, fetchJson } from '../../api';
+import StepBar from '../../components/StepBar';
 
 export default function Customhoa(){
   const FLOWER_STORAGE_KEY = 'flowerSelection';
@@ -111,141 +112,97 @@ export default function Customhoa(){
   };
 
   return (
-<div className="w-full overflow-x-auto overflow-y-visible py-4">
-<div
-  className="relative mx-auto inline-flex flex-col justify-start items-center overflow-hidden bg-Color-3 px-10"
-  style={{ width: 1440, minWidth: 1440, height: 1000 }}
->
-  
-  {/* Panel Tạm tính (Bên phải) */}
-  <div className="w-[525px] h-[532px] left-[816px] top-[280px] absolute bg-white rounded-[10px] outline outline-1 outline-offset-[-1px] outline-[#AF2E38] overflow-hidden">
-    <div className="w-[477px] h-[340px] left-[24px] top-[26px] absolute overflow-y-auto overflow-x-hidden scrollbar-hide pr-3">
-      {selectedItems.length === 0 ? (
-        <div className="h-full flex items-center justify-center text-center text-zinc-400 text-base font-light font-['Geologica'] leading-6">
-          Chưa có hoa nào được chọn
+    <div className="w-full min-h-screen bg-Color-3 flex flex-col font-['Geologica']">
+      <StepBar currentStep={1} />
+
+      {/* Main Content Area */}
+      <div className="flex flex-col lg:flex-row gap-6 p-4 md:p-8 lg:p-12 max-w-[1280px] mx-auto w-full flex-grow">
+        
+        {/* Panel Chọn Hoa (Bên trái) */}
+        <div className="w-full lg:w-[60%] bg-[#AF2E38] rounded-[20px] p-4 md:p-6 overflow-y-auto max-h-[60vh] md:max-h-[70vh] scrollbar-hide shadow-inner">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 justify-items-center">
+            {products.map((flower) => (
+              <div key={flower._id} className="relative w-full max-w-[260px] aspect-[260/330] flex flex-col items-center overflow-hidden rounded-xl bg-white shadow-md transition-transform hover:shadow-lg">
+                {/* Background base */}
+                <img className="absolute top-0 w-full h-full object-cover z-0" src="/images/CustomizeHoa/nenhoa.png" alt="nen" />
+                
+                {/* Inner Content */}
+                <div className="absolute inset-0 flex flex-col z-10 p-4 gap-2">
+                   {/* Price */}
+                   <div className="text-[13px] font-bold italic text-[#AF2E38] pl-2 z-20">
+                     {new Intl.NumberFormat('vi-VN').format(flower.price)} VNĐ
+                   </div>
+                   
+                   {/* Image */}
+                   <div className="flex justify-center items-center h-[40%] md:h-[45%] z-20">
+                     <img className="object-contain hover:scale-105 transition h-full" src={flower.imageUrl} alt={flower.name} />
+                   </div>
+                   
+                   {/* Name */}
+                   <div className="text-center text-[#3B73A9] text-base md:text-[17px] font-bold truncate px-2 z-20">
+                     {flower.name}
+                   </div>
+                   
+                   {/* Description */}
+                   <div className="text-[#444] text-xs italic leading-tight text-center line-clamp-2 px-2 z-20">
+                     {flower.description}
+                   </div>
+
+                   {/* Spacer to push buttons to bottom if needed flex-grow */}
+                   <div className="flex-grow"></div>
+
+                   {/* Buttons */}
+                   <div className="flex items-center justify-center gap-4 z-20 pb-2">
+                     <button onClick={() => decrease(flower._id)} className="text-[#AF2E38] text-2xl font-medium w-8 h-8 hover:bg-rose-50 rounded-full transition">-</button>
+                     <span className="text-[#AF2E38] text-base font-bold italic w-5 text-center">{counts[flower._id] || 0}</span>
+                     <button onClick={() => increase(flower._id)} className="text-[#AF2E38] text-2xl font-medium w-8 h-8 hover:bg-rose-50 rounded-full transition">+</button>
+                   </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {selectedItems.map((item) => (
-            <div key={item.key} className="w-full px-4 py-3 bg-[#FAF9F5] rounded-lg flex items-center justify-between">
-              <span className="text-[#AF2E38] text-lg font-normal font-['Geologica'] leading-6">x{item.quantity} {item.label}</span>
-              <span className="text-[#AF2E38] text-lg font-semibold font-['Geologica'] leading-6">{formatPrice(item.lineTotal)}</span>
-            </div>
-          ))}
+
+        {/* Panel Tạm tính (Bên phải) */}
+        <div className="w-full lg:w-[40%] bg-white rounded-[10px] border border-[#AF2E38] flex flex-col overflow-hidden shadow-sm h-[400px] lg:h-auto">
+          {/* List Items */}
+          <div className="flex-grow overflow-y-auto scrollbar-hide p-4 md:p-6">
+            {selectedItems.length === 0 ? (
+              <div className="h-full flex items-center justify-center text-center text-zinc-400 text-base font-light">
+                Chưa có hoa nào được chọn
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {selectedItems.map((item) => (
+                  <div key={item.key} className="w-full px-4 py-3 bg-[#FAF9F5] rounded-lg flex items-center justify-between border border-rose-50 shadow-sm">
+                    <span className="text-[#AF2E38] text-base md:text-lg font-normal break-words max-w-[60%]">x{item.quantity} {item.label}</span>
+                    <span className="text-[#AF2E38] text-base md:text-lg font-semibold whitespace-nowrap">{formatPrice(item.lineTotal)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          {/* Total Bar */}
+          <div className="bg-[#AF2E38] p-4 md:p-6 text-white flex justify-between items-center rounded-b-lg">
+            <span className="text-xl md:text-3xl font-semibold">Tạm tính</span>
+            <span className="text-xl md:text-3xl font-light">{new Intl.NumberFormat('vi-VN').format(subtotal)}đ</span>
+          </div>
         </div>
-      )}
-    </div>
-    <div className="w-[619px] h-36 left-0 top-[404px] absolute bg-[#AF2E38] rounded-[10px]" />
-    <div className="w-40 h-10 left-[16px] top-[472px] absolute text-center justify-center text-white text-3xl font-semibold font-['Geologica'] leading-10">Tạm tính</div>
-    <div className="w-52 h-10 left-[296px] top-[472px] absolute text-right justify-center text-white text-3xl font-light font-['Geologica'] leading-10">{new Intl.NumberFormat('vi-VN').format(subtotal)}</div>
-  </div>
 
-  {/* Panel Chọn Hoa (Bên trái) - Đã tái cấu trúc CSS */}
-  <div className="w-[623px] h-[621px] left-[120px] top-[280px] absolute bg-[#AF2E38] rounded-[20px] outline outline-1 outline-offset-[-1px] outline-[#AF2E38] overflow-y-auto overflow-x-hidden scrollbar-hide scroll-smooth py-6 px-5">
-    <div
-      className="grid justify-center justify-items-center gap-x-6 gap-y-6 w-full"
-      style={{ gridTemplateColumns: 'repeat(2, minmax(0, 260px))' }}
-    >
-      {products.map((flower) => (
-         <div key={flower._id} className="relative w-[260px] h-[330px] flex flex-col items-center" style={{ overflow: 'hidden' }}>
-            {/* Background base */}
-            <img className="absolute top-0 w-[260px] h-[330px] drop-shadow-md z-0" src="/images/CustomizeHoa/nenhoa.png" alt="nen" />
-            
-            {/* Inner Content */}
-            <div className="absolute inset-0 flex flex-col z-10 pointer-events-none" style={{ padding: '18px 16px 14px 16px', gap: '7px', overflow: 'hidden' }}>
-               {/* Price */}
-               <div className="pointer-events-auto" style={{ fontSize: '13px', fontWeight: '700', fontStyle: 'italic', color: '#AF2E38', paddingLeft: '8px' }}>
-                 {new Intl.NumberFormat('vi-VN').format(flower.price)} VNĐ/cành
-               </div>
-               
-               {/* Image */}
-               <div className="flex justify-center items-center pointer-events-auto" style={{ height: '132px' }}>
-                 <img className="object-contain hover:scale-105 transition" style={{ height: '128px', width: 'auto' }} src={flower.imageUrl} alt={flower.name} />
-               </div>
-               
-               {/* Name */}
-               <div className="text-center pointer-events-auto" style={{ color: '#3B73A9', fontSize: '17px', fontWeight: '700', fontFamily: 'Geologica', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                 {flower.name}
-               </div>
-               
-               {/* Description */}
-               <div style={{ color: '#444', fontSize: '12px', fontStyle: 'italic', fontFamily: 'Geologica', lineHeight: '1.25', wordBreak: 'break-word', overflowWrap: 'break-word', overflow: 'hidden', textAlign: 'center', maxHeight: '38px', width: '100%', boxSizing: 'border-box', padding: '0 10px' }}>
-                 {flower.description?.substring(0, 25)}{flower.description?.length > 25 ? '...' : ''}
-               </div>
-
-               {/* Buttons */}
-               <div className="flex items-center justify-center gap-4 pointer-events-auto">
-                 <button onClick={() => decrease(flower._id)} style={{ background: 'transparent', border: 'none', color: '#AF2E38', fontSize: '24px', fontWeight: '500', width: '32px', height: '32px', padding: 0, cursor: 'pointer' }}>-</button>
-                 <span style={{ color: '#AF2E38', fontSize: '16px', fontWeight: '700', fontStyle: 'italic', width: '20px', textAlign: 'center' }}>{counts[flower._id] || 0}</span>
-                 <button onClick={() => increase(flower._id)} style={{ background: 'transparent', border: 'none', color: '#AF2E38', fontSize: '24px', fontWeight: '500', width: '32px', height: '32px', padding: 0, cursor: 'pointer' }}>+</button>
-               </div>
-            </div>
-         </div>
-      ))}
-    </div>
-  </div>
-
-
-  {/* Header Status Bar (Các bước điều hướng tĩnh) */}
-  <div className="w-[1131px] h-28 left-[150px] top-[135px] absolute overflow-hidden">
-    <div className="w-[982px] h-[1px] left-[70px] top-[47px] absolute bg-black"></div>
-    {/* Bước 1: Hoa (active) */}
-    <Link to="/custom-flowers" className="absolute left-[50px] top-[27px]">
-      <div className="w-10 h-10 bg-[#AF2E38] rounded-full cursor-pointer"></div>
-    </Link>
-    <Link to="/custom-flowers" className="absolute left-[39px] top-[75px]">
-      <div className="w-16 h-6 text-center text-[#AF2E38] text-2xl font-extralight font-['Geologica'] leading-9 cursor-pointer">Hoa</div>
-    </Link>
-    {/* Bước 2: Lá */}
-    <div className="absolute left-[290px] top-[25px]">
-      <div className="w-10 h-10 bg-[#B8DAFF] rounded-full"></div>
-    </div>
-    <div className="absolute left-[281px] top-[75px]">
-      <div className="w-16 h-6 text-center text-black text-2xl font-extralight font-['Geologica'] leading-9">Lá</div>
-    </div>
-    {/* Bước 3: Túi */}
-    <div className="absolute left-[538px] top-[25px]">
-      <div className="w-10 h-10 bg-[#B8DAFF] rounded-full"></div>
-    </div>
-    <div className="absolute left-[526px] top-[75px]">
-      <div className="w-16 h-6 text-center text-black text-2xl font-extralight font-['Geologica'] leading-9">Túi</div>
-    </div>
-    {/* Bước 4: Xem trước (AI) */}
-    <div className="absolute left-[620px] top-[15px] z-20">
-      <div className="w-16 h-16 bg-[#B8DAFF] rounded-full flex items-center justify-center">
-        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#4A90C4" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="2"/>
-          <ellipse cx="12" cy="6" rx="1.8" ry="3"/>
-          <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(60 12 12)"/>
-          <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(120 12 12)"/>
-          <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(180 12 12)"/>
-          <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(240 12 12)"/>
-          <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(300 12 12)"/>
-        </svg>
       </div>
-    </div>
-    <div className="w-24 h-6 left-[600px] top-[75px] absolute text-center justify-center text-black text-xl font-extralight font-['Geologica'] leading-9">Xem Trước</div>
-    {/* Bước 5: Thiệp */}
-    <div className="absolute left-[785px] top-[25px]">
-      <div className="w-10 h-10 bg-[#B8DAFF] rounded-full"></div>
-    </div>
-    <div className="absolute left-[770px] top-[75px]">
-      <div className="w-16 h-6 text-center text-black text-2xl font-extralight font-['Geologica'] leading-9">Thiệp</div>
-    </div>
-    {/* Bước 6: Thanh toán */}
-    <div className="absolute left-[1032px] top-[25px]">
-      <div className="w-10 h-10 bg-[#B8DAFF] rounded-full"></div>
-    </div>
-    <div className="absolute left-[982px] top-[75px]">
-      <div className="w-32 h-6 text-center text-black text-2xl font-extralight font-['Geologica'] leading-9">Thanh toán</div>
-    </div>
-  </div>
 
-  <Link to="/custom-leaves" onClick={handleContinue} className="absolute" style={{ right: '60px', top: '830px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-    <div style={{ background: '#B8DAFF', borderRadius: '10px', padding: '12px 28px', color: '#AF2E38', fontSize: '24px', fontFamily: 'Geologica', fontWeight: '400', whiteSpace: 'nowrap' }}>TIẾP TỤC</div>
-  </Link>
-  
-</div>
-</div>
+      {/* Continue Button */}
+      <div className="flex justify-center md:justify-end px-4 md:px-12 pb-12 pt-4">
+        <Link 
+          to="/custom-leaves" 
+          onClick={handleContinue} 
+          className="bg-[#B8DAFF] text-[#AF2E38] text-xl md:text-2xl font-normal py-3 px-8 rounded-[10px] hover:bg-blue-200 transition-colors shadow-md w-full md:w-auto text-center"
+        >
+          TIẾP TỤC
+        </Link>
+      </div>
+
+    </div>
   );
 }

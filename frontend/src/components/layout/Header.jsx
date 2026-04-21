@@ -5,6 +5,8 @@ import { useCart } from "../../context/CartContext";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDesktopDropdownOpen, setIsDesktopDropdownOpen] = useState(false);
+  const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
   const { user, logout } = useAuth();
   const { cartItems } = useCart();
 
@@ -34,7 +36,7 @@ export default function Header() {
         {/* Logo - Center */}
         <div className="flex-1 flex justify-center">
           <Link to="/">
-            <h1 className="text-5xl md:text-6xl text-Color-2 font-['Italianno'] font-normal leading-none cursor-pointer">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl text-Color-2 font-['Italianno'] font-normal leading-none cursor-pointer whitespace-nowrap">
               Dear, Chérie
             </h1>
           </Link>
@@ -47,23 +49,28 @@ export default function Header() {
           
           <div className="flex items-center space-x-4 pl-4 xl:pl-6 border-l border-rose-700/20">
             {user ? (
-              <div className="relative group flex items-center pr-2">
-                <div className="text-Icon-Default-Default hover:text-Color transition cursor-pointer flex items-center gap-1">
+              <div className="relative flex items-center pr-2">
+                <div 
+                  className="text-Icon-Default-Default hover:text-Color transition cursor-pointer flex items-center gap-1"
+                  onClick={() => setIsDesktopDropdownOpen(!isDesktopDropdownOpen)}
+                >
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                   </svg>
                   <span className="text-xs font-bold capitalize hidden xl:block">{user.name.split(' ')[0]}</span>
                 </div>
-                {/* Desktop Dropdown */}
-                <div className="absolute top-full -right-4 pt-4 hidden group-hover:block z-50">
-                  <div className="bg-white border border-rose-100 shadow-2xl rounded-2xl w-48 py-2 flex flex-col normal-case text-slate-800">
-                    <div className="px-5 py-2 w-full text-xs text-slate-400 border-b border-rose-50 mb-1 truncate">Xin chào, {user.name}</div>
-                    <Link to="/" className="px-5 py-2 w-full text-sm hover:bg-rose-50 hover:text-rose-700 transition text-left cursor-pointer">Hồ sơ của tôi</Link>
-                    <Link to="/cart" className="px-5 py-2 w-full text-sm hover:bg-rose-50 hover:text-rose-700 transition text-left cursor-pointer">Giỏ hàng</Link>
-                    <div className="border-t border-rose-50 mt-1"></div>
-                    <button onClick={logout} className="px-5 py-2 w-full text-sm text-red-600 hover:bg-red-50 transition text-left mt-1 font-bold">Đăng xuất</button>
+                {/* Desktop Dropdown - Click based */}
+                {isDesktopDropdownOpen && (
+                  <div className="absolute top-full -right-4 pt-4 z-50">
+                    <div className="bg-white border border-rose-100 shadow-2xl rounded-2xl w-48 py-2 flex flex-col normal-case text-slate-800">
+                      <div className="px-5 py-2 w-full text-xs text-slate-400 border-b border-rose-50 mb-1 truncate">Xin chào, {user.name}</div>
+                      <Link to="/" onClick={() => setIsDesktopDropdownOpen(false)} className="px-5 py-2 w-full text-sm hover:bg-rose-50 hover:text-rose-700 transition text-left cursor-pointer">Hồ sơ của tôi</Link>
+                      <Link to="/cart" onClick={() => setIsDesktopDropdownOpen(false)} className="px-5 py-2 w-full text-sm hover:bg-rose-50 hover:text-rose-700 transition text-left cursor-pointer">Giỏ hàng</Link>
+                      <div className="border-t border-rose-50 mt-1"></div>
+                      <button onClick={() => { logout(); setIsDesktopDropdownOpen(false); }} className="px-5 py-2 w-full text-sm text-red-600 hover:bg-red-50 transition text-left mt-1 font-bold">Đăng xuất</button>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             ) : (
               <Link to="/login" className="text-Icon-Default-Default hover:text-Color transition" title="Đăng nhập">
@@ -88,22 +95,27 @@ export default function Header() {
 
         <div className="lg:hidden flex-1 flex justify-end items-center space-x-3">
           {user ? (
-            <div className="relative group z-50">
-              <div className="text-Icon-Default-Default hover:text-rose-700 transition cursor-pointer flex items-center pr-2">
+            <div className="relative z-50">
+              <div 
+                className="text-Icon-Default-Default hover:text-rose-700 transition cursor-pointer flex items-center pr-2"
+                onClick={() => setIsMobileDropdownOpen(!isMobileDropdownOpen)}
+              >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                 </svg>
               </div>
-              {/* Mobile Dropdown */}
-              <div className="absolute top-full right-[-10px] pt-4 hidden group-hover:block">
-                <div className="bg-white border border-rose-100 shadow-2xl rounded-2xl w-44 py-2 flex flex-col normal-case text-slate-800 tracking-normal">
-                  <div className="px-4 py-2 w-full text-xs text-slate-400 border-b border-rose-50 mb-1 truncate">Xin chào, {user.name}</div>
-                  <Link to="/" className="px-4 py-2 w-full text-sm hover:bg-rose-50 hover:text-rose-700 transition text-left">Hồ sơ của tôi</Link>
-                  <Link to="/cart" className="px-4 py-2 w-full text-sm hover:bg-rose-50 hover:text-rose-700 transition text-left">Giỏ hàng</Link>
-                  <div className="border-t border-rose-50 mt-1"></div>
-                  <button onClick={logout} className="px-4 py-3 w-full text-sm text-red-600 hover:bg-red-50 transition text-left mt-1 font-bold">Đăng xuất</button>
+              {/* Mobile Dropdown - Click based */}
+              {isMobileDropdownOpen && (
+                <div className="absolute top-full right-[-10px] pt-4 z-50">
+                  <div className="bg-white border border-rose-100 shadow-2xl rounded-2xl w-44 py-2 flex flex-col normal-case text-slate-800 tracking-normal">
+                    <div className="px-4 py-2 w-full text-xs text-slate-400 border-b border-rose-50 mb-1 truncate">Xin chào, {user.name}</div>
+                    <Link to="/" onClick={() => setIsMobileDropdownOpen(false)} className="px-4 py-2 w-full text-sm hover:bg-rose-50 hover:text-rose-700 transition text-left">Hồ sơ của tôi</Link>
+                    <Link to="/cart" onClick={() => setIsMobileDropdownOpen(false)} className="px-4 py-2 w-full text-sm hover:bg-rose-50 hover:text-rose-700 transition text-left">Giỏ hàng</Link>
+                    <div className="border-t border-rose-50 mt-1"></div>
+                    <button onClick={() => { logout(); setIsMobileDropdownOpen(false); }} className="px-4 py-3 w-full text-sm text-red-600 hover:bg-red-50 transition text-left mt-1 font-bold">Đăng xuất</button>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           ) : (
             <Link to="/login" className="text-Icon-Default-Default hover:text-rose-700 transition">

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { API_BASE } from '../../api';
+import StepBar from '../../components/StepBar';
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -44,6 +45,7 @@ export default function CustomPreview() {
   const [previewMeta, setPreviewMeta] = useState(null);
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // 1. Calculate combined subtotal for displaying "Tạm tính"
@@ -197,109 +199,64 @@ export default function CustomPreview() {
   const placeHolder = "https://placehold.co/791x607?text=AI+is+generating...";
 
   return (
-    <div className="w-full overflow-x-auto overflow-y-visible py-4 bg-Color-3">
-      {/* Outer wrapper matching Figma size */}
-      <div
-        className="relative mx-auto overflow-hidden bg-Color-3"
-        style={{ width: 1440, minWidth: 1440, height: 1400 }}
-      >
+    <div className="w-full min-h-screen bg-Color-3 flex flex-col font-['Geologica']">
+      <StepBar currentStep={4} />
+
+      {/* Main Content Area */}
+      <div className="flex flex-col gap-6 p-4 md:p-8 lg:p-12 max-w-[1280px] mx-auto w-full flex-grow items-center">
         
         {/* Main Stamp Container for AI Image */}
-        <div className="w-[971px] h-[636px] left-[266px] top-[278px] absolute bg-rose-700 rounded-[20px] outline outline-1 outline-offset-[-1px] outline-red-600 overflow-hidden flex items-center justify-center">
+        <div className="w-full lg:w-[80%] max-w-[1000px] aspect-[16/10] bg-rose-700 rounded-[20px] outline outline-2 outline-offset-[-2px] outline-red-600 overflow-hidden flex flex-col items-center justify-center p-4 shadow-xl">
             {loading ? (
-               <div className="text-white text-3xl font-['Geologica'] flex flex-col items-center">
-                 <svg className="animate-spin h-16 w-16 text-white mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+               <div className="text-white text-xl md:text-3xl font-['Geologica'] flex flex-col items-center text-center px-4">
+                 <svg className="animate-spin h-12 w-12 md:h-16 md:w-16 text-white mb-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                  </svg>
                  AI ĐANG KẾT HỢP DỮ LIỆU... VUI LÒNG CHỜ
                </div>
             ) : aiImage ? (
-               <img className="w-full h-full object-contain rounded-[20px]" src={aiImage} alt="AI Bouquet Output" />
+               <img className="w-full h-full object-contain rounded-[10px]" src={aiImage} alt="AI Bouquet Output" />
             ) : (
-               <div className="text-white text-xl font-['Geologica'] pr-8 pl-8 text-center">
-                 {previewError || "Chưa có dữ liệu Hoa để dựng hình AI."}<br/>Hãy quay lại chọn Hoa/Lá/Túi trước nhé.
+               <div className="text-white text-lg md:text-xl font-['Geologica'] px-4 md:px-8 text-center bg-black/20 p-6 rounded-xl backdrop-blur-sm">
+                 {previewError || "Chưa có dữ liệu Hoa để dựng hình AI."}<br/><span className="mt-2 block opacity-80">Hãy quay lại chọn Hoa/Lá/Túi trước nhé.</span>
                </div>
             )}
         </div>
 
         {previewMeta && (
-          <div className="absolute left-[266px] top-[924px] w-[971px] text-[12px] text-white/80 text-center font-['Geologica']">
+          <div className="text-[11px] md:text-[12px] text-zinc-500 text-center font-['Geologica'] mt-[-10px]">
             AI backend: {previewMeta.backend} | Image model: {previewMeta.imageModel} | Vision model: {previewMeta.visionModel}
           </div>
         )}
 
-        {/* Buttons */}
-        <Link to="/custom-cards" className="w-48 h-12 left-[1241px] top-[1024px] absolute overflow-hidden block hover:opacity-80 transition cursor-pointer">
-            <div className="w-48 h-12 left-0 top-0 absolute bg-blue-200 rounded-[10px]"></div>
-            <div className="left-[40px] top-[11px] absolute text-center justify-center text-rose-700 text-2xl font-normal font-['Geologica'] leading-7">TIẾP TỤC</div>
-        </Link>
-        <Link to="/custom-bags" className="w-48 h-12 left-[45px] top-[1018px] absolute overflow-hidden block hover:opacity-80 transition cursor-pointer">
-            <div className="w-48 h-12 left-0 top-0 absolute bg-blue-200 rounded-[10px]"></div>
-            <div className="left-[37px] top-[11px] absolute text-center justify-center text-rose-700 text-2xl font-normal font-['Geologica'] leading-7">QUAY LẠI</div>
-        </Link>
+        {/* Subtotal & Actions Bottom Bar */}
+        <div className="w-full lg:w-[80%] max-w-[1000px] flex flex-col md:flex-row justify-between items-center gap-6 mt-4">
+          
+          {/* Back Button */}
+          <button 
+            onClick={() => navigate('/custom-bags')}
+            className="w-full md:w-auto min-w-[200px] order-3 md:order-1 px-8 py-3 bg-blue-100/80 hover:bg-blue-200 text-rose-700 text-xl font-semibold rounded-[10px] transition-colors shadow-sm text-center"
+          >
+            QUAY LẠI
+          </button>
 
-        {/* Subtotal Box */}
-        <div className="w-[609px] h-28 left-[431px] top-[940px] absolute bg-red-200/20 rounded-[10px]"></div>
-        <div className="w-40 h-10 left-[449px] top-[977px] absolute text-center justify-center text-white text-3xl font-semibold font-['Geologica'] leading-10">Tạm tính</div>
-        <div className="w-52 h-10 left-[773px] top-[977px] absolute text-right justify-center text-[#AF2E38] font-bold text-3xl font-['Geologica'] leading-10">
-          {new Intl.NumberFormat('vi-VN').format(totalSubtotal)}đ
-        </div>
+          {/* Subtotal Display */}
+          <div className="w-full md:w-auto flex-grow order-1 md:order-2 bg-red-50/50 outline outline-1 outline-rose-200 rounded-[10px] p-4 flex justify-between items-center px-6 md:px-12 shadow-sm backdrop-blur-sm h-full min-h-[60px]">
+            <span className="text-[#AF2E38] text-xl md:text-2xl font-bold">Tạm tính</span>
+            <span className="text-[#AF2E38] text-2xl md:text-3xl font-bold">
+              {new Intl.NumberFormat('vi-VN').format(totalSubtotal)}đ
+            </span>
+          </div>
 
-        {/* Progress Bar (Đồng bộ với custom-bags) */}
-        <div className="w-[1131px] h-28 left-[150px] top-[135px] absolute overflow-hidden z-20">
-          <div className="w-[982px] h-[1px] left-[70px] top-[47px] absolute bg-black"></div>
-          {/* Bước 1: Hoa (Completed) */}
-          <Link to="/custom-flowers" className="absolute left-[50px] top-[27px]">
-            <div className="w-10 h-10 bg-[#AF2E38] rounded-full cursor-pointer"></div>
+          {/* Continue Button */}
+          <Link 
+            to="/custom-cards" 
+            className="w-full md:w-auto min-w-[200px] order-2 md:order-3 px-8 py-3 bg-blue-200 hover:bg-blue-300 text-rose-700 text-xl font-semibold rounded-[10px] transition-colors shadow-sm text-center"
+          >
+            TIẾP TỤC
           </Link>
-          <Link to="/custom-flowers" className="absolute left-[39px] top-[75px]">
-            <div className="w-16 h-6 text-center text-black text-2xl font-extralight font-['Geologica'] leading-9 cursor-pointer">Hoa</div>
-          </Link>
-          {/* Bước 2: Lá (Completed) */}
-          <Link to="/custom-leaves" className="absolute left-[290px] top-[25px]">
-            <div className="w-10 h-10 bg-[#AF2E38] rounded-full cursor-pointer"></div>
-          </Link>
-          <Link to="/custom-leaves" className="absolute left-[281px] top-[75px]">
-            <div className="w-16 h-6 text-center text-black text-2xl font-extralight font-['Geologica'] leading-9 cursor-pointer">Lá</div>
-          </Link>
-          {/* Bước 3: Túi (Completed) */}
-          <Link to="/custom-bags" className="absolute left-[538px] top-[25px]">
-            <div className="w-10 h-10 bg-[#AF2E38] rounded-full cursor-pointer"></div>
-          </Link>
-          <Link to="/custom-bags" className="absolute left-[526px] top-[75px]">
-            <div className="w-16 h-6 text-center text-black text-2xl font-extralight font-['Geologica'] leading-9 cursor-pointer">Túi</div>
-          </Link>
-          {/* Bước 4: Xem trước (AI) ACTIVE */}
-          <Link to="/custom-preview" className="absolute left-[620px] top-[15px] cursor-pointer z-20">
-            <div className="w-16 h-16 bg-[#AF2E38] rounded-full flex items-center justify-center shadow-lg">
-              <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="2"/>
-                <ellipse cx="12" cy="6" rx="1.8" ry="3"/>
-                <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(60 12 12)"/>
-                <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(120 12 12)"/>
-                <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(180 12 12)"/>
-                <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(240 12 12)"/>
-                <ellipse cx="12" cy="6" rx="1.8" ry="3" transform="rotate(300 12 12)"/>
-              </svg>
-            </div>
-          </Link>
-          <div className="w-24 h-6 left-[600px] top-[75px] absolute text-center justify-center text-[#AF2E38] text-xl font-bold font-['Geologica'] leading-9">Xem Trước</div>
-
-          {/* Bước 5: Thiệp */}
-          <div className="absolute left-[785px] top-[25px]">
-            <div className="w-10 h-10 bg-[#B8DAFF] rounded-full"></div>
-          </div>
-          <div className="absolute left-[770px] top-[75px]">
-            <div className="w-16 h-6 text-center text-black text-2xl font-extralight font-['Geologica'] leading-9">Thiệp</div>
-          </div>
-          {/* Bước 6: Thanh toán */}
-          <div className="absolute left-[1032px] top-[25px]">
-            <div className="w-10 h-10 bg-[#B8DAFF] rounded-full"></div>
-          </div>
-          <div className="absolute left-[982px] top-[75px]">
-            <div className="w-32 h-6 text-center text-black text-2xl font-extralight font-['Geologica'] leading-9">Thanh toán</div>
-          </div>
+          
         </div>
 
       </div>
