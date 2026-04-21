@@ -41,6 +41,7 @@ export default function CustomPreview() {
   const [loading, setLoading] = useState(false);
   const [totalSubtotal, setTotalSubtotal] = useState(0);
   const [previewError, setPreviewError] = useState("");
+  const [previewMeta, setPreviewMeta] = useState(null);
 
   const location = useLocation();
 
@@ -64,6 +65,7 @@ export default function CustomPreview() {
       const fetchAIImage = async () => {
       setLoading(true);
       setPreviewError("");
+      setPreviewMeta(null);
       try {
         // Fetch all products to resolve IDs to ImageUrls
         const resProd = await fetch(`${backendUrl}/api/products`);
@@ -155,10 +157,20 @@ export default function CustomPreview() {
           if (aiData.imageBase64) {
             setAiImage(aiData.imageBase64);
             setPreviewError("");
+            setPreviewMeta({
+              backend: aiData.usedImageBackend || "unknown",
+              imageModel: aiData.usedImageModel || "unknown",
+              visionModel: aiData.usedVisionModel || "unknown",
+              signature: aiData.selectionSignature || ""
+            });
             localStorage.setItem('customPreviewImage', aiData.imageBase64);
             localStorage.setItem('aiGeneratedImage', aiData.imageBase64);
             localStorage.setItem('aiGeneratedComboKey', currentComboKey);
             localStorage.setItem('aiGeneratedCacheVersion', previewCacheVersion);
+
+            if ((aiData.usedImageBackend || "") !== "gemini") {
+              console.warn("Preview đang chạy fallback backend:", aiData.usedImageBackend, aiData.usedImageModel);
+            }
           }
         } else {
           const rawError = resAi ? await resAi.text() : "No response from preview API after retries";
@@ -210,6 +222,12 @@ export default function CustomPreview() {
                </div>
             )}
         </div>
+
+        {previewMeta && (
+          <div className="absolute left-[266px] top-[924px] w-[971px] text-[12px] text-white/80 text-center font-['Geologica']">
+            AI backend: {previewMeta.backend} | Image model: {previewMeta.imageModel} | Vision model: {previewMeta.visionModel}
+          </div>
+        )}
 
         {/* Buttons */}
         <Link to="/custom-cards" className="w-48 h-12 left-[1241px] top-[1024px] absolute overflow-hidden block hover:opacity-80 transition cursor-pointer">

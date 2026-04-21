@@ -28,6 +28,16 @@ const maskApiKey = (key = "") => {
   return `${"*".repeat(Math.max(0, key.length - 4))}${key.slice(-4)}`;
 };
 
+const createStableSignature = (payload) => {
+  const raw = JSON.stringify(payload || "");
+  let hash = 2166136261;
+  for (let i = 0; i < raw.length; i += 1) {
+    hash ^= raw.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(16);
+};
+
 const resolveAiConfig = async () => {
   try {
     const config = await AiConfig.findOne({ singletonKey: "default" }).lean();
@@ -198,145 +208,71 @@ export const generatePreview = async (req, res) => {
 
     const genAI = hasGeminiApiKey ? new GoogleGenerativeAI(API_KEY) : null;
 
-    // ── BƯỚC 1: Vision → tạo prompt (cascade fallback) ──
-    const VISION_MODELS = [
-      "gemini-2.0-flash-lite",   // nhẹ nhất, ít bị overload nhất
-      "gemini-2.0-flash-001",    // ổn định, versioned
-      "gemini-2.5-flash",        // mạnh hơn nhưng hay bị 503
-    ];
-
-    const promptInstructions = `You are a professional floral photographer.
-I provide reference images in this order:
-- first: flowers (can contain duplicates to indicate quantity)
-- then: leaves/greenery (can contain duplicates to indicate quantity)
-- last: optional bag/vase
-
-Your task:
-1) Analyze exact color, texture, petal/leaf shape, and silhouette of EACH reference.
-2) Write ONE single detailed English prompt for a hyper-realistic studio photo.
-3) The bouquet must match these references EXACTLY. Do not invent extra flower species, extra leaves, extra accessories, ribbons, cards, or fillers.
-4) Enforce exact counts for each selected flower/leaf type. Example: if selected quantity is 3, output must show exactly 3 stems of that selected type.
-5) Keep full bouquet and full bag/vase visible in frame (wide angle, zoomed out, no crop).
-6) The bag/vase must match the reference image silhouette and structure (opening shape, handle form, body proportions, material feel, and dominant color).
-6) Neutral clean background, soft studio lighting, realistic product-photo style.
-
-Return ONLY the prompt text, no explanation.`;
-
     const formatItemSummaryLine = (item) =>
       `- ${item.label || item.key}: exactly ${item.quantity}`;
 
-    const quantitySummary = [
-      `Flowers image count: ${flowerUrls.length}`,
-      `Leaves image count: ${leafUrls.length}`,
-      `Has bag image: ${trimmedBagUrl ? "yes" : "no"}`,
-      "",
-      "Exact flower requirements:",
-      ...(normalizedFlowerItems.length > 0 ? normalizedFlowerItems.map(formatItemSummaryLine) : ["- none"]),
-      "",
-      "Exact leaf requirements:",
-      ...(normalizedLeafItems.length > 0 ? normalizedLeafItems.map(formatItemSummaryLine) : ["- none"]),
-      "",
-      `Bag reference label: ${normalizedBagItem?.label || "none"}`,
-      `Strict mode: ${useStrictReference ? "ON" : "OFF"}`
-    ].join("\n");
+    const selectionSignature = createStableSignature({
+      flowers: normalizedFlowerItems.map((item) => ({ key: item.key, quantity: item.quantity })),
+      leaves: normalizedLeafItems.map((item) => ({ key: item.key, quantity: item.quantity })),
+      bag: normalizedBagItem ? { key: normalizedBagItem.key, quantity: normalizedBagItem.quantity } : null,
+      strictReference: useStrictReference
+    });
 
-    const deterministicFallbackPrompt = [
-      "Hyper-realistic studio product photo of a handcrafted bouquet arrangement.",
-      "Use only the provided flower/leaf/bag references. Do not add extra species, fillers, props, ribbons, or cards.",
-      "Keep full bouquet and full bag visible in frame, wide composition, soft neutral background.",
-      "Flower exact counts:",
-      ...(normalizedFlowerItems.length > 0 ? normalizedFlowerItems.map(formatItemSummaryLine) : ["- none"]),
-      "Leaf exact counts:",
-      ...(normalizedLeafItems.length > 0 ? normalizedLeafItems.map(formatItemSummaryLine) : ["- none"]),
-      `Bag reference: ${normalizedBagItem?.label || "none"}`,
-      `Strict mode: ${useStrictReference ? "ON" : "OFF"}`
-    ].join("\n");
+    const referenceParts = [];
 
-    const imageParts = [];
-    for (const url of flowerUrls.slice(0, 12)) {
-      const fPart = await urlToGenerativePart(url);
-      if (fPart) imageParts.push(fPart);
-    }
-    for (const url of leafUrls.slice(0, 8)) {
-      const lPart = await urlToGenerativePart(url);
-      if (lPart) imageParts.push(lPart);
-    }
-    if (trimmedBagUrl) {
-      const bPart = await urlToGenerativePart(trimmedBagUrl);
-      if (bPart) imageParts.push(bPart);
+    for (const item of normalizedFlowerItems.slice(0, 12)) {
+      const flowerPart = await urlToGenerativePart(item.imageUrl);
+      if (!flowerPart) continue;
+      referenceParts.push(flowerPart);
+      referenceParts.push({
+        text: `Flower reference: ${item.label}. Use exactly ${item.quantity} stems of this flower type.`
+      });
     }
 
-    if (imageParts.length === 0) {
+    for (const item of normalizedLeafItems.slice(0, 8)) {
+      const leafPart = await urlToGenerativePart(item.imageUrl);
+      if (!leafPart) continue;
+      referenceParts.push(leafPart);
+      referenceParts.push({
+        text: `Leaf reference: ${item.label}. Use exactly ${item.quantity} stems/leaves of this greenery type.`
+      });
+    }
+
+    if (normalizedBagItem?.imageUrl) {
+      const bagPart = await urlToGenerativePart(normalizedBagItem.imageUrl);
+      if (bagPart) {
+        referenceParts.push(bagPart);
+        referenceParts.push({
+          text: `Bag/container reference: ${normalizedBagItem.label}. Match this container shape, color, and structure.`
+        });
+      }
+    }
+
+    if (referenceParts.length === 0) {
       return res.status(400).json({ message: "Không đọc được ảnh nguyên liệu từ payload." });
     }
 
-    let generatedPrompt = null;
-    let usedVisionModel = null;
-    if (genAI) {
-      for (const vModel of VISION_MODELS) {
-      const MAX_VISION_RETRIES = 2;
-      const BASE_DELAY_MS = 1200;
+    const usedVisionModel = "direct-reference-prompt";
 
-      for (let attempt = 1; attempt <= MAX_VISION_RETRIES + 1; attempt += 1) {
-        try {
-          console.log(`🧠 Vision thử model: ${vModel} (lần ${attempt})`);
-          const visionModel = genAI.getGenerativeModel({ model: vModel });
-          const visionResult = await visionModel.generateContent([
-            promptInstructions,
-            quantitySummary,
-            ...imageParts
-          ]);
-          generatedPrompt = visionResult.response.text().trim();
-          usedVisionModel = vModel;
-          console.log(`✅ Vision OK (${vModel}):`, generatedPrompt.substring(0, 80) + "...");
-          break;
-        } catch (ve) {
-          const shortMessage = String(ve?.message || "Unknown error").substring(0, 140);
-          const shouldRetry = isTransientModelError(ve) && attempt <= MAX_VISION_RETRIES;
-          console.warn(`⚠️ Vision ${vModel} thất bại (lần ${attempt}):`, shortMessage);
-
-          if (!shouldRetry) {
-            break;
-          }
-
-          const backoffMs = BASE_DELAY_MS * attempt;
-          console.log(`⏳ Retry Vision ${vModel} sau ${backoffMs}ms...`);
-          await wait(backoffMs);
-        }
-      }
-
-        if (generatedPrompt) {
-          break;
-        }
-      }
-    }
-
-    if (!generatedPrompt) {
-      generatedPrompt = deterministicFallbackPrompt;
-      usedVisionModel = "deterministic-fallback";
-      console.warn("⚠️ Vision unavailable. Switched to deterministic fallback prompt.");
-    }
-
-    const hardConstraints = [
-      "MANDATORY CONSTRAINTS:",
-      "- Preserve exact flower and leaf type counts listed below.",
-      "- No additional flowers/leaves/fillers/ribbons/props.",
-      "- Keep bag/vase silhouette and structure close to the provided bag reference.",
-      "- If any conflict occurs, prioritize these constraints over artistic choices.",
-      "",
+    const finalImagePrompt = [
+      "3D digital art render of a floral arrangement.",
+      "Style: clean, polished, soft studio lighting, cinematic product-photo look.",
+      "Use ONLY the provided references for flower species, leaves, and bag/container.",
+      "Do not invent any extra species, fillers, ribbons, cards, props, or accessories.",
+      "Keep the full bouquet and full bag visible in frame (zoomed out, no crop).",
+      "Match bag reference exactly in shape, opening, handle/body proportions, and color tone.",
       "Flower exact counts:",
       ...(normalizedFlowerItems.length > 0 ? normalizedFlowerItems.map(formatItemSummaryLine) : ["- none"]),
-      "",
       "Leaf exact counts:",
       ...(normalizedLeafItems.length > 0 ? normalizedLeafItems.map(formatItemSummaryLine) : ["- none"]),
-      "",
-      `Bag shape lock: ${normalizedBagItem ? `match ${normalizedBagItem.label}` : "none"}`
+      `Bag reference: ${normalizedBagItem ? normalizedBagItem.label : "none"}`,
+      `Strict mode: ${useStrictReference ? "ON" : "OFF"}`,
+      `Selection signature: ${selectionSignature}`
     ].join("\n");
 
-    const finalImagePrompt = `${generatedPrompt}\n\n${hardConstraints}`;
     const imageGenerationParts = [
       { text: finalImagePrompt },
-      ...imageParts
+      ...referenceParts
     ];
 
     // ── BƯỚC 2: sinh ảnh với các model có hỗ trợ image output ──
@@ -344,7 +280,7 @@ Return ONLY the prompt text, no explanation.`;
     let usedImageModel = null;
     let usedImageBackend = null;
     const shouldTryGeminiImage = imageProvider !== "pollinations-only" && Boolean(genAI);
-    const shouldTryPollinations = imageProvider !== "gemini-only";
+    const shouldTryPollinations = imageProvider !== "gemini-only" && !useStrictReference;
 
     const generateWithImageModel = async (modelName) => {
       const MAX_IMAGE_RETRIES = 1;
@@ -387,18 +323,8 @@ Return ONLY the prompt text, no explanation.`;
     };
 
     if (shouldTryGeminiImage) {
-      // Thử 1: gemini-2.5-flash-image (hỗ trợ image generation, có trong ListModels)
+      // Model ảnh chính theo mẫu tham chiếu.
       base64Image = await generateWithImageModel("gemini-2.5-flash-image");
-
-      // Thử 2: gemini-3.1-flash-image-preview (fallback)
-      if (!base64Image) {
-        base64Image = await generateWithImageModel("gemini-3.1-flash-image-preview");
-      }
-
-      // Thử 3: model ổn định hơn cho nhiều project cũ
-      if (!base64Image) {
-        base64Image = await generateWithImageModel("gemini-1.5-flash");
-      }
     }
 
     // Thử 4: Pollinations AI (Miễn phí 100%, không cần API Key - Giải pháp cứu cánh cho luồng miễn phí)
@@ -407,8 +333,9 @@ Return ONLY the prompt text, no explanation.`;
         console.log("🔄 Thử Pollinations AI (Free Open Source Image Gen)...");
         // Mã hoá prompt để đưa lên URL
         const encodedPrompt = encodeURIComponent(finalImagePrompt);
+        const pollinationsSeed = parseInt(selectionSignature.slice(0, 8), 16) || 1;
         // Gọi Pollinations tạo ảnh tỷ lệ 1:1, không có logo (nologo=true)
-        const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=800&height=800&nologo=true`;
+        const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=800&height=800&nologo=true&seed=${pollinationsSeed}&model=flux`;
         
         const polliResp = await axios.get(pollinationsUrl, { responseType: 'arraybuffer' });
         const buffer = Buffer.from(polliResp.data, 'binary');
@@ -422,10 +349,19 @@ Return ONLY the prompt text, no explanation.`;
       }
     }
 
+    if (!base64Image && useStrictReference) {
+      return res.status(503).json({
+        message: "Gemini image model không khả dụng nên không thể tạo ảnh strict-reference lúc này.",
+        provider: imageProvider,
+        usedVisionModel,
+        hint: "Kiểm tra GEMINI_API_KEY/quota/model availability và thử lại."
+      });
+    }
+
     if (!base64Image) {
       return res.status(500).json({
         message: "Tất cả model sinh ảnh đều bị chặn hoặc quá tải ở Free Tier.",
-        prompt: generatedPrompt,
+        prompt: finalImagePrompt,
         provider: imageProvider,
         hint: "Kiểm tra quota hoặc enable billing tại https://ai.dev/rate-limit"
       });
@@ -433,15 +369,16 @@ Return ONLY the prompt text, no explanation.`;
 
     res.json({
       imageBase64: base64Image,
-        prompt: finalImagePrompt,
+      prompt: finalImagePrompt,
       provider: imageProvider,
       usedVisionModel,
       usedImageModel,
       usedImageBackend,
+      selectionSignature,
       flowerCount: flowerUrls.length,
       leafCount: leafUrls.length,
-        hasBag: Boolean(trimmedBagUrl),
-        strictReference: useStrictReference
+      hasBag: Boolean(trimmedBagUrl),
+      strictReference: useStrictReference
     });
 
   } catch (error) {
