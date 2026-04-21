@@ -127,7 +127,11 @@ export default function Customcards() {
   };
 
   return (
-    <div className="w-[1440px] h-[1200px] px-10 relative left-1/2 -translate-x-1/2 bg-Color-3 inline-flex flex-col justify-start items-center overflow-hidden">
+    <div className="w-full overflow-x-auto overflow-y-visible py-4">
+      <div
+        className="relative mx-auto inline-flex flex-col justify-start items-center overflow-hidden bg-Color-3 px-10"
+        style={{ width: 1440, minWidth: 1440, height: 1200 }}
+      >
       
       {/* Right Pane Summary */}
       <div className="w-[525px] h-[532px] left-[816px] top-[280px] absolute bg-white rounded-[10px] outline outline-1 outline-offset-[-1px] outline-[#AF2E38] overflow-hidden">
@@ -307,6 +311,7 @@ export default function Customcards() {
         <div className="absolute left-[982px] top-[75px]">
           <div className="w-32 h-6 text-center text-black text-2xl font-extralight font-['Geologica'] leading-9">Thanh toán</div>
         </div>
+      </div>
       </div>
     </div>
   );

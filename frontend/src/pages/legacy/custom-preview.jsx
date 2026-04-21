@@ -185,9 +185,12 @@ export default function CustomPreview() {
   const placeHolder = "https://placehold.co/791x607?text=AI+is+generating...";
 
   return (
-    <div className="w-full bg-Color-3 flex justify-center">
+    <div className="w-full overflow-x-auto overflow-y-visible py-4 bg-Color-3">
       {/* Outer wrapper matching Figma size */}
-      <div className="w-[1440px] h-[1400px] relative overflow-hidden bg-Color-3">
+      <div
+        className="relative mx-auto overflow-hidden bg-Color-3"
+        style={{ width: 1440, minWidth: 1440, height: 1400 }}
+      >
         
         {/* Main Stamp Container for AI Image */}
         <div className="w-[971px] h-[636px] left-[266px] top-[278px] absolute bg-rose-700 rounded-[20px] outline outline-1 outline-offset-[-1px] outline-red-600 overflow-hidden flex items-center justify-center">

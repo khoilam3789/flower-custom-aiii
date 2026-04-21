@@ -111,7 +111,11 @@ export default function Customleaves(){
   };
 
   return (
-<div className="w-[1440px] h-[1000px] px-10 relative left-1/2 -translate-x-1/2 bg-Color-3 inline-flex flex-col justify-start items-center overflow-hidden">
+<div className="w-full overflow-x-auto overflow-y-visible py-4">
+<div
+  className="relative mx-auto inline-flex flex-col justify-start items-center overflow-hidden bg-Color-3 px-10"
+  style={{ width: 1440, minWidth: 1440, height: 1000 }}
+>
   
   <div className="w-[525px] h-[532px] left-[816px] top-[280px] absolute bg-white rounded-[10px] outline outline-1 outline-offset-[-1px] outline-[#AF2E38] overflow-hidden">
     <div className="w-[477px] h-[340px] left-[24px] top-[26px] absolute overflow-y-auto overflow-x-hidden scrollbar-hide pr-3">
@@ -266,6 +270,7 @@ export default function Customleaves(){
     <div style={{ background: '#B8DAFF', borderRadius: '10px', padding: '12px 28px', color: '#AF2E38', fontSize: '24px', fontFamily: 'Geologica', fontWeight: '400', whiteSpace: 'nowrap' }}>TIẾP TỤC</div>
   </Link>
   
+</div>
 </div>
   );
 }
