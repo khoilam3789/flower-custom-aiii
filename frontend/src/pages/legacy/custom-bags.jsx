@@ -136,23 +136,26 @@ export default function Custombags() {
                 {/* Inner Content */}
                 <div className="absolute inset-0 flex flex-col z-10 p-4 gap-2">
                    {/* Price */}
-                   <div className="text-[13px] font-bold italic text-[#AF2E38] pl-2 z-20">
+                   <div className="text-[13px] font-bold italic text-[#AF2E38] pl-2 z-20 shrink-0">
                      {new Intl.NumberFormat('vi-VN').format(bag.price)} VNĐ
                    </div>
                    
                    {/* Image */}
-                   <div className="flex-1 min-h-0 flex justify-center items-center z-20 py-2">
-                     <img className="object-contain transition-transform duration-300 h-full w-full scale-[1.15] md:scale-[1.25] hover:scale-[1.25] md:hover:scale-[1.35]" src={bag.imageUrl} alt={bag.name} />
+                   <div className="flex-1 min-h-0 flex justify-center items-center z-20 pb-4 pt-2">
+                     <img className="object-contain transition-transform duration-300 h-full w-full scale-[1.5] md:scale-[1.7] hover:scale-[1.6] md:hover:scale-[1.85]" src={bag.imageUrl} alt={bag.name} />
                    </div>
                    
-                   {/* Name */}
-                   <div className="text-center text-[#3B73A9] text-base md:text-[17px] font-bold line-clamp-1 px-2 z-20 shrink-0 leading-normal">
-                     {bag.name}
-                   </div>
-                   
-                   {/* Description */}
-                   <div className="text-[#444] text-xs italic leading-tight text-center line-clamp-2 px-2 z-20">
-                     {bag.description}
+                   {/* Bottom Content Group (Name, Desc) pinned down */}
+                   <div className="flex flex-col shrink-0 items-center justify-end z-20 pb-1">
+                     {/* Name */}
+                     <div className="text-center text-[#3B73A9] text-base md:text-[17px] font-bold line-clamp-1 px-1 leading-snug pb-1">
+                       {bag.name}
+                     </div>
+                     
+                     {/* Description */}
+                     <div className="text-[#444] text-[11px] md:text-[13px] italic leading-tight text-center line-clamp-2 px-1 pb-3 min-h-[32px] md:min-h-[36px] flex items-center justify-center">
+                       {bag.description}
+                     </div>
                    </div>
 
                    {/* Custom Checkbox */}

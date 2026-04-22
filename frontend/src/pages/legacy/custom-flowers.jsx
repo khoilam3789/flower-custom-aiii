@@ -129,33 +129,33 @@ export default function Customhoa(){
                 {/* Inner Content */}
                 <div className="absolute inset-0 flex flex-col z-10 p-4 gap-2">
                    {/* Price */}
-                   <div className="text-[13px] font-bold italic text-[#AF2E38] pl-2 z-20">
+                   <div className="text-[13px] font-bold italic text-[#AF2E38] pl-2 z-20 shrink-0">
                      {new Intl.NumberFormat('vi-VN').format(flower.price)} VNĐ
                    </div>
                    
                    {/* Image */}
-                   <div className="flex-1 min-h-0 flex justify-center items-center z-20 py-2">
-                     <img className="object-contain transition-transform duration-300 h-full w-full scale-[1.15] md:scale-[1.25] hover:scale-[1.25] md:hover:scale-[1.35]" src={flower.imageUrl} alt={flower.name} />
+                   <div className="flex-1 min-h-0 flex justify-center items-center z-20 pb-4 pt-2">
+                     <img className="object-contain transition-transform duration-300 h-full w-full scale-[1.5] md:scale-[1.7] hover:scale-[1.6] md:hover:scale-[1.85]" src={flower.imageUrl} alt={flower.name} />
                    </div>
                    
-                   {/* Name */}
-                   <div className="text-center text-[#3B73A9] text-base md:text-[17px] font-bold line-clamp-1 px-2 z-20 shrink-0 leading-normal">
-                     {flower.name}
-                   </div>
-                   
-                   {/* Description */}
-                   <div className="text-[#444] text-xs italic leading-tight text-center line-clamp-2 px-2 z-20">
-                     {flower.description}
-                   </div>
+                   {/* Bottom Content Group (Name, Desc, Buttons) pinned down */}
+                   <div className="flex flex-col shrink-0 items-center justify-end z-20 pb-1">
+                     {/* Name */}
+                     <div className="text-center text-[#3B73A9] text-base md:text-[17px] font-bold line-clamp-1 px-1 leading-snug pb-1">
+                       {flower.name}
+                     </div>
+                     
+                     {/* Description */}
+                     <div className="text-[#444] text-[11px] md:text-[13px] italic leading-tight text-center line-clamp-2 px-1 pb-3 min-h-[32px] md:min-h-[36px] flex items-center justify-center">
+                       {flower.description}
+                     </div>
 
-                   {/* Spacer to push buttons to bottom if needed flex-grow */}
-                   <div className="flex-grow"></div>
-
-                   {/* Buttons */}
-                   <div className="flex items-center justify-center gap-4 z-20 pb-2">
-                     <button onClick={() => decrease(flower._id)} className="text-[#AF2E38] text-2xl font-medium w-8 h-8 hover:bg-rose-50 rounded-full transition">-</button>
-                     <span className="text-[#AF2E38] text-base font-bold italic w-5 text-center">{counts[flower._id] || 0}</span>
-                     <button onClick={() => increase(flower._id)} className="text-[#AF2E38] text-2xl font-medium w-8 h-8 hover:bg-rose-50 rounded-full transition">+</button>
+                     {/* Buttons */}
+                     <div className="flex items-center justify-center gap-4">
+                       <button onClick={(e) => { e.preventDefault(); decrease(flower._id); }} className="text-[#AF2E38] text-2xl font-black w-8 h-8 flex items-center justify-center hover:bg-rose-50 rounded-full transition shadow-sm bg-white/50 pb-1">-</button>
+                       <span className="text-[#AF2E38] text-base font-bold italic w-5 text-center">{counts[flower._id] || 0}</span>
+                       <button onClick={(e) => { e.preventDefault(); increase(flower._id); }} className="text-[#AF2E38] text-2xl font-black w-8 h-8 flex items-center justify-center hover:bg-rose-50 rounded-full transition shadow-sm bg-white/50 pb-1">+</button>
+                     </div>
                    </div>
                 </div>
               </div>
