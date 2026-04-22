@@ -84,24 +84,27 @@ export default function AboutUs() {
             className="w-full h-auto object-contain"
           />
           
-          <div className="absolute inset-0 grid grid-cols-3 grid-rows-2 pointer-events-none">
-             <div className="flex items-end justify-center pb-2 translate-y-2 md:translate-y-4 lg:translate-y-8 -translate-x-4 md:-translate-x-8 lg:-translate-x-12">
-                <span className="font-bold text-[10px] sm:text-xs md:text-base lg:text-[19px] uppercase tracking-widest whitespace-nowrap text-zinc-900 drop-shadow-sm">Trần Thiên Phúc</span>
+          <div className="absolute inset-0 pointer-events-none">
+             {/* ROW 1 */}
+             <div className="absolute top-[48%] left-[16.66%] -translate-x-1/2 flex justify-center w-[30%]">
+                <span className="font-bold text-[9px] sm:text-[11px] md:text-sm lg:text-[17px] uppercase tracking-widest text-center text-zinc-900 drop-shadow-sm leading-tight">Trần Thiên Phúc</span>
              </div>
-             <div className="flex items-end justify-center pb-2 translate-y-2 md:translate-y-4 lg:translate-y-8">
-                <span className="font-bold text-[10px] sm:text-xs md:text-base lg:text-[19px] uppercase tracking-widest whitespace-nowrap text-zinc-900 drop-shadow-sm">Lê Thị Phương Vi</span>
+             <div className="absolute top-[48%] left-[50%] -translate-x-1/2 flex justify-center w-[30%]">
+                <span className="font-bold text-[9px] sm:text-[11px] md:text-sm lg:text-[17px] uppercase tracking-widest text-center text-zinc-900 drop-shadow-sm leading-tight">Lê Thị Phương Vi</span>
              </div>
-             <div className="flex items-end justify-center pb-2 translate-y-2 md:translate-y-4 lg:translate-y-8 translate-x-4 md:translate-x-8 lg:translate-x-12">
-                <span className="font-bold text-[10px] sm:text-xs md:text-base lg:text-[19px] uppercase tracking-widest whitespace-nowrap text-zinc-900 drop-shadow-sm">Nguyễn Thị Lê Na</span>
+             <div className="absolute top-[48%] left-[83.33%] -translate-x-1/2 flex justify-center w-[30%]">
+                <span className="font-bold text-[9px] sm:text-[11px] md:text-sm lg:text-[17px] uppercase tracking-widest text-center text-zinc-900 drop-shadow-sm leading-tight">Nguyễn Thị Lê Na</span>
              </div>
-             <div className="flex items-end justify-center pb-2 translate-y-2 md:translate-y-4 lg:translate-y-8 -translate-x-4 md:-translate-x-8 lg:-translate-x-12">
-                <span className="font-bold text-[10px] sm:text-xs md:text-base lg:text-[19px] uppercase tracking-widest whitespace-nowrap text-zinc-900 drop-shadow-sm">Trần Phối Kim</span>
+
+             {/* ROW 2 */}
+             <div className="absolute top-[96%] left-[16.66%] -translate-x-1/2 flex justify-center w-[30%]">
+                <span className="font-bold text-[9px] sm:text-[11px] md:text-sm lg:text-[17px] uppercase tracking-widest text-center text-zinc-900 drop-shadow-sm leading-tight">Trần Phối Kim</span>
              </div>
-             <div className="flex items-end justify-center pb-2 translate-y-2 md:translate-y-4 lg:translate-y-8">
-                <span className="font-bold text-[10px] sm:text-xs md:text-base lg:text-[19px] uppercase tracking-widest whitespace-nowrap text-zinc-900 drop-shadow-sm">Lý Tú Trân</span>
+             <div className="absolute top-[96%] left-[50%] -translate-x-1/2 flex justify-center w-[30%]">
+                <span className="font-bold text-[9px] sm:text-[11px] md:text-sm lg:text-[17px] uppercase tracking-widest text-center text-zinc-900 drop-shadow-sm leading-tight">Lý Tú Trân</span>
              </div>
-             <div className="flex items-end justify-center pb-2 translate-y-2 md:translate-y-4 lg:translate-y-8 translate-x-4 md:translate-x-8 lg:translate-x-12">
-                <span className="font-bold text-[10px] sm:text-xs md:text-base lg:text-[19px] uppercase tracking-widest whitespace-nowrap text-zinc-900 drop-shadow-sm">Phan Minh Thúy Trâm</span>
+             <div className="absolute top-[96%] left-[83.33%] -translate-x-1/2 flex justify-center w-[30%]">
+                <span className="font-bold text-[9px] sm:text-[11px] md:text-sm lg:text-[17px] uppercase tracking-widest text-center text-zinc-900 drop-shadow-sm leading-tight">Phan Minh Thúy Trâm</span>
              </div>
           </div>
         </div>
