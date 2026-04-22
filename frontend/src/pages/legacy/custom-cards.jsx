@@ -169,8 +169,8 @@ export default function Customcards() {
                   </div>
 
                   {/* Image */}
-                  <div className="flex-1 min-h-0 flex justify-center items-center mt-8 z-10 w-full px-2">
-                    <img className="object-contain h-full w-auto hover:scale-105 transition max-h-[90px]" src={card.imageUrl} alt={card.name} />
+                  <div className="flex-1 min-h-0 flex justify-center items-center mt-6 z-10 w-full px-2 py-2">
+                    <img className="object-contain transition-transform duration-300 h-full w-full scale-[1.15] md:scale-[1.25] hover:scale-[1.25] md:hover:scale-[1.35]" src={card.imageUrl} alt={card.name} />
                   </div>
                   
                   {/* Name */}

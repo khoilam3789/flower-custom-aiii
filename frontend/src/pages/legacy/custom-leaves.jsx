@@ -138,8 +138,8 @@ export default function Customleaves(){
                    </div>
                    
                    {/* Image */}
-                   <div className="flex-1 min-h-0 flex justify-center items-center z-20">
-                     <img className="object-contain hover:scale-105 transition h-full max-h-[120px] md:max-h-[140px]" src={leaf.imageUrl} alt={leaf.name} />
+                   <div className="flex-1 min-h-0 flex justify-center items-center z-20 py-2">
+                     <img className="object-contain transition-transform duration-300 h-full w-full scale-[1.15] md:scale-[1.25] hover:scale-[1.25] md:hover:scale-[1.35]" src={leaf.imageUrl} alt={leaf.name} />
                    </div>
                    
                    {/* Name */}
