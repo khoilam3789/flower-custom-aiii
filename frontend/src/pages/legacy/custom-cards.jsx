@@ -169,12 +169,12 @@ export default function Customcards() {
                   </div>
 
                   {/* Image */}
-                  <div className="flex justify-center items-center mt-8 h-[90px] z-10 w-full px-2">
-                    <img className="object-contain h-full w-auto hover:scale-105 transition" src={card.imageUrl} alt={card.name} />
+                  <div className="flex-1 min-h-0 flex justify-center items-center mt-8 z-10 w-full px-2">
+                    <img className="object-contain h-full w-auto hover:scale-105 transition max-h-[90px]" src={card.imageUrl} alt={card.name} />
                   </div>
                   
                   {/* Name */}
-                  <div className="text-center mt-3 text-[#3B73A9] text-[13px] font-bold truncate w-full px-2 z-10">
+                  <div className="text-center mt-3 text-[#3B73A9] text-[13px] font-bold line-clamp-1 w-full px-2 z-10 shrink-0 leading-normal">
                     {card.name}
                   </div>
                   

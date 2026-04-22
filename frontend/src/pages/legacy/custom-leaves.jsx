@@ -138,12 +138,12 @@ export default function Customleaves(){
                    </div>
                    
                    {/* Image */}
-                   <div className="flex justify-center items-center h-[40%] md:h-[45%] z-20">
-                     <img className="object-contain hover:scale-105 transition h-full" src={leaf.imageUrl} alt={leaf.name} />
+                   <div className="flex-1 min-h-0 flex justify-center items-center z-20">
+                     <img className="object-contain hover:scale-105 transition h-full max-h-[120px] md:max-h-[140px]" src={leaf.imageUrl} alt={leaf.name} />
                    </div>
                    
                    {/* Name */}
-                   <div className="text-center text-[#3B73A9] text-base md:text-[17px] font-bold truncate px-2 z-20">
+                   <div className="text-center text-[#3B73A9] text-base md:text-[17px] font-bold line-clamp-1 px-2 z-20 shrink-0 leading-normal">
                      {leaf.name}
                    </div>
                    
