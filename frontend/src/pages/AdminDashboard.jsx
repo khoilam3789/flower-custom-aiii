@@ -526,12 +526,27 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-      <div className="flex space-x-4 mb-6 bg-white border border-slate-200 rounded-2xl px-3 pt-4 overflow-x-auto whitespace-nowrap shadow-sm">
-        <button onClick={() => switchTab("users")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "users" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Quản Lý Tài Khoản</button>
-        <button onClick={() => switchTab("orders")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "orders" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Quản Lý Đơn Hàng</button>
-        <button onClick={() => switchTab("products")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "products" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Kho Sản Phẩm (Hoa/Lá)</button>
-        <button onClick={() => switchTab("stories")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "stories" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Trang Story</button>
-        <button onClick={() => switchTab("ai-settings")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "ai-settings" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>AI Settings</button>
+      <div className="mb-6 bg-white border border-slate-200 rounded-2xl px-3 pt-4 shadow-sm">
+        <div className="flex items-center justify-between gap-3 mb-3">
+          <div className="overflow-x-auto whitespace-nowrap flex space-x-4">
+            <button onClick={() => switchTab("users")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "users" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Quản Lý Tài Khoản</button>
+            <button onClick={() => switchTab("orders")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "orders" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Quản Lý Đơn Hàng</button>
+            <button onClick={() => switchTab("products")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "products" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Kho Sản Phẩm (Hoa/Lá)</button>
+            <button onClick={() => switchTab("stories")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "stories" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Trang Story</button>
+            <button onClick={() => switchTab("ai-settings")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "ai-settings" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>AI Settings</button>
+          </div>
+
+          {activeTab === "orders" && (
+            <button
+              type="button"
+              onClick={handleCleanupLegacyBase64}
+              disabled={cleaningBase64}
+              className="mb-3 mr-1 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition disabled:opacity-60 shrink-0"
+            >
+              {cleaningBase64 ? "Dang cleanup..." : "Xoa Base64 cu"}
+            </button>
+          )}
+        </div>
       </div>
 
       {loading ? (
