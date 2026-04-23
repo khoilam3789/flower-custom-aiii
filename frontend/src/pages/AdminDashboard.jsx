@@ -952,6 +952,15 @@ export default function AdminDashboard() {
         </div>
       )}
       </div>
+
+      <button
+        type="button"
+        onClick={handleCleanupLegacyBase64}
+        disabled={cleaningBase64}
+        className="fixed bottom-6 right-6 z-40 px-4 py-3 rounded-xl bg-red-600 text-white text-sm font-bold shadow-lg hover:bg-red-700 transition disabled:opacity-60"
+      >
+        {cleaningBase64 ? "Dang cleanup DB..." : "Clean Base64 DB"}
+      </button>
     </div>
   );
 }
