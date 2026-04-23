@@ -56,6 +56,34 @@ const sanitizeExploreItems = (items = []) =>
     }))
     .filter((item) => item.label);
 
+const initialBlogForm = {
+  title: "",
+  slug: "",
+  coverImage: "",
+  date: "",
+  summary: "",
+  themeColor: "bg-pink-300/40",
+  tableOfContentsText: "",
+  sections: [],
+  showOnHome: true,
+  showOnStoryPage: true,
+  isPublished: true
+};
+
+const blogToForm = (blog) => ({
+  title: blog.title || "",
+  slug: blog.slug || "",
+  coverImage: blog.coverImage || "",
+  date: blog.date || "",
+  summary: blog.summary || "",
+  themeColor: blog.themeColor || "bg-pink-300/40",
+  tableOfContentsText: (blog.tableOfContents || []).join("\n"),
+  sections: blog.sections || [],
+  showOnHome: Boolean(blog.showOnHome),
+  showOnStoryPage: Boolean(blog.showOnStoryPage),
+  isPublished: Boolean(blog.isPublished)
+});
+
 const storyToForm = (story) => ({
   title: story.title || "",
   slug: story.slug || "",
@@ -89,7 +117,7 @@ export default function AdminDashboard() {
   const backendUrl = API_BASE;
 
   const tabFromQuery = searchParams.get("tab");
-  const allowedTabs = ["users", "orders", "products", "stories", "ai-settings"];
+  const allowedTabs = ["users", "orders", "products", "stories", "blogs", "ai-settings"];
   const initialTab = allowedTabs.includes(tabFromQuery) ? tabFromQuery : "users";
 
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -97,6 +125,9 @@ export default function AdminDashboard() {
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
   const [stories, setStories] = useState([]);
+  const [blogs, setBlogs] = useState([]);
+  const [blogForm, setBlogForm] = useState(initialBlogForm);
+  const [editingBlogId, setEditingBlogId] = useState(null);
   const [aiSettings, setAiSettings] = useState({
     imageProvider: "auto",
     geminiApiKeyInput: "",
@@ -128,6 +159,7 @@ export default function AdminDashboard() {
         fetchStories();
         fetchHomeReviews();
       }
+      else if (activeTab === "blogs") fetchBlogs();
       else if (activeTab === "ai-settings") fetchAiSettings();
     }
   }, [activeTab, user]);
@@ -181,6 +213,21 @@ export default function AdminDashboard() {
       });
       if (res.ok) {
         setStories(await res.json());
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setLoading(false);
+  };
+
+  const fetchBlogs = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${backendUrl}/api/blogs`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setBlogs(await res.json());
       }
     } catch (e) {
       console.error(e);
@@ -550,6 +597,120 @@ export default function AdminDashboard() {
     } catch (e) {
       console.error(e);
     }
+  };
+
+  const resetBlogForm = () => {
+    setBlogForm(initialBlogForm);
+    setEditingBlogId(null);
+  };
+
+  const addBlogSection = () => {
+    setBlogForm((prev) => ({
+      ...prev,
+      sections: [...prev.sections, { type: "text", heading: "", content: "", imageUrl: "" }]
+    }));
+  };
+
+  const updateBlogSection = (index, field, value) => {
+    setBlogForm((prev) => {
+      const nextSections = [...prev.sections];
+      nextSections[index] = { ...nextSections[index], [field]: value };
+      return { ...prev, sections: nextSections };
+    });
+  };
+
+  const removeBlogSection = (index) => {
+    setBlogForm((prev) => {
+      const nextSections = prev.sections.filter((_, idx) => idx !== index);
+      return { ...prev, sections: nextSections };
+    });
+  };
+
+  const handleSaveBlog = async (e) => {
+    e.preventDefault();
+    try {
+      const payload = {
+        ...blogForm,
+        tableOfContents: parseMultiLine(blogForm.tableOfContentsText),
+        sections: blogForm.sections.map(s => ({
+          type: s.type,
+          heading: String(s.heading || "").trim(),
+          content: String(s.content || "").trim(),
+          imageUrl: String(s.imageUrl || "").trim()
+        }))
+      };
+      const url = editingBlogId ? `${backendUrl}/api/blogs/${editingBlogId}` : `${backendUrl}/api/blogs`;
+      const method = editingBlogId ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        alert((await res.json()).message || "Luu blog that bai");
+        return;
+      }
+
+      const saved = await res.json();
+      if (editingBlogId) {
+        setBlogs(blogs.map((b) => (b._id === editingBlogId ? saved : b)));
+      } else {
+        setBlogs([saved, ...blogs]);
+      }
+      resetBlogForm();
+      alert(editingBlogId ? "Da cap nhat blog" : "Da tao blog moi");
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleEditBlog = (blog) => {
+    setEditingBlogId(blog._id);
+    setBlogForm(blogToForm(blog));
+  };
+
+  const handleCloneBlog = async (blog) => {
+    try {
+      const suffix = String(Date.now()).slice(-6);
+      const payload = {
+        ...blog,
+        title: `${blog.title} Ban sao`,
+        slug: `${blog.slug}-copy-${suffix}`
+      };
+      delete payload._id;
+      delete payload.createdAt;
+      delete payload.updatedAt;
+
+      const res = await fetch(`${backendUrl}/api/blogs`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        alert((await res.json()).message || "Clone blog that bai");
+        return;
+      }
+      const cloned = await res.json();
+      setBlogs([cloned, ...blogs]);
+      alert("Da clone blog thanh cong");
+    } catch (e) { console.error(e); }
+  };
+
+  const handleDeleteBlog = async (id) => {
+    if (!window.confirm("Ban co chac chan muon xoa blog nay?")) return;
+    try {
+      const res = await fetch(`${backendUrl}/api/blogs/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.ok) {
+        setBlogs(blogs.filter((item) => item._id !== id));
+        if (editingBlogId === id) resetBlogForm();
+      }
+    } catch (e) { console.error(e); }
   };
 
   const addHomeReviewRow = () => {
@@ -1125,6 +1286,152 @@ export default function AdminDashboard() {
                 {savingHomeReviews ? "Đang lưu..." : "Lưu phần đánh giá"}
               </button>
             </form>
+          </div>
+        </div>
+      ) : activeTab === "blogs" ? (
+        <div className="flex flex-col lg:flex-row gap-8">
+          <div className="lg:w-1/2 bg-white rounded-3xl shadow-sm border border-slate-200 p-6">
+            <h2 className="text-xl font-bold mb-4">{editingBlogId ? "Chỉnh sửa Blog" : "Tạo Blog mới"}</h2>
+            <form onSubmit={handleSaveBlog} className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-600 mb-1">Tiêu đề *</label>
+                <input required type="text" value={blogForm.title} onChange={(e) => setBlogForm({ ...blogForm, title: e.target.value })} className="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:border-rose-500" />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-600 mb-1">Slug *</label>
+                <input required type="text" value={blogForm.slug} onChange={(e) => setBlogForm({ ...blogForm, slug: e.target.value })} className="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:border-rose-500" placeholder="tui-hoa-tu-thiet-ke" />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-600 mb-1">Ảnh bìa (Cover Image) *</label>
+                <input required type="text" value={blogForm.coverImage} onChange={(e) => setBlogForm({ ...blogForm, coverImage: e.target.value })} className="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:border-rose-500" />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-600 mb-1">Ngày (Date) *</label>
+                <input required type="text" value={blogForm.date} onChange={(e) => setBlogForm({ ...blogForm, date: e.target.value })} className="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:border-rose-500" placeholder="24/2/2026" />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-600 mb-1">Mô tả ngắn (Summary) *</label>
+                <textarea required value={blogForm.summary} onChange={(e) => setBlogForm({ ...blogForm, summary: e.target.value })} className="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:border-rose-500" rows={4}></textarea>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-600 mb-1">Màu nền chủ đề (Theme Color)</label>
+                <input type="text" value={blogForm.themeColor} onChange={(e) => setBlogForm({ ...blogForm, themeColor: e.target.value })} className="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:border-rose-500" placeholder="bg-pink-300/40" />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-600 mb-1">Mục lục (mỗi mục 1 dòng)</label>
+                <textarea value={blogForm.tableOfContentsText} onChange={(e) => setBlogForm({ ...blogForm, tableOfContentsText: e.target.value })} className="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:border-rose-500" rows={4}></textarea>
+              </div>
+              
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-bold text-slate-600">Các phần nội dung (Sections)</label>
+                  <button type="button" onClick={addBlogSection} className="px-3 py-1.5 rounded-md bg-slate-100 text-slate-700 text-sm font-semibold hover:bg-slate-200 transition">+ Thêm phần</button>
+                </div>
+                <div className="space-y-4">
+                  {blogForm.sections.map((section, index) => (
+                    <div key={`section-${index}`} className="bg-slate-50 border border-slate-200 rounded-lg p-3 space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="font-semibold text-slate-700 text-sm">Phần {index + 1}</span>
+                        <button type="button" onClick={() => removeBlogSection(index)} className="text-red-500 text-sm font-semibold hover:underline">Xóa</button>
+                      </div>
+                      <select value={section.type} onChange={(e) => updateBlogSection(index, "type", e.target.value)} className="w-full px-3 py-2 bg-white border rounded-md outline-none focus:border-rose-500">
+                        <option value="text">Văn bản (Text)</option>
+                        <option value="image">Hình ảnh (Image)</option>
+                      </select>
+                      
+                      {section.type === "text" && (
+                        <>
+                          <input type="text" value={section.heading} onChange={(e) => updateBlogSection(index, "heading", e.target.value)} placeholder="Tiêu đề phụ (Heading)" className="w-full px-3 py-2 bg-white border rounded-md outline-none focus:border-rose-500" />
+                          <textarea value={section.content} onChange={(e) => updateBlogSection(index, "content", e.target.value)} placeholder="Nội dung" className="w-full px-3 py-2 bg-white border rounded-md outline-none focus:border-rose-500" rows={4}></textarea>
+                        </>
+                      )}
+
+                      {section.type === "image" && (
+                        <input type="text" value={section.imageUrl} onChange={(e) => updateBlogSection(index, "imageUrl", e.target.value)} placeholder="Image URL" className="w-full px-3 py-2 bg-white border rounded-md outline-none focus:border-rose-500" />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2 pt-2">
+                <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+                  <input type="checkbox" checked={blogForm.showOnHome} onChange={(e) => setBlogForm({ ...blogForm, showOnHome: e.target.checked })} />
+                  Hiển thị ở trang chủ (Home)
+                </label>
+                <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+                  <input type="checkbox" checked={blogForm.showOnStoryPage} onChange={(e) => setBlogForm({ ...blogForm, showOnStoryPage: e.target.checked })} />
+                  Hiển thị ở trang Story (phần bài viết)
+                </label>
+                <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+                  <input type="checkbox" checked={blogForm.isPublished} onChange={(e) => setBlogForm({ ...blogForm, isPublished: e.target.checked })} />
+                  Public (cho hiển thị ngoài website)
+                </label>
+              </div>
+
+              <div className="flex gap-3">
+                <button type="submit" className="flex-1 py-3 bg-rose-700 text-white font-bold rounded-xl hover:bg-rose-800 transition">
+                  {editingBlogId ? "Lưu chỉnh sửa" : "Tạo blog"}
+                </button>
+                {editingBlogId && (
+                  <button type="button" onClick={resetBlogForm} className="px-5 py-3 bg-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-300 transition">
+                    Hủy sửa
+                  </button>
+                )}
+              </div>
+            </form>
+          </div>
+
+          <div className="lg:w-1/2 bg-white rounded-3xl shadow-sm border border-slate-200 overflow-x-auto p-2 self-start sticky top-6">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 text-slate-500 uppercase text-xs tracking-wider">
+                  <th className="p-4">Ảnh bìa</th>
+                  <th className="p-4">Tiêu đề</th>
+                  <th className="p-4">Hiển thị</th>
+                  <th className="p-4 text-right">Hành động</th>
+                </tr>
+              </thead>
+              <tbody>
+                {blogs.map((blog) => (
+                  <tr key={blog._id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50 align-top">
+                    <td className="p-4">
+                      <img src={blog.coverImage} alt={blog.title} className="w-14 h-14 rounded-md object-cover border" />
+                    </td>
+                    <td className="p-4 font-semibold text-slate-800">
+                      <Link
+                        to={`/blog/${blog.slug}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-slate-800 hover:text-rose-700 hover:underline"
+                      >
+                        {blog.title}
+                      </Link>
+                      <div className="text-xs text-slate-500 font-normal mt-1">{blog.slug}</div>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex flex-col gap-1">
+                        <span className={`px-2 py-0.5 w-fit rounded text-[10px] font-bold ${blog.isPublished ? "bg-green-100 text-green-700" : "bg-slate-200 text-slate-600"}`}>
+                          {blog.isPublished ? "PUB" : "DRAFT"}
+                        </span>
+                        <span className={`px-2 py-0.5 w-fit rounded text-[10px] font-bold ${blog.showOnHome ? "bg-blue-100 text-blue-700" : "bg-slate-200 text-slate-600"}`}>
+                          HOME: {blog.showOnHome ? "Y" : "N"}
+                        </span>
+                        <span className={`px-2 py-0.5 w-fit rounded text-[10px] font-bold ${blog.showOnStoryPage ? "bg-purple-100 text-purple-700" : "bg-slate-200 text-slate-600"}`}>
+                          STORY: {blog.showOnStoryPage ? "Y" : "N"}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="p-4 text-right space-x-2">
+                      <button onClick={() => handleEditBlog(blog)} className="text-blue-600 font-semibold hover:underline">Sửa</button>
+                      <button onClick={() => handleCloneBlog(blog)} className="text-emerald-600 font-semibold hover:underline">Clone</button>
+                      <button onClick={() => handleDeleteBlog(blog._id)} className="text-red-600 font-semibold hover:underline">Xóa</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {blogs.length === 0 && <div className="text-center py-10 text-slate-500">Chưa có blog nào</div>}
           </div>
         </div>
       ) : (

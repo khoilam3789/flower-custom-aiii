@@ -36,6 +36,8 @@ export default function Home() {
   const flowerSliderRef = useRef(null);
   const [reviewSection, setReviewSection] = useState(defaultReviewSection);
 
+  const [blogs, setBlogs] = useState([]);
+
   const flowerLanguages = [
     { name: "Hoa Hồng", desc: "Tình yêu, sự lãng mạn và sắc đẹp", img: "/images/home/hoahong.png" },
     { name: "Hoa Ly", desc: "Lòng chung thuỷ & cao thượng", img: "/images/home/hoaly.png" },
@@ -73,7 +75,20 @@ export default function Home() {
       }
     };
 
+    const loadBlogs = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/blogs?showOnHome=true&isPublished=true`);
+        if (res.ok) {
+          const data = await res.json();
+          setBlogs(data.slice(0, 3)); // Display up to 3 blogs
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
     loadHomeReviews();
+    loadBlogs();
   }, []);
 
   return (
@@ -209,42 +224,24 @@ export default function Home() {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mx-auto">
-            {/* Blog 1 */}
-            <div className="bg-red-400 rounded-[30px] overflow-hidden shadow-lg transform transition hover:-translate-y-2 flex flex-col p-8 pb-10">
-              <img src="/images/blog1/anh1.png" className="w-full h-48 object-cover rounded-[15px] opacity-90 mb-6" />
-              <div className="text-white flex flex-col flex-grow">
-                <span className="text-white text-[10px] font-thin font-['Geologica'] leading-3 mb-4 opacity-80 border border-white/30 px-2 py-1 self-start rounded">12/3/2026</span>
-                <h3 className="text-white text-base font-extrabold font-['Geologica'] leading-5 mb-4">Ý nghĩa các loài hoa trong ngày Valentine: Chọn hoa tặng người thương sao cho đúng?</h3>
-                <p className="text-white text-xs font-extralight font-['Geologica'] leading-4 opacity-90 mb-6 flex-grow">Valentine không chỉ là dịp để trao đi những bó hoa đẹp, mà còn là cách để gửi gắm những cảm xúc khó nói thành lời. Mỗi loài hoa đều mang trong mình một ý nghĩa riêng - từ tình yêu mãnh liệt, sự dịu dàng, đến những lời hứa thầm lặng. Vì vậy, chọn đúng loại hoa cũng chính là chọn đúng thông điệp bạn muốn gửi đến người thương.</p>
-                <Link to="/blog-1" className="text-white text-base font-semibold font-['Geologica'] leading-4 underline underline-offset-4 hover:opacity-80">Đọc chi tiết</Link>
+            {blogs.map((blog, idx) => (
+              <div key={blog._id} className={`${idx % 2 === 0 ? 'bg-red-400' : 'bg-slate-500'} rounded-[30px] overflow-hidden shadow-lg transform transition hover:-translate-y-2 flex flex-col p-8 pb-10 ${idx === 1 ? 'mt-0 md:mt-24' : ''}`}>
+                <img src={blog.coverImage} className="w-full h-48 object-cover rounded-[15px] opacity-90 mb-6" alt={blog.title} />
+                <div className="text-white flex flex-col flex-grow">
+                  <span className="text-white text-[10px] font-thin font-['Geologica'] leading-3 mb-4 opacity-80 border border-white/30 px-2 py-1 self-start rounded">{blog.date}</span>
+                  <h3 className="text-white text-base font-extrabold font-['Geologica'] leading-5 mb-4">{blog.title}</h3>
+                  <p className="text-white text-xs font-extralight font-['Geologica'] leading-4 opacity-90 mb-6 flex-grow whitespace-pre-line line-clamp-6">{blog.summary}</p>
+                  <Link to={`/blog/${blog.slug}`} className="text-white text-base font-semibold font-['Geologica'] leading-4 underline underline-offset-4 hover:opacity-80">Đọc chi tiết</Link>
+                </div>
               </div>
-            </div>
-
-            {/* Blog 2 */}
-            <div className="bg-slate-500 rounded-[30px] overflow-hidden shadow-lg transform transition hover:-translate-y-2 mt-0 md:mt-24 flex flex-col p-8 pb-10">
-              <img src="/images/blog2/anh1.png" className="w-full h-48 object-cover rounded-[15px] opacity-90 mb-6" />
-              <div className="text-white flex flex-col flex-grow">
-                <span className="text-white text-[10px] font-thin font-['Geologica'] leading-3 mb-4 opacity-80 border border-white/30 px-2 py-1 self-start rounded">24/2/2026</span>
-                <h3 className="text-white text-base font-extrabold font-['Geologica'] leading-5 mb-4">Túi hoa tự thiết kế: Khi việc mang hoa trở thành một trải nghiệm trọn vẹn</h3>
-                <p className="text-white text-xs font-extralight font-['Geologica'] leading-4 opacity-90 mb-6 flex-grow">Một bó hoa luôn mang theo những cảm xúc đẹp - đó có thể là lời yêu, sự trân trọng, hay đơn giản là một khoảnh khắc muốn lưu giữ. Nhưng thực tế, việc mang theo một bó hoa trong suốt cả ngày lại không hề dễ dàng như chúng ta tưởng. Những bất tiện đó vô tình làm gián đoạn trải nghiệm vốn dĩ rất lãng mạn.</p>
-                <Link to="/blog-2" className="text-white text-base font-semibold font-['Geologica'] leading-4 underline underline-offset-4 hover:opacity-80">Đọc chi tiết</Link>
-              </div>
-            </div>
-
-            {/* Blog 3 */}
-            <div className="bg-red-400 rounded-[30px] overflow-hidden shadow-lg transform transition hover:-translate-y-2 flex flex-col p-8 pb-10">
-              <img src="/images/blog3/anh1.png" className="w-full h-48 object-cover rounded-[15px] opacity-90 mb-6" />
-              <div className="text-white flex flex-col flex-grow">
-                <span className="text-white text-[10px] font-thin font-['Geologica'] leading-3 mb-4 opacity-80 border border-white/30 px-2 py-1 self-start rounded">20/12/2026</span>
-                <h3 className="text-white text-base font-extrabold font-['Geologica'] leading-5 mb-4">Cách bảo quản hoa tươi: Giữ trọn vẻ đẹp và cảm xúc theo thời gian</h3>
-                <p className="text-white text-xs font-extralight font-['Geologica'] leading-4 opacity-90 mb-6 flex-grow">Một bó hoa không chỉ đẹp ở khoảnh khắc được trao đi, mà còn nằm ở cách nó được nâng niu và gìn giữ sau đó. Tuy nhiên, hoa tươi lại rất “mong manh” chỉ cần một vài sai sót nhỏ cũng có thể khiến hoa nhanh héo, mất đi vẻ rạng rỡ ban đầu.<br/><br/>Vì vậy, việc bảo quản đúng cách sẽ giúp bạn kéo dài tuổi thọ của hoa, đồng thời giữ trọn ý nghĩa mà bó hoa mang lại.</p>
-                <Link to="/blog-3" className="text-white text-base font-semibold font-['Geologica'] leading-4 underline underline-offset-4 hover:opacity-80">Đọc chi tiết</Link>
-              </div>
-            </div>
+            ))}
+            {blogs.length === 0 && (
+              <div className="col-span-1 md:col-span-3 text-center text-slate-500 py-10 font-['Geologica']">Chưa có bài viết nào</div>
+            )}
           </div>
           
           <div className="text-center mt-24">
-            <Link to="/blog-1" className="inline-block px-12 py-4 bg-transparent border-2 border-rose-700 text-rose-700 text-lg font-extralight font-['Geologica'] leading-7 rounded-[100px] hover:bg-rose-700 hover:text-white transition uppercase tracking-wider">
+            <Link to="/story" className="inline-block px-12 py-4 bg-transparent border-2 border-rose-700 text-rose-700 text-lg font-extralight font-['Geologica'] leading-7 rounded-[100px] hover:bg-rose-700 hover:text-white transition uppercase tracking-wider">
               ĐỌC CÁC BÀI VIẾT KHÁC
             </Link>
           </div>

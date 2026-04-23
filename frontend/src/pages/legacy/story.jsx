@@ -67,29 +67,7 @@ const exhibitionImages = [
   "/images/story/4.png"
 ];
 
-const overviewBlogs = [
-  {
-    title: "Ý nghĩa các loài hoa trong ngày Valentine: Chọn hoa tặng người thương sao cho đúng?",
-    excerpt: "Hoa hồng được mệnh danh là nữ hoàng của các loài hoa. Theo thần thoại Hy Lạp, hoa hồng không chỉ là một loài hoa bình thường mà được tạo ra từ chính các vị thần...",
-    date: "12/3/2026",
-    image: "/images/blog1/anh1.png",
-    link: "/blog-1"
-  },
-  {
-    title: "Túi hoa tự thiết kế: Khi việc mang hoa trở thành một trải nghiệm trọn vẹn",
-    excerpt: "Một bó hoa luôn mang theo những cảm xúc đẹp. Đó có thể là lời yêu, sự trân trọng, hay đơn giản là một khoảnh khắc muốn lưu giữ...",
-    date: "24/2/2026",
-    image: "/images/blog2/anh1.png",
-    link: "/blog-2"
-  },
-  {
-    title: "Cách bảo quản hoa tươi: Giữ trọn vẻ đẹp và cảm xúc theo thời gian",
-    excerpt: "Một bó hoa không chỉ đẹp ở khoảnh khắc được trao đi, mà còn nằm ở cách nó được nâng niu và gìn giữ sau đó...",
-    date: "20/12/2026",
-    image: "/images/blog3/anh1.png",
-    link: "/blog-3"
-  }
-];
+
 
 export default function Story() {
   const { slug } = useParams();
@@ -100,6 +78,8 @@ export default function Story() {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [loadError, setLoadError] = useState("");
+  const [blogs, setBlogs] = useState([]);
+  const [visibleBlogCount, setVisibleBlogCount] = useState(3);
 
   const storySlug = useMemo(() => slug || "", [slug]);
 
@@ -126,7 +106,20 @@ export default function Story() {
       }
     };
 
+    const fetchBlogs = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/api/blogs?showOnStoryPage=true&isPublished=true`);
+        if (response.ok) {
+          const data = await response.json();
+          if (isMounted) setBlogs(data);
+        }
+      } catch (_error) {
+        // error handling
+      }
+    };
+
     fetchOverviewStories();
+    fetchBlogs();
 
     return () => {
       isMounted = false;
@@ -295,15 +288,15 @@ export default function Story() {
           </div>
 
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {overviewBlogs.map((post, index) => (
-              <article key={`${post.title}-${index}`} className="bg-white rounded-[28px] border border-rose-100 overflow-hidden shadow-sm">
-                <img src={post.image} alt={post.title} className="w-full h-56 object-cover" />
-                <div className="p-6">
+            {blogs.slice(0, visibleBlogCount).map((post, index) => (
+              <article key={post._id || index} className="bg-white rounded-[28px] border border-rose-100 overflow-hidden shadow-sm">
+                <img src={post.coverImage} alt={post.title} className="w-full h-56 object-cover" />
+                <div className="p-6 flex flex-col h-full">
                   <h3 className="text-black text-base font-medium font-['Geologica'] leading-6 line-clamp-3 min-h-[72px]">{post.title}</h3>
-                  <p className="text-black/75 text-sm font-extralight font-['Geologica'] leading-6 mt-3 line-clamp-4 min-h-[96px]">{post.excerpt}</p>
-                  <div className="mt-4 pt-3 border-t border-rose-200 flex items-center justify-between gap-4">
+                  <p className="text-black/75 text-sm font-extralight font-['Geologica'] leading-6 mt-3 line-clamp-4 min-h-[96px]">{post.summary}</p>
+                  <div className="mt-4 pt-3 border-t border-rose-200 flex items-center justify-between gap-4 mt-auto">
                     <span className="text-black/75 text-sm font-extralight font-['Geologica']">{post.date}</span>
-                    <Link to={post.link} className="text-rose-700 text-sm font-semibold font-['Geologica'] hover:underline">
+                    <Link to={`/blog/${post.slug}`} className="text-rose-700 text-sm font-semibold font-['Geologica'] hover:underline">
                       Đọc chi tiết
                     </Link>
                   </div>
@@ -311,6 +304,21 @@ export default function Story() {
               </article>
             ))}
           </div>
+
+          {blogs.length > visibleBlogCount && (
+            <div className="mt-8 text-center">
+              <button
+                type="button"
+                onClick={() => setVisibleBlogCount(prev => prev + 3)}
+                className="rounded-full bg-transparent border-2 border-rose-700 px-8 py-3 text-rose-700 text-lg md:text-xl font-semibold font-['Geologica'] transition hover:bg-rose-700 hover:text-white"
+              >
+                Xem thêm
+              </button>
+            </div>
+          )}
+          {blogs.length === 0 && (
+            <div className="text-center py-10 text-white/80 font-['Geologica']">Chưa có bài viết nào</div>
+          )}
         </section>
       </div>
     );
