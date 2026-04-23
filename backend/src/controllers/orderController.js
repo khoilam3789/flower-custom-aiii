@@ -309,15 +309,23 @@ export const getDatabaseStats = async (req, res) => {
     
     for (let coll of collections) {
       if (coll.type === 'view') continue;
-      const collStats = await db.collection(coll.name).stats();
+      let collStats = {};
+      try {
+        collStats = await db.command({ collStats: coll.name });
+      } catch (err) {
+        // Fallback if collStats command is not allowed
+        const count = await db.collection(coll.name).estimatedDocumentCount();
+        collStats = { count, size: 0, storageSize: 0, avgObjSize: 0 };
+      }
+      
       stats.push({
         collection: coll.name,
-        count: collStats.count,
-        size: collStats.size,          // Data size in bytes
-        storageSize: collStats.storageSize, // Storage size in bytes
-        avgObjSize: collStats.avgObjSize // Average object size
+        count: collStats.count || 0,
+        size: collStats.size || 0,          // Data size in bytes
+        storageSize: collStats.storageSize || 0, // Storage size in bytes
+        avgObjSize: collStats.avgObjSize || 0 // Average object size
       });
-      totalSize += collStats.size;
+      totalSize += (collStats.size || 0);
     }
     
     stats.sort((a, b) => b.size - a.size); // Sort descending by size
