@@ -117,11 +117,11 @@ export default function Home() {
             {/* Left Features */}
             <div className="flex flex-col space-y-12 md:space-y-24 text-center md:text-right md:pr-8">
               <div>
-                <h3 className="text-white text-xl md:text-3xl font-bold font-['Geologica'] leading-tight md:leading-10 mb-2 md:mb-4 drop-shadow">DỄ DÀNG MANG THEO</h3>
+                <h3 className="text-white text-xl md:text-xl lg:text-2xl xl:text-3xl font-bold font-['Geologica'] leading-tight md:leading-10 mb-2 md:mb-4 drop-shadow md:whitespace-nowrap">DỄ DÀNG MANG THEO</h3>
                 <p className="text-white text-base md:text-xl font-extralight font-['Geologica'] leading-6 md:leading-7">Thiết kế giúp cố định bó hoa gọn gàng, rảnh tay hơn khi di chuyển, ăn uống hay tham gia các hoạt động</p>
               </div>
               <div>
-                <h3 className="text-white text-xl md:text-3xl font-bold font-['Geologica'] leading-tight md:leading-10 mb-2 md:mb-4 drop-shadow">BẢO VỆ NHỮNG ĐOÁ HOA</h3>
+                <h3 className="text-white text-xl md:text-xl lg:text-2xl xl:text-3xl font-bold font-['Geologica'] leading-tight md:leading-10 mb-2 md:mb-4 drop-shadow md:whitespace-nowrap">BẢO VỆ NHỮNG ĐOÁ HOA</h3>
                 <p className="text-white text-base md:text-xl font-extralight font-['Geologica'] leading-6 md:leading-7">Giữ form hoa luôn đẹp, hạn chế dập nát hay xô lệch trong suốt cả ngày</p>
               </div>
             </div>
@@ -135,11 +135,11 @@ export default function Home() {
             {/* Right Features */}
             <div className="flex flex-col space-y-12 md:space-y-24 text-center md:text-left md:pl-8">
               <div>
-                <h3 className="text-white text-xl md:text-3xl font-bold font-['Geologica'] leading-tight md:leading-10 mb-2 md:mb-4 drop-shadow">TÍNH CÁ NHÂN HOÁ</h3>
+                <h3 className="text-white text-xl md:text-xl lg:text-2xl xl:text-3xl font-bold font-['Geologica'] leading-tight md:leading-10 mb-2 md:mb-4 drop-shadow md:whitespace-nowrap">TÍNH CÁ NHÂN HOÁ</h3>
                 <p className="text-white text-base md:text-xl font-extralight font-['Geologica'] leading-6 md:leading-7">Có thể tuỳ chỉnh theo phong cách, trang phục hoặc dịp sử dụng, biến bó hoa thành một điểm nhấn thời trang</p>
               </div>
               <div>
-                <h3 className="text-white text-xl md:text-3xl font-bold font-['Geologica'] leading-tight md:leading-10 mb-2 md:mb-4 drop-shadow">ĐỂ HOA THAY LỜI MUỐN NÓI</h3>
+                <h3 className="text-white text-xl md:text-xl lg:text-2xl xl:text-3xl font-bold font-['Geologica'] leading-tight md:leading-10 mb-2 md:mb-4 drop-shadow md:whitespace-nowrap">ĐỂ HOA THAY LỜI MUỐN NÓI</h3>
                 <p className="text-white text-base md:text-xl font-extralight font-['Geologica'] leading-6 md:leading-7">Mọi thông điệp đều được gửi đi một cách tinh tế, trọn vẹn</p>
               </div>
             </div>
