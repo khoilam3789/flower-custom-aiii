@@ -1,8 +1,24 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useState, useEffect } from "react";
 
 export default function Footer() {
   const { user } = useAuth();
+  
+  const [emailSub, setEmailSub] = useState("");
+  
+  useEffect(() => {
+    if (user?.email) {
+      setEmailSub(user.email);
+    }
+  }, [user]);
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    if (!emailSub.trim()) return;
+    alert("Đăng ký nhận bản tin thành công! Cám ơn bạn đã quan tâm.");
+    setEmailSub("");
+  };
 
   return (
     <footer id="contact-footer" className="w-full bg-slate-500 pb-12 pt-12 md:pt-16">
@@ -32,20 +48,20 @@ export default function Footer() {
           </div>
           <div>
             <p className="text-rose-700 font-bold text-sm">KẾT NỐI:</p>
-            <a href="#" className="font-light hover:underline block">Facebook</a>
-            <a href="#" className="font-light hover:underline block">TikTok</a>
+            <a href="https://www.facebook.com/share/1B3jHU9noi/?mibextid=wwXIfr" target="_blank" rel="noreferrer" className="font-light hover:underline block">Facebook</a>
+            <a href="https://www.threads.com/@dearcherie_flower_bag?igshid=NTc4MTIwNjQ2YQ==" target="_blank" rel="noreferrer" className="font-light hover:underline block">Threads</a>
           </div>
         </div>
 
         {/* Branch 3: Quick Links */}
         <div className="flex flex-col space-y-4">
           <h3 className="font-bold text-lg md:text-xl uppercase tracking-wider mb-2">Trang Chủ</h3>
-          <Link to="/about" className="font-light hover:underline">Về Chúng Tôi</Link>
-          <Link to="/custom-flowers" className="font-light hover:underline">Thiết Kế Túi</Link>
-          <Link to="/story" className="font-light hover:underline">Ngôn Ngữ Hoa</Link>
+          <Link to="/about" onClick={() => window.scrollTo(0,0)} className="font-light hover:underline">Về Chúng Tôi</Link>
+          <Link to="/custom-flowers" onClick={() => window.scrollTo(0,0)} className="font-light hover:underline">Thiết Kế Túi</Link>
+          <Link to="/story" onClick={() => window.scrollTo(0,0)} className="font-light hover:underline">Ngôn Ngữ Hoa</Link>
           <a href="#contact-footer" className="font-light hover:underline">Liên Hệ</a>
-          <Link to="/faq" className="font-light hover:underline">Câu hỏi thường gặp</Link>
-          <Link to="/faq" className="font-light hover:underline">Chính sách</Link>
+          <Link to="/faq" onClick={() => window.scrollTo(0,0)} className="font-light hover:underline">Câu hỏi thường gặp</Link>
+          <Link to="/faq" onClick={() => window.scrollTo(0,0)} className="font-light hover:underline">Chính sách</Link>
         </div>
 
         {/* Branch 4: Newsletter & Addr */}
@@ -54,15 +70,19 @@ export default function Footer() {
           <p className="font-light text-sm opacity-90 leading-relaxed">
             Nhận ngay ưu đãi 10% cho đơn hàng đầu tiên khi đăng ký bản tin của chúng tôi
           </p>
-          <div className="flex w-full">
+          <form onSubmit={handleSubscribe} className="flex w-full overflow-hidden rounded-sm">
             <input 
               type="email" 
-              value={user?.email || ""}
+              value={emailSub}
+              onChange={(e) => setEmailSub(e.target.value)}
               placeholder="Email của bạn..." 
-              readOnly
-              className="px-4 py-2 w-full bg-zinc-300 text-rose-700 placeholder:text-rose-700/60 focus:outline-none rounded-sm"
+              required
+              className="px-4 py-3 w-full bg-zinc-300 text-rose-700 placeholder:text-rose-700/60 focus:outline-none"
             />
-          </div>
+            <button type="submit" className="bg-rose-700 text-white font-bold px-5 hover:bg-rose-800 transition">
+              GỬI
+            </button>
+          </form>
           <p className="font-extralight text-xs mt-4 lg:mt-8 opacity-80">
             10 Xuân Thuỷ, P. Thảo Điền, Quận 2, TP. HCM
           </p>

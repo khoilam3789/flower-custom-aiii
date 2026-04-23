@@ -83,7 +83,7 @@ export default function Home() {
               {flowerLanguages.map((f, i) => (
                 <div key={i} className="flex-none flex flex-col items-center group cursor-pointer w-40 md:w-44 snap-center">
                   <div className="w-40 h-40 md:w-44 md:h-44 bg-zinc-100 rounded-full shadow-md group-hover:scale-105 transition-transform overflow-hidden border border-slate-300">
-                    <img src={f.img} alt={f.name} className="w-full h-full object-cover" />
+                    <img src={f.img} alt={f.name} className="w-full h-full object-contain p-2 md:p-3" />
                   </div>
                   <h3 className="text-slate-500 text-base font-black font-['Geologica'] leading-5 mt-4 text-center">{f.name}</h3>
                   <p className="text-black text-sm font-thin font-['Geologica'] leading-5 mt-2 text-center whitespace-normal">{f.desc}</p>
