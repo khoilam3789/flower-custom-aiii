@@ -1,8 +1,40 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { API_BASE } from "../../api";
+
+const defaultReviewSection = {
+  sectionTitle: "ĐÁNH GIÁ TỪ HỘI YÊU HOA",
+  reviews: [
+    {
+      name: "Đỗ Thị Hà",
+      age: 22,
+      role: "Sinh viên",
+      imageUrl: "/images/anhnguoi/1.jpg",
+      content:
+        "Túi giữ form hoa rất tốt, nhìn gọn gàng và tinh tế hơn nhiều. Mình mang đi chụp ảnh thấy tổng thể đẹp hơn hẳn, không còn cảm giác cầm bó hoa bị lạc quẻ nữa. Quan trọng là bó hoa vẫn giữ được vẻ đẹp ban đầu, nhìn lúc nào cũng chỉn chu."
+    },
+    {
+      name: "Trần Thanh Tú",
+      age: 25,
+      role: "Lập trình viên",
+      imageUrl: "/images/anhnguoi/2.jpg",
+      content:
+        "Lần đầu tặng hoa mà thấy thật sự có ý nghĩa. Mình chọn hoa hồng đỏ vì muốn nói điều mà bình thường khó nói thành lời. Lúc trao hoa, thấy người ấy hiểu ngay ý mình mà không cần nói nhiều. Có thêm túi nên mọi thứ gọn gàng, tinh tế hơn với bạn ấy, không cần cầm cả bó vướng víu."
+    },
+    {
+      name: "Ngô Thuỳ Linh",
+      age: 30,
+      role: "Doanh nhân",
+      imageUrl: "/images/anhnguoi/3.jpg",
+      content:
+        "Ban đầu mình chỉ định đặt nhanh một bó hoa thôi, nhưng lúc được tự mình chọn từng loại hoa, màu sắc với ý nghĩa, tự nhiên thấy rất thú vị. Cảm giác như mình đang tự tay thiết kế một bó hoa mang đúng thông điệp của mình vậy."
+    }
+  ]
+};
 
 export default function Home() {
   const flowerSliderRef = useRef(null);
+  const [reviewSection, setReviewSection] = useState(defaultReviewSection);
 
   const flowerLanguages = [
     { name: "Hoa Hồng", desc: "Tình yêu, sự lãng mạn và sắc đẹp", img: "/images/home/hoahong.png" },
@@ -21,6 +53,28 @@ export default function Home() {
     const amount = direction === "left" ? -360 : 360;
     flowerSliderRef.current.scrollBy({ left: amount, behavior: "smooth" });
   };
+
+  useEffect(() => {
+    const loadHomeReviews = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/home-reviews`);
+        if (!res.ok) return;
+
+        const data = await res.json();
+        const nextReviews = Array.isArray(data?.reviews) ? data.reviews : [];
+        if (nextReviews.length === 0) return;
+
+        setReviewSection({
+          sectionTitle: data.sectionTitle || defaultReviewSection.sectionTitle,
+          reviews: nextReviews
+        });
+      } catch (_error) {
+        // Keep fallback static content when API is unavailable.
+      }
+    };
+
+    loadHomeReviews();
+  }, []);
 
   return (
     <div className="w-full flex-col">
@@ -200,62 +254,34 @@ export default function Home() {
       {/* Reviews Section */}
       <section className="w-full bg-Color-3 pb-32 px-4 md:px-6 relative">
           <div className="max-w-[1280px] mx-auto px-4 md:px-24">
-            <h2 className="text-Color-2 text-2xl md:text-4xl font-bold font-['Geologica'] mb-12 drop-shadow-sm uppercase text-center md:text-left md:pl-8">ĐÁNH GIÁ TỪ HỘI YÊU HOA</h2>
+            <h2 className="text-Color-2 text-2xl md:text-4xl font-bold font-['Geologica'] mb-12 drop-shadow-sm uppercase text-center md:text-left md:pl-8">{reviewSection.sectionTitle}</h2>
             
             <div className="flex flex-col space-y-12 md:space-y-6 max-w-5xl mx-auto">
-              {/* Review 1 */}
-              <div className="relative w-full max-w-4xl mx-auto mb-16">
-                <div className="text-center md:text-right mb-4 md:w-4/5 md:pr-12 lg:pr-20">
-                  <h4 className="text-rose-700 text-lg md:text-xl font-bold font-['Geologica']">Đỗ Thị Hà - 22 tuổi</h4>
-                </div>
-                <div className="relative w-full flex flex-col md:flex-row items-center md:justify-start">
-                  <div className="relative z-10 flex flex-col items-center md:absolute md:right-0 lg:right-4 md:top-1/2 md:-translate-y-1/2">
-                    <img src="/images/anhnguoi/1.jpg" className="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover border-[4px] border-[#FBFAF7] shadow-sm mb-2" alt="Review 1" />
-                    <span className="text-rose-700 text-xs md:text-[15px] font-bold font-['Geologica']">Sinh viên</span>
-                  </div>
-                  <div className="bg-zinc-100/90 backdrop-blur-md rounded-2xl p-6 md:p-8 md:pr-40 w-full md:w-4/5 shadow-md -mt-12 md:mt-0 relative z-0 border border-zinc-200/50">
-                    <p className="text-slate-700 text-sm md:text-base font-light font-['Geologica'] italic leading-loose text-justify md:text-left pt-14 md:pt-0">
-                      Túi giữ form hoa rất tốt, nhìn gọn gàng và tinh tế hơn nhiều. Mình mang đi chụp ảnh thấy tổng thể đẹp hơn hẳn, không còn cảm giác cầm bó hoa bị “lạc quẻ” nữa. Quan trọng là bó hoa vẫn giữ được vẻ đẹp ban đầu, nhìn lúc nào cũng chỉn chu.
-                    </p>
-                  </div>
-                </div>
-              </div>
+              {reviewSection.reviews.map((review, index) => {
+                const isOddLayout = index % 2 === 1;
+                const heading = review?.age ? `${review.name} - ${review.age} tuổi` : review.name;
 
-              {/* Review 2 */}
-              <div className="relative w-full max-w-4xl mx-auto mb-16">
-                <div className="text-center md:text-left mb-4 md:w-4/5 md:ml-auto md:pl-12 lg:pl-20">
-                  <h4 className="text-rose-700 text-lg md:text-xl font-bold font-['Geologica']">Trần Thanh Tú - 25 tuổi</h4>
-                </div>
-                <div className="relative w-full flex flex-col md:flex-row items-center md:justify-end">
-                  <div className="relative z-10 flex flex-col items-center md:absolute md:left-0 lg:left-4 md:top-1/2 md:-translate-y-1/2">
-                    <img src="/images/anhnguoi/2.jpg" className="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover border-[4px] border-[#FBFAF7] shadow-sm mb-2" alt="Review 2" />
-                    <span className="text-rose-700 text-xs md:text-[15px] font-bold font-['Geologica']">Lập trình viên</span>
-                  </div>
-                  <div className="bg-zinc-100/90 backdrop-blur-md rounded-2xl p-6 md:p-8 md:pl-40 w-full md:w-4/5 shadow-md -mt-12 md:mt-0 relative z-0 border border-zinc-200/50">
-                    <p className="text-slate-700 text-sm md:text-base font-light font-['Geologica'] italic leading-loose text-justify md:text-left pt-14 md:pt-0">
-                      Lần đầu tặng hoa mà thấy thật sự có ý nghĩa. Mình chọn hoa hồng đỏ vì muốn nói điều mà bình thường khó nói thành lời. Lúc trao hoa, thấy người ấy hiểu ngay ý mình mà không cần nói nhiều. Có thêm túi nên mọi thứ gọn gàng, tinh tế hơn với bạn ấy, không cần cầm cả bó vướng víu.
-                    </p>
-                  </div>
-                </div>
-              </div>
+                return (
+                  <div key={`${review.name}-${index}`} className={`relative w-full max-w-4xl mx-auto ${index === reviewSection.reviews.length - 1 ? "mb-10" : "mb-16"}`}>
+                    <div className={`text-center mb-4 md:w-4/5 ${isOddLayout ? "md:text-left md:ml-auto md:pl-12 lg:pl-20" : "md:text-right md:pr-12 lg:pr-20"}`}>
+                      <h4 className="text-rose-700 text-lg md:text-xl font-bold font-['Geologica']">{heading}</h4>
+                    </div>
 
-              {/* Review 3 */}
-              <div className="relative w-full max-w-4xl mx-auto mb-10">
-                <div className="text-center md:text-right mb-4 md:w-4/5 md:pr-12 lg:pr-20">
-                  <h4 className="text-rose-700 text-lg md:text-xl font-bold font-['Geologica']">Ngô Thuỳ Linh - 30 tuổi</h4>
-                </div>
-                <div className="relative w-full flex flex-col md:flex-row items-center md:justify-start">
-                  <div className="relative z-10 flex flex-col items-center md:absolute md:right-0 lg:right-4 md:top-1/2 md:-translate-y-1/2">
-                    <img src="/images/anhnguoi/3.jpg" className="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover border-[4px] border-[#FBFAF7] shadow-sm mb-2" alt="Review 3" />
-                    <span className="text-rose-700 text-xs md:text-[15px] font-bold font-['Geologica']">Doanh nhân</span>
+                    <div className={`relative w-full flex flex-col md:flex-row items-center ${isOddLayout ? "md:justify-end" : "md:justify-start"}`}>
+                      <div className={`relative z-10 flex flex-col items-center md:absolute md:top-1/2 md:-translate-y-1/2 ${isOddLayout ? "md:left-0 lg:left-4" : "md:right-0 lg:right-4"}`}>
+                        <img src={review.imageUrl} className="w-28 h-28 md:w-32 md:h-32 rounded-full object-cover border-[4px] border-[#FBFAF7] shadow-sm mb-2" alt={review.name} />
+                        <span className="text-rose-700 text-xs md:text-[15px] font-bold font-['Geologica']">{review.role}</span>
+                      </div>
+
+                      <div className={`bg-zinc-100/90 backdrop-blur-md rounded-2xl p-6 md:p-8 w-full md:w-4/5 shadow-md -mt-12 md:mt-0 relative z-0 border border-zinc-200/50 ${isOddLayout ? "md:pl-40" : "md:pr-40"}`}>
+                        <p className="text-slate-700 text-sm md:text-base font-light font-['Geologica'] italic leading-loose text-justify md:text-left pt-14 md:pt-0">
+                          {review.content}
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div className="bg-zinc-100/90 backdrop-blur-md rounded-2xl p-6 md:p-8 md:pr-40 w-full md:w-4/5 shadow-md -mt-12 md:mt-0 relative z-0 border border-zinc-200/50">
-                    <p className="text-slate-700 text-sm md:text-base font-light font-['Geologica'] italic leading-loose text-justify md:text-left pt-14 md:pt-0">
-                      Ban đầu mình chỉ định đặt nhanh một bó hoa thôi, nhưng lúc được tự mình chọn từng loại hoa, màu sắc với ý nghĩa, tự nhiên thấy rất thú vị. Cảm giác như mình đang tự tay “thiết kế” một bó hoa mang đúng thông điệp của mình vậy.
-                    </p>
-                  </div>
-                </div>
-              </div>
+                );
+              })}
             </div>
          </div>
       </section>

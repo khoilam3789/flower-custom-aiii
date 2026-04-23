@@ -9,6 +9,7 @@ import orderRoutes from "./routes/orderRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
 import storyRoutes from "./routes/storyRoutes.js";
+import homeReviewRoutes from "./routes/homeReviewRoutes.js";
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/stories", storyRoutes);
+app.use("/api/home-reviews", homeReviewRoutes);
 
 app.get("/api/health", (_, res) => {
   res.json({ ok: true });

@@ -19,6 +19,20 @@ const initialStoryForm = {
   isPublished: true
 };
 
+const initialHomeReviewForm = {
+  sectionTitle: "ĐÁNH GIÁ TỪ HỘI YÊU HOA",
+  reviews: [
+    {
+      name: "",
+      age: "",
+      role: "",
+      imageUrl: "",
+      content: "",
+      isActive: true
+    }
+  ]
+};
+
 const parseMultiLine = (input) =>
   input
     .split("\n")
@@ -96,6 +110,8 @@ export default function AdminDashboard() {
   const [checkingDbStats, setCheckingDbStats] = useState(false);
   const [cleanupSummary, setCleanupSummary] = useState("");
   const [editingStoryId, setEditingStoryId] = useState(null);
+  const [homeReviewForm, setHomeReviewForm] = useState(initialHomeReviewForm);
+  const [savingHomeReviews, setSavingHomeReviews] = useState(false);
 
   // Form State cho Product
   const [formData, setFormData] = useState({
@@ -108,7 +124,10 @@ export default function AdminDashboard() {
       if (activeTab === "users") fetchUsers();
       else if (activeTab === "orders") fetchOrders();
       else if (activeTab === "products") fetchProducts();
-      else if (activeTab === "stories") fetchStories();
+      else if (activeTab === "stories") {
+        fetchStories();
+        fetchHomeReviews();
+      }
       else if (activeTab === "ai-settings") fetchAiSettings();
     }
   }, [activeTab, user]);
@@ -167,6 +186,33 @@ export default function AdminDashboard() {
       console.error(e);
     }
     setLoading(false);
+  };
+
+  const fetchHomeReviews = async () => {
+    try {
+      const res = await fetch(`${backendUrl}/api/home-reviews/admin`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (!res.ok) return;
+
+      const data = await res.json();
+      setHomeReviewForm({
+        sectionTitle: data?.sectionTitle || initialHomeReviewForm.sectionTitle,
+        reviews: Array.isArray(data?.reviews) && data.reviews.length > 0
+          ? data.reviews.map((item) => ({
+              name: item?.name || "",
+              age: item?.age ?? "",
+              role: item?.role || "",
+              imageUrl: item?.imageUrl || "",
+              content: item?.content || "",
+              isActive: item?.isActive !== false
+            }))
+          : initialHomeReviewForm.reviews
+      });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const fetchAiSettings = async () => {
@@ -506,6 +552,91 @@ export default function AdminDashboard() {
     }
   };
 
+  const addHomeReviewRow = () => {
+    setHomeReviewForm((prev) => ({
+      ...prev,
+      reviews: [
+        ...prev.reviews,
+        { name: "", age: "", role: "", imageUrl: "", content: "", isActive: true }
+      ]
+    }));
+  };
+
+  const updateHomeReviewRow = (index, field, value) => {
+    setHomeReviewForm((prev) => {
+      const nextReviews = [...prev.reviews];
+      nextReviews[index] = { ...nextReviews[index], [field]: value };
+      return { ...prev, reviews: nextReviews };
+    });
+  };
+
+  const removeHomeReviewRow = (index) => {
+    setHomeReviewForm((prev) => {
+      const nextReviews = prev.reviews.filter((_, idx) => idx !== index);
+      return {
+        ...prev,
+        reviews: nextReviews.length > 0 ? nextReviews : initialHomeReviewForm.reviews
+      };
+    });
+  };
+
+  const handleSaveHomeReviews = async (e) => {
+    e.preventDefault();
+    setSavingHomeReviews(true);
+
+    try {
+      const payload = {
+        sectionTitle: String(homeReviewForm.sectionTitle || "").trim(),
+        reviews: (homeReviewForm.reviews || [])
+          .map((item) => ({
+            name: String(item?.name || "").trim(),
+            age: item?.age === "" ? null : Number(item?.age),
+            role: String(item?.role || "").trim(),
+            imageUrl: String(item?.imageUrl || "").trim(),
+            content: String(item?.content || "").trim(),
+            isActive: item?.isActive !== false
+          }))
+          .filter((item) => item.name && item.imageUrl && item.content)
+      };
+
+      const res = await fetch(`${backendUrl}/api/home-reviews/admin`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.message || "Lưu đánh giá thất bại");
+        return;
+      }
+
+      setHomeReviewForm({
+        sectionTitle: data?.sectionTitle || initialHomeReviewForm.sectionTitle,
+        reviews: Array.isArray(data?.reviews) && data.reviews.length > 0
+          ? data.reviews.map((item) => ({
+              name: item?.name || "",
+              age: item?.age ?? "",
+              role: item?.role || "",
+              imageUrl: item?.imageUrl || "",
+              content: item?.content || "",
+              isActive: item?.isActive !== false
+            }))
+          : initialHomeReviewForm.reviews
+      });
+
+      alert("Đã lưu phần đánh giá trang chủ");
+    } catch (e) {
+      console.error(e);
+      alert("Không thể lưu phần đánh giá lúc này");
+    }
+
+    setSavingHomeReviews(false);
+  };
+
 
   if (!user) {
     return (
@@ -724,7 +855,8 @@ export default function AdminDashboard() {
           </div>
         </div>
       ) : activeTab === "stories" ? (
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="space-y-8">
+          <div className="flex flex-col lg:flex-row gap-8">
           <div className="lg:w-1/2 bg-white rounded-3xl shadow-sm border border-slate-200 p-6">
             <h2 className="text-xl font-bold mb-4">{editingStoryId ? "Chỉnh sửa Story" : "Tạo Story mới"}</h2>
             <form onSubmit={handleSaveStory} className="space-y-4">
@@ -890,6 +1022,109 @@ export default function AdminDashboard() {
               </tbody>
             </table>
             {stories.length === 0 && <div className="text-center py-10 text-slate-500">Chưa có trang story nào</div>}
+          </div>
+          </div>
+
+          <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-slate-800">Chỉnh sửa phần Đánh giá trang chủ</h2>
+              <button
+                type="button"
+                onClick={addHomeReviewRow}
+                className="px-3 py-1.5 rounded-md bg-slate-100 text-slate-700 text-sm font-semibold hover:bg-slate-200 transition"
+              >
+                + Thêm đánh giá
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveHomeReviews} className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-600 mb-1">Tiêu đề section</label>
+                <input
+                  type="text"
+                  value={homeReviewForm.sectionTitle}
+                  onChange={(e) =>
+                    setHomeReviewForm((prev) => ({ ...prev, sectionTitle: e.target.value }))
+                  }
+                  className="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:border-rose-500"
+                  placeholder="ĐÁNH GIÁ TỪ HỘI YÊU HOA"
+                />
+              </div>
+
+              <div className="space-y-3">
+                {homeReviewForm.reviews.map((item, index) => (
+                  <div key={`home-review-${index}`} className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-semibold text-slate-700">Review #{index + 1}</h3>
+                      <button
+                        type="button"
+                        onClick={() => removeHomeReviewRow(index)}
+                        className="text-red-600 text-sm font-semibold hover:underline"
+                      >
+                        Xóa
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <input
+                        type="text"
+                        value={item.name}
+                        onChange={(e) => updateHomeReviewRow(index, "name", e.target.value)}
+                        className="px-3 py-2 bg-white border rounded-lg outline-none focus:border-rose-500"
+                        placeholder="Tên người đánh giá"
+                      />
+                      <input
+                        type="number"
+                        min="0"
+                        max="120"
+                        value={item.age}
+                        onChange={(e) => updateHomeReviewRow(index, "age", e.target.value)}
+                        className="px-3 py-2 bg-white border rounded-lg outline-none focus:border-rose-500"
+                        placeholder="Tuổi"
+                      />
+                      <input
+                        type="text"
+                        value={item.role}
+                        onChange={(e) => updateHomeReviewRow(index, "role", e.target.value)}
+                        className="px-3 py-2 bg-white border rounded-lg outline-none focus:border-rose-500"
+                        placeholder="Nghề nghiệp"
+                      />
+                      <label className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 px-2">
+                        <input
+                          type="checkbox"
+                          checked={item.isActive}
+                          onChange={(e) => updateHomeReviewRow(index, "isActive", e.target.checked)}
+                        />
+                        Hiển thị ngoài trang chủ
+                      </label>
+                    </div>
+
+                    <input
+                      type="text"
+                      value={item.imageUrl}
+                      onChange={(e) => updateHomeReviewRow(index, "imageUrl", e.target.value)}
+                      className="w-full px-3 py-2 bg-white border rounded-lg outline-none focus:border-rose-500"
+                      placeholder="URL hình ảnh (VD: /images/anhnguoi/1.jpg)"
+                    />
+
+                    <textarea
+                      value={item.content}
+                      onChange={(e) => updateHomeReviewRow(index, "content", e.target.value)}
+                      className="w-full px-3 py-2 bg-white border rounded-lg outline-none focus:border-rose-500 min-h-[90px]"
+                      placeholder="Nội dung đánh giá"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <button
+                type="submit"
+                disabled={savingHomeReviews}
+                className="px-5 py-2.5 bg-rose-700 text-white font-semibold rounded-lg hover:bg-rose-800 transition disabled:opacity-60"
+              >
+                {savingHomeReviews ? "Đang lưu..." : "Lưu phần đánh giá"}
+              </button>
+            </form>
           </div>
         </div>
       ) : (
