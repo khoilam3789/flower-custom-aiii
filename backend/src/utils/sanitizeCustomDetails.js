@@ -25,9 +25,29 @@ const isLikelyRawBase64Blob = (value) => {
   return /^[A-Za-z0-9+/=]+$/.test(compact);
 };
 
+const createReasonStats = () => ({
+  dataImage: 0,
+  genericDataBase64: 0,
+  rawBase64Blob: 0,
+  legacyImageKeyLargeValue: 0
+});
+
 const sanitizeNode = (value, counters, parentKey = "") => {
-  if (isDataImage(value) || isGenericDataBase64(value) || isLikelyRawBase64Blob(value)) {
+  if (isDataImage(value)) {
     counters.cleaned += 1;
+    counters.reasons.dataImage += 1;
+    return "";
+  }
+
+  if (isGenericDataBase64(value)) {
+    counters.cleaned += 1;
+    counters.reasons.genericDataBase64 += 1;
+    return "";
+  }
+
+  if (isLikelyRawBase64Blob(value)) {
+    counters.cleaned += 1;
+    counters.reasons.rawBase64Blob += 1;
     return "";
   }
 
@@ -37,6 +57,7 @@ const sanitizeNode = (value, counters, parentKey = "") => {
     value.length > 500
   ) {
     counters.cleaned += 1;
+    counters.reasons.legacyImageKeyLargeValue += 1;
     return "";
   }
 
@@ -57,12 +78,12 @@ const sanitizeNode = (value, counters, parentKey = "") => {
 
 export const sanitizeCustomDetailsWithStats = (details) => {
   if (!details || typeof details !== "object") {
-    return { sanitized: details, cleanedFields: 0 };
+    return { sanitized: details, cleanedFields: 0, reasonStats: createReasonStats() };
   }
 
-  const counters = { cleaned: 0 };
+  const counters = { cleaned: 0, reasons: createReasonStats() };
   const sanitized = sanitizeNode(details, counters);
-  return { sanitized, cleanedFields: counters.cleaned };
+  return { sanitized, cleanedFields: counters.cleaned, reasonStats: counters.reasons };
 };
 
 export const sanitizeCustomDetails = (details) => sanitizeCustomDetailsWithStats(details).sanitized;

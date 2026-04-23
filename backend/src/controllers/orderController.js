@@ -152,15 +152,35 @@ export const cleanupLegacyBase64Data = async (_req, res) => {
     let cartsUpdated = 0;
     let ordersUpdated = 0;
     let cleanedFields = 0;
+    let cartItemsScanned = 0;
+    let orderItemsScanned = 0;
+    let cartItemsWithCustomDetails = 0;
+    let orderItemsWithCustomDetails = 0;
+    const reasonTotals = {
+      dataImage: 0,
+      genericDataBase64: 0,
+      rawBase64Blob: 0,
+      legacyImageKeyLargeValue: 0
+    };
 
     for (const cart of carts) {
       let changed = false;
       const nextItems = (cart.items || []).map((item) => {
-        const { sanitized, cleanedFields: itemCleaned } = sanitizeCustomDetailsWithStats(item.customDetails);
+        cartItemsScanned += 1;
+        if (item.customDetails && typeof item.customDetails === 'object') {
+          cartItemsWithCustomDetails += 1;
+        }
+
+        const { sanitized, cleanedFields: itemCleaned, reasonStats } = sanitizeCustomDetailsWithStats(item.customDetails);
         if (itemCleaned > 0) {
           changed = true;
           cleanedFields += itemCleaned;
         }
+
+        reasonTotals.dataImage += reasonStats.dataImage;
+        reasonTotals.genericDataBase64 += reasonStats.genericDataBase64;
+        reasonTotals.rawBase64Blob += reasonStats.rawBase64Blob;
+        reasonTotals.legacyImageKeyLargeValue += reasonStats.legacyImageKeyLargeValue;
 
         return {
           customDetails: sanitized,
@@ -180,11 +200,21 @@ export const cleanupLegacyBase64Data = async (_req, res) => {
     for (const order of orders) {
       let changed = false;
       const nextItems = (order.items || []).map((item) => {
-        const { sanitized, cleanedFields: itemCleaned } = sanitizeCustomDetailsWithStats(item.customDetails);
+        orderItemsScanned += 1;
+        if (item.customDetails && typeof item.customDetails === 'object') {
+          orderItemsWithCustomDetails += 1;
+        }
+
+        const { sanitized, cleanedFields: itemCleaned, reasonStats } = sanitizeCustomDetailsWithStats(item.customDetails);
         if (itemCleaned > 0) {
           changed = true;
           cleanedFields += itemCleaned;
         }
+
+        reasonTotals.dataImage += reasonStats.dataImage;
+        reasonTotals.genericDataBase64 += reasonStats.genericDataBase64;
+        reasonTotals.rawBase64Blob += reasonStats.rawBase64Blob;
+        reasonTotals.legacyImageKeyLargeValue += reasonStats.legacyImageKeyLargeValue;
 
         return {
           customDetails: sanitized,
@@ -207,7 +237,14 @@ export const cleanupLegacyBase64Data = async (_req, res) => {
       ordersScanned: orders.length,
       cartsUpdated,
       ordersUpdated,
-      cleanedFields
+      cleanedFields,
+      debug: {
+        cartItemsScanned,
+        orderItemsScanned,
+        cartItemsWithCustomDetails,
+        orderItemsWithCustomDetails,
+        reasonTotals
+      }
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

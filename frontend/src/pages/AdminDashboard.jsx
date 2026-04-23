@@ -276,6 +276,7 @@ export default function AdminDashboard() {
       });
 
       const data = await res.json();
+      console.log("[cleanup-base64] response", data);
       if (!res.ok) {
         alert(data.message || "Cleanup that bai");
         return;
@@ -284,6 +285,11 @@ export default function AdminDashboard() {
       setCleanupSummary(
         `Da quet ${data.cartsScanned} cart va ${data.ordersScanned} order | cap nhat ${data.cartsUpdated} cart, ${data.ordersUpdated} order | xoa ${data.cleanedFields} truong Base64`
       );
+
+      if ((data.cleanedFields || 0) === 0) {
+        console.warn("[cleanup-base64] no fields cleaned", data?.debug || {});
+      }
+
       await fetchOrders();
     } catch (e) {
       console.error(e);
@@ -536,16 +542,7 @@ export default function AdminDashboard() {
             <button onClick={() => switchTab("ai-settings")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "ai-settings" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>AI Settings</button>
           </div>
 
-          {activeTab === "orders" && (
-            <button
-              type="button"
-              onClick={handleCleanupLegacyBase64}
-              disabled={cleaningBase64}
-              className="mb-3 mr-1 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition disabled:opacity-60 shrink-0"
-            >
-              {cleaningBase64 ? "Dang cleanup..." : "Xoa Base64 cu"}
-            </button>
-          )}
+
         </div>
       </div>
 
@@ -581,16 +578,8 @@ export default function AdminDashboard() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
             <div>
               <h2 className="text-lg font-bold text-slate-800">Quan ly don hang</h2>
-              <p className="text-sm text-slate-500">Nut cleanup de xoa toan bo blob Base64 cu trong MongoDB.</p>
+              <p className="text-sm text-slate-500">Bam nut Clean Base64 DB goc phai duoi va xem log trong DevTools Console.</p>
             </div>
-            <button
-              type="button"
-              onClick={handleCleanupLegacyBase64}
-              disabled={cleaningBase64}
-              className="px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition disabled:opacity-60"
-            >
-              {cleaningBase64 ? "Dang cleanup..." : "Xoa Base64 cu trong DB"}
-            </button>
           </div>
 
           {cleanupSummary && (
