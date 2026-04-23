@@ -1,6 +1,38 @@
+import mongoose from 'mongoose';
 import Order from '../models/Order.js';
 import Cart from '../models/Cart.js';
 import { sanitizeCustomDetails, sanitizeCustomDetailsWithStats } from '../utils/sanitizeCustomDetails.js';
+
+const LARGE_STRING_THRESHOLD = 500;
+
+const inspectLargeStrings = (value, path = 'customDetails', bucket = { total: 0, samples: [] }) => {
+  if (typeof value === 'string') {
+    if (value.length >= LARGE_STRING_THRESHOLD) {
+      bucket.total += 1;
+      if (bucket.samples.length < 8) {
+        bucket.samples.push({
+          path,
+          length: value.length,
+          preview: value.slice(0, 80)
+        });
+      }
+    }
+    return bucket;
+  }
+
+  if (Array.isArray(value)) {
+    value.forEach((entry, index) => inspectLargeStrings(entry, `${path}[${index}]`, bucket));
+    return bucket;
+  }
+
+  if (value && typeof value === 'object') {
+    Object.entries(value).forEach(([key, child]) => {
+      inspectLargeStrings(child, `${path}.${key}`, bucket);
+    });
+  }
+
+  return bucket;
+};
 
 // @desc    Checkout and create Order from Cart
 // @route   POST /api/orders/checkout
@@ -162,6 +194,10 @@ export const cleanupLegacyBase64Data = async (_req, res) => {
       rawBase64Blob: 0,
       legacyImageKeyLargeValue: 0
     };
+    const largeStringDebug = {
+      total: 0,
+      samples: []
+    };
 
     for (const cart of carts) {
       let changed = false;
@@ -175,6 +211,10 @@ export const cleanupLegacyBase64Data = async (_req, res) => {
         if (itemCleaned > 0) {
           changed = true;
           cleanedFields += itemCleaned;
+        }
+
+        if (item.customDetails && typeof item.customDetails === 'object') {
+          inspectLargeStrings(item.customDetails, 'customDetails', largeStringDebug);
         }
 
         reasonTotals.dataImage += reasonStats.dataImage;
@@ -211,6 +251,10 @@ export const cleanupLegacyBase64Data = async (_req, res) => {
           cleanedFields += itemCleaned;
         }
 
+        if (item.customDetails && typeof item.customDetails === 'object') {
+          inspectLargeStrings(item.customDetails, 'customDetails', largeStringDebug);
+        }
+
         reasonTotals.dataImage += reasonStats.dataImage;
         reasonTotals.genericDataBase64 += reasonStats.genericDataBase64;
         reasonTotals.rawBase64Blob += reasonStats.rawBase64Blob;
@@ -243,8 +287,45 @@ export const cleanupLegacyBase64Data = async (_req, res) => {
         orderItemsScanned,
         cartItemsWithCustomDetails,
         orderItemsWithCustomDetails,
-        reasonTotals
+        reasonTotals,
+        largeStringDebug
       }
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get database statistics to debug data size
+// @route   GET /api/orders/admin/db-stats
+// @access  Private/Admin
+export const getDatabaseStats = async (req, res) => {
+  try {
+    const db = mongoose.connection.db;
+    const collections = await db.listCollections().toArray();
+    
+    const stats = [];
+    let totalSize = 0;
+    
+    for (let coll of collections) {
+      if (coll.type === 'view') continue;
+      const collStats = await db.collection(coll.name).stats();
+      stats.push({
+        collection: coll.name,
+        count: collStats.count,
+        size: collStats.size,          // Data size in bytes
+        storageSize: collStats.storageSize, // Storage size in bytes
+        avgObjSize: collStats.avgObjSize // Average object size
+      });
+      totalSize += collStats.size;
+    }
+    
+    stats.sort((a, b) => b.size - a.size); // Sort descending by size
+    
+    res.json({
+      message: 'Database stats fetched',
+      totalDataSizeBytes: totalSize,
+      collections: stats
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

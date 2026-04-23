@@ -93,6 +93,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(false);
   const [savingAiSettings, setSavingAiSettings] = useState(false);
   const [cleaningBase64, setCleaningBase64] = useState(false);
+  const [checkingDbStats, setCheckingDbStats] = useState(false);
   const [cleanupSummary, setCleanupSummary] = useState("");
   const [editingStoryId, setEditingStoryId] = useState(null);
 
@@ -297,6 +298,27 @@ export default function AdminDashboard() {
     }
 
     setCleaningBase64(false);
+  };
+
+  const handleCheckDbStats = async () => {
+    setCheckingDbStats(true);
+    try {
+      const res = await fetch(`${backendUrl}/api/orders/admin/db-stats`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      console.log("[db-stats] Chi tiet DB size:", data);
+      
+      if (res.ok) {
+        alert(`Tong dung luong: ${(data.totalDataSizeBytes / 1024 / 1024).toFixed(2)} MB. (Xem dev tools log de biet chi tiet)`);
+      } else {
+        alert(data.message || "Khong the lay thong ke DB");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Loi khi lay thong ke DB");
+    }
+    setCheckingDbStats(false);
   };
 
   // ----- ACTIONS CHO PRODUCTS -----
@@ -942,14 +964,25 @@ export default function AdminDashboard() {
       )}
       </div>
 
-      <button
-        type="button"
-        onClick={handleCleanupLegacyBase64}
-        disabled={cleaningBase64}
-        className="fixed bottom-6 right-6 z-40 px-4 py-3 rounded-xl bg-red-600 text-white text-sm font-bold shadow-lg hover:bg-red-700 transition disabled:opacity-60"
-      >
-        {cleaningBase64 ? "Dang cleanup DB..." : "Clean Base64 DB"}
-      </button>
+      <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-3 items-end">
+        <button
+          type="button"
+          onClick={handleCheckDbStats}
+          disabled={checkingDbStats}
+          className="px-4 py-3 rounded-xl bg-orange-500 text-white text-sm font-bold shadow-lg hover:bg-orange-600 transition disabled:opacity-60"
+        >
+          {checkingDbStats ? "Dang check..." : "Debug DB Size"}
+        </button>
+
+        <button
+          type="button"
+          onClick={handleCleanupLegacyBase64}
+          disabled={cleaningBase64}
+          className="px-4 py-3 rounded-xl bg-red-600 text-white text-sm font-bold shadow-lg hover:bg-red-700 transition disabled:opacity-60"
+        >
+          {cleaningBase64 ? "Dang cleanup DB..." : "Clean Base64 DB"}
+        </button>
+      </div>
     </div>
   );
 }
