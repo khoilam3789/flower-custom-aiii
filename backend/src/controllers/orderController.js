@@ -1,5 +1,6 @@
 import Order from '../models/Order.js';
 import Cart from '../models/Cart.js';
+import { sanitizeCustomDetails, sanitizeCustomDetailsWithStats } from '../utils/sanitizeCustomDetails.js';
 
 // @desc    Checkout and create Order from Cart
 // @route   POST /api/orders/checkout
@@ -16,9 +17,16 @@ export const checkoutCart = async (req, res) => {
     const shippingFee = 30000;
     const totalPrice = subTotal + shippingFee;
 
+    const normalizedItems = cart.items.map((item) => ({
+      customDetails: sanitizeCustomDetails(item.customDetails),
+      totalQuantity: item.totalQuantity,
+      itemPrice: item.itemPrice,
+      subTotal: item.subTotal
+    }));
+
     const newOrder = await Order.create({
       userId: req.user._id,
-      items: cart.items,
+      items: normalizedItems,
       shippingFee,
       totalPrice,
       status: 'Đang xử lý',
@@ -126,6 +134,81 @@ export const deleteOrder = async (req, res) => {
     } else {
       res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
     }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Admin cleanup old Base64 blobs in Cart + Order customDetails
+// @route   POST /api/orders/admin/cleanup-base64
+// @access  Private/Admin
+export const cleanupLegacyBase64Data = async (_req, res) => {
+  try {
+    const [carts, orders] = await Promise.all([
+      Cart.find({}, { items: 1 }),
+      Order.find({}, { items: 1 })
+    ]);
+
+    let cartsUpdated = 0;
+    let ordersUpdated = 0;
+    let cleanedFields = 0;
+
+    for (const cart of carts) {
+      let changed = false;
+      const nextItems = (cart.items || []).map((item) => {
+        const { sanitized, cleanedFields: itemCleaned } = sanitizeCustomDetailsWithStats(item.customDetails);
+        if (itemCleaned > 0) {
+          changed = true;
+          cleanedFields += itemCleaned;
+        }
+
+        return {
+          customDetails: sanitized,
+          totalQuantity: item.totalQuantity,
+          itemPrice: item.itemPrice,
+          subTotal: item.subTotal
+        };
+      });
+
+      if (changed) {
+        cart.items = nextItems;
+        await cart.save();
+        cartsUpdated += 1;
+      }
+    }
+
+    for (const order of orders) {
+      let changed = false;
+      const nextItems = (order.items || []).map((item) => {
+        const { sanitized, cleanedFields: itemCleaned } = sanitizeCustomDetailsWithStats(item.customDetails);
+        if (itemCleaned > 0) {
+          changed = true;
+          cleanedFields += itemCleaned;
+        }
+
+        return {
+          customDetails: sanitized,
+          totalQuantity: item.totalQuantity,
+          itemPrice: item.itemPrice,
+          subTotal: item.subTotal
+        };
+      });
+
+      if (changed) {
+        order.items = nextItems;
+        await order.save();
+        ordersUpdated += 1;
+      }
+    }
+
+    res.json({
+      message: 'Da cleanup Base64 cu trong Cart va Order',
+      cartsScanned: carts.length,
+      ordersScanned: orders.length,
+      cartsUpdated,
+      ordersUpdated,
+      cleanedFields
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

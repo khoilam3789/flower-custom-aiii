@@ -128,7 +128,7 @@ export default function CustomPreview() {
           bagItem ? `${bagItem.key}:${bagItem.quantity}` : ''
         ].join('__');
         const cachedComboKey = localStorage.getItem('aiGeneratedComboKey');
-        const cachedImage = localStorage.getItem('aiGeneratedImage');
+        const cachedImage = localStorage.getItem('aiGeneratedImageUrl') || localStorage.getItem('aiGeneratedImage');
         const cachedVersion = localStorage.getItem('aiGeneratedCacheVersion');
 
         if (cachedImage && cachedComboKey === currentComboKey && cachedVersion === previewCacheVersion) {
@@ -156,8 +156,9 @@ export default function CustomPreview() {
 
         if (resAi?.ok) {
           const aiData = await resAi.json();
-          if (aiData.imageBase64) {
-            setAiImage(aiData.imageBase64);
+          const resolvedAiImage = aiData.imageUrl || aiData.imageBase64 || "";
+          if (resolvedAiImage) {
+            setAiImage(resolvedAiImage);
             setPreviewError("");
             setPreviewMeta({
               backend: aiData.usedImageBackend || "unknown",
@@ -165,8 +166,11 @@ export default function CustomPreview() {
               visionModel: aiData.usedVisionModel || "unknown",
               signature: aiData.selectionSignature || ""
             });
-            localStorage.setItem('customPreviewImage', aiData.imageBase64);
-            localStorage.setItem('aiGeneratedImage', aiData.imageBase64);
+            localStorage.setItem('customPreviewImage', resolvedAiImage);
+            localStorage.setItem('aiGeneratedImage', resolvedAiImage);
+            if (aiData.imageUrl) {
+              localStorage.setItem('aiGeneratedImageUrl', aiData.imageUrl);
+            }
             localStorage.setItem('aiGeneratedComboKey', currentComboKey);
             localStorage.setItem('aiGeneratedCacheVersion', previewCacheVersion);
 

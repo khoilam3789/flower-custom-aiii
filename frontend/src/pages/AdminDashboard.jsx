@@ -92,6 +92,8 @@ export default function AdminDashboard() {
   });
   const [loading, setLoading] = useState(false);
   const [savingAiSettings, setSavingAiSettings] = useState(false);
+  const [cleaningBase64, setCleaningBase64] = useState(false);
+  const [cleanupSummary, setCleanupSummary] = useState("");
   const [editingStoryId, setEditingStoryId] = useState(null);
 
   // Form State cho Product
@@ -257,6 +259,38 @@ export default function AdminDashboard() {
         setOrders(orders.map((o) => (o._id === id ? updatedOrder : o)));
       }
     } catch (e) { console.error(e); }
+  };
+
+  const handleCleanupLegacyBase64 = async () => {
+    if (!window.confirm("Xoa toan bo du lieu anh Base64 cu trong Cart va Order? Hanh dong nay khong hoan tac.")) {
+      return;
+    }
+
+    setCleaningBase64(true);
+    setCleanupSummary("");
+
+    try {
+      const res = await fetch(`${backendUrl}/api/orders/admin/cleanup-base64`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.message || "Cleanup that bai");
+        return;
+      }
+
+      setCleanupSummary(
+        `Da quet ${data.cartsScanned} cart va ${data.ordersScanned} order | cap nhat ${data.cartsUpdated} cart, ${data.ordersUpdated} order | xoa ${data.cleanedFields} truong Base64`
+      );
+      await fetchOrders();
+    } catch (e) {
+      console.error(e);
+      alert("Khong the cleanup luc nay");
+    }
+
+    setCleaningBase64(false);
   };
 
   // ----- ACTIONS CHO PRODUCTS -----
@@ -528,7 +562,29 @@ export default function AdminDashboard() {
           </table>
         </div>
       ) : activeTab === "orders" ? (
-        <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-x-auto p-2">
+        <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-4 md:p-5">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+            <div>
+              <h2 className="text-lg font-bold text-slate-800">Quan ly don hang</h2>
+              <p className="text-sm text-slate-500">Nut cleanup de xoa toan bo blob Base64 cu trong MongoDB.</p>
+            </div>
+            <button
+              type="button"
+              onClick={handleCleanupLegacyBase64}
+              disabled={cleaningBase64}
+              className="px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition disabled:opacity-60"
+            >
+              {cleaningBase64 ? "Dang cleanup..." : "Xoa Base64 cu trong DB"}
+            </button>
+          </div>
+
+          {cleanupSummary && (
+            <div className="mb-4 text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+              {cleanupSummary}
+            </div>
+          )}
+
+          <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-slate-200 text-slate-500 uppercase text-xs tracking-wider">
@@ -571,6 +627,7 @@ export default function AdminDashboard() {
               ))}
             </tbody>
           </table>
+          </div>
           {orders.length === 0 && <div className="text-center py-10 text-slate-500">Chưa có đơn hàng nào</div>}
         </div>
       ) : activeTab === "products" ? (

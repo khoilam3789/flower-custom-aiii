@@ -1,4 +1,5 @@
 import Cart from '../models/Cart.js';
+import { sanitizeCustomDetails } from '../utils/sanitizeCustomDetails.js';
 
 // @desc    Get user cart
 // @route   GET /api/cart
@@ -22,6 +23,7 @@ export const getCart = async (req, res) => {
 export const addToCart = async (req, res) => {
   try {
     const { customDetails, totalQuantity, itemPrice } = req.body;
+    const safeCustomDetails = sanitizeCustomDetails(customDetails);
     let cart = await Cart.findOne({ userId: req.user._id });
 
     if (!cart) {
@@ -29,7 +31,7 @@ export const addToCart = async (req, res) => {
     }
 
     const subTotal = totalQuantity * itemPrice;
-    cart.items.push({ customDetails, totalQuantity, itemPrice, subTotal });
+    cart.items.push({ customDetails: safeCustomDetails, totalQuantity, itemPrice, subTotal });
 
     await cart.save();
     res.status(201).json(cart);

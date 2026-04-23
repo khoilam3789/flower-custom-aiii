@@ -113,6 +113,7 @@ export default function Payment() {
               quantity: Number(item.totalQuantity) || 0,
               lineTotal: Number(item.subTotal) || 0,
               imageUrl:
+                item?.customDetails?.aiImageUrl ||
                 item?.customDetails?.aiImage ||
                 item?.customDetails?.blocks?.flatMap((block) => block.items || [])?.find((entry) => entry?.imageUrl)?.imageUrl ||
                 ""
@@ -144,8 +145,9 @@ export default function Payment() {
 
   const buildCustomDetails = () => ({
     source: "payment-page",
-    previewImage: localStorage.getItem("customPreviewImage") || localStorage.getItem("aiGeneratedImage") || "",
-    aiImage: localStorage.getItem("aiGeneratedImage") || "",
+    previewImage: localStorage.getItem("customPreviewImage") || localStorage.getItem("aiGeneratedImageUrl") || localStorage.getItem("aiGeneratedImage") || "",
+    aiImageUrl: localStorage.getItem("aiGeneratedImageUrl") || "",
+    aiImage: localStorage.getItem("aiGeneratedImageUrl") || localStorage.getItem("aiGeneratedImage") || "",
     message: cardMessage,
     blocks: selectionBlocks.map((block) => ({
       key: block.key,
@@ -167,6 +169,7 @@ export default function Payment() {
     localStorage.removeItem("bagSelection");
     localStorage.removeItem("cardSelection");
     localStorage.removeItem("aiGeneratedImage");
+    localStorage.removeItem("aiGeneratedImageUrl");
     localStorage.removeItem("aiGeneratedComboKey");
     localStorage.removeItem("aiGeneratedCacheVersion");
   };

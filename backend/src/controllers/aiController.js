@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import axios from "axios";
 import AiConfig from "../models/AiConfig.js";
+import { uploadAiImageDataUri } from "../services/cloudinaryService.js";
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -367,8 +368,23 @@ export const generatePreview = async (req, res) => {
       });
     }
 
+    let imageUrl = "";
+    let imagePublicId = "";
+
+    try {
+      const uploaded = await uploadAiImageDataUri(base64Image, {
+        public_id: `preview-${selectionSignature}-${Date.now()}`
+      });
+      imageUrl = uploaded?.url || "";
+      imagePublicId = uploaded?.publicId || "";
+    } catch (uploadError) {
+      console.warn("Cloudinary upload thất bại, fallback Base64:", uploadError.message);
+    }
+
     res.json({
       imageBase64: base64Image,
+      imageUrl,
+      imagePublicId,
       prompt: finalImagePrompt,
       provider: imageProvider,
       usedVisionModel,
