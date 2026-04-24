@@ -292,11 +292,11 @@ export default function Story() {
               <article key={post._id || index} className="bg-white rounded-[28px] border border-rose-100 overflow-hidden shadow-sm">
                 <img src={post.coverImage} alt={post.title} className="w-full h-56 object-cover" />
                 <div className="p-6 flex flex-col h-full">
-                  <h3 className="text-black text-base font-medium font-['Geologica'] leading-6 line-clamp-3 min-h-[72px]">{post.title}</h3>
+                  <h3 className="text-black text-lg font-bold italic font-['Gentium_Book_Plus'] leading-6 line-clamp-3 min-h-[72px]">{post.title}</h3>
                   <p className="text-black/75 text-sm font-extralight font-['Geologica'] leading-6 mt-3 line-clamp-4 min-h-[96px]">{post.summary}</p>
                   <div className="mt-4 pt-3 border-t border-rose-200 flex items-center justify-between gap-4 mt-auto">
                     <span className="text-black/75 text-sm font-extralight font-['Geologica']">{post.date}</span>
-                    <Link to={`/blog/${post.slug}`} className="text-rose-700 text-sm font-semibold font-['Geologica'] hover:underline">
+                    <Link to={`/blog/${post.slug}`} className="bg-rose-700/90 hover:bg-rose-800 text-white text-sm font-semibold font-['Geologica'] px-5 py-2 rounded-full transition">
                       Đọc chi tiết
                     </Link>
                   </div>
