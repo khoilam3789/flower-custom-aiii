@@ -289,9 +289,9 @@ export default function Story() {
 
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {blogs.slice(0, visibleBlogCount).map((post, index) => (
-              <article key={post._id || index} className="bg-white rounded-[28px] border border-rose-100 overflow-hidden shadow-sm">
+              <article key={post._id || index} className="bg-white rounded-[28px] border border-rose-100 overflow-hidden shadow-sm flex flex-col">
                 <img src={post.coverImage} alt={post.title} className="w-full h-56 object-cover" />
-                <div className="p-6 flex flex-col h-full">
+                <div className="p-6 flex flex-col flex-grow">
                   <h3 className="text-black text-lg font-bold italic font-['Gentium_Book_Plus'] leading-6 line-clamp-3 min-h-[72px]">{post.title}</h3>
                   <p className="text-black/75 text-sm font-extralight font-['Geologica'] leading-6 mt-3 line-clamp-4 min-h-[96px]">{post.summary}</p>
                   <div className="mt-4 pt-3 border-t border-rose-200 flex items-center justify-between gap-4 mt-auto">
