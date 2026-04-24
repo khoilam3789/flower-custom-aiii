@@ -120,9 +120,9 @@ export default function Customhoa(){
         
         {/* Panel Chọn Hoa (Bên trái) */}
         <div className="w-full lg:w-[60%] bg-[#AF2E38] rounded-[20px] p-4 md:p-6 overflow-y-auto max-h-[60vh] md:max-h-[70vh] scrollbar-hide shadow-inner">
-          <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-6 justify-items-center">
+          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5 justify-items-center">
             {products.map((flower) => (
-              <div key={flower._id} className="relative w-full max-w-[170px] sm:max-w-[260px] aspect-[260/330] flex flex-col items-center overflow-hidden rounded-xl bg-white shadow-md transition-transform hover:shadow-lg">
+              <div key={flower._id} className="relative w-full max-w-[150px] sm:max-w-[220px] aspect-[260/310] flex flex-col items-center overflow-hidden rounded-xl bg-white shadow-md transition-transform hover:shadow-lg">
                 {/* Background base */}
                 <img className="absolute top-0 w-full h-full object-cover z-0" src="/images/CustomizeHoa/nenhoa.png" alt="nen" />
                 
@@ -134,14 +134,14 @@ export default function Customhoa(){
                    </div>
                    
                    {/* Image */}
-                   <div className="flex-1 min-h-0 flex justify-center items-center z-20 pb-4 pt-2">
-                     <img className="object-contain transition-transform duration-300 h-full w-full scale-[1.5] md:scale-[1.7] hover:scale-[1.6] md:hover:scale-[1.85]" src={flower.imageUrl} alt={flower.name} />
+                   <div className="flex-1 min-h-0 flex justify-center items-center z-20 pb-2 pt-2">
+                     <img className="object-contain transition-transform duration-300 h-full w-full scale-[1.3] md:scale-[1.5] hover:scale-[1.4] md:hover:scale-[1.65]" src={flower.imageUrl} alt={flower.name} />
                    </div>
                    
                    {/* Bottom Content Group (Name, Desc, Buttons) pinned down */}
                    <div className="flex flex-col shrink-0 items-center justify-end z-20 pb-1">
                      {/* Name */}
-                     <div className="text-center text-[#3B73A9] text-base md:text-[17px] font-bold line-clamp-1 px-1 leading-snug pb-1">
+                     <div className="text-center text-[#3B73A9] text-[14px] md:text-[16px] font-bold line-clamp-1 px-1 leading-snug pb-0.5">
                        {flower.name}
                      </div>
                      
