@@ -120,11 +120,12 @@ export default function Customleaves(){
         
         {/* Panel Chọn Lá (Bên trái) */}
         <div className="w-full lg:w-[60%] bg-[#AF2E38] rounded-[20px] p-4 md:p-6 overflow-y-auto max-h-[60vh] md:max-h-[70vh] scrollbar-hide shadow-inner">
-          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5 justify-items-center">
+          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5 justify-items-center w-full">
             {products.map((leaf) => (
               <div 
                 key={leaf._id} 
-                className="relative w-full max-w-[150px] sm:max-w-[220px] aspect-[260/310] flex flex-col items-center overflow-hidden rounded-xl bg-white shadow-md transition-transform hover:shadow-lg cursor-pointer"
+                className="relative w-full flex flex-col items-center overflow-hidden rounded-xl bg-white shadow-md transition-transform hover:shadow-lg cursor-pointer"
+                style={{ maxWidth: '160px', aspectRatio: '260/350' }}
                 onClick={() => toggleSelection(leaf._id)}
               >
                 {/* Background base */}
@@ -138,8 +139,8 @@ export default function Customleaves(){
                    </div>
                    
                    {/* Image */}
-                   <div className="flex-1 min-h-0 flex justify-center items-center z-20 pb-1 pt-2">
-                     <img className="object-contain transition-transform duration-300 h-full w-full scale-[1.2] md:scale-[1.4] hover:scale-[1.3] md:hover:scale-[1.5]" src={leaf.imageUrl} alt={leaf.name} />
+                   <div className="flex-1 min-h-[60px] flex justify-center items-center z-20 pb-1 pt-2">
+                     <img className="object-contain transition-transform duration-300 h-full w-full" style={{ transform: 'scale(1.2)' }} src={leaf.imageUrl} alt={leaf.name} />
                    </div>
                    
                    {/* Bottom Content Group (Name, Desc) pinned down */}
