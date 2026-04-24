@@ -124,8 +124,7 @@ export default function Customleaves(){
             {products.map((leaf) => (
               <div 
                 key={leaf._id} 
-                className="relative w-full overflow-hidden rounded-xl bg-white shadow-md transition-transform hover:shadow-lg cursor-pointer"
-                style={{ height: '130px' }}
+                className="flower-card relative w-full overflow-hidden rounded-xl bg-white shadow-md transition-transform hover:shadow-lg cursor-pointer"
                 onClick={() => toggleSelection(leaf._id)}
               >
                 {/* Background base */}

@@ -124,8 +124,7 @@ export default function Customhoa(){
             {products.map((flower) => (
               <div 
                 key={flower._id} 
-                className="relative w-full overflow-hidden rounded-xl bg-white shadow-md transition-transform hover:shadow-lg"
-                style={{ height: '130px' }}
+                className="flower-card relative w-full overflow-hidden rounded-xl bg-white shadow-md transition-transform hover:shadow-lg"
               >
                 {/* Background base */}
                 <img className="absolute top-0 w-full h-full object-cover z-0" src="/images/CustomizeHoa/nenhoa.png" alt="nen" />

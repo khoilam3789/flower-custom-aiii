@@ -22,6 +22,17 @@
     scrollbar-width: none;
 }
 
+/* Flower / Leaf product cards */
+.flower-card {
+  height: 130px;
+}
+@media (min-width: 768px) {
+  .flower-card {
+    height: auto;
+    aspect-ratio: 260 / 330;
+  }
+}
+
 body {
   margin: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
