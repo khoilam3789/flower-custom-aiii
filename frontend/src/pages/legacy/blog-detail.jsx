@@ -30,16 +30,11 @@ export default function BlogDetail() {
   return (
     <div className="w-full bg-Color-3 pb-24 pt-10">
       <div className="max-w-[1280px] mx-auto px-4 md:px-8 lg:px-10">
-        <section className={`relative rounded-[28px] ${blog.themeColor || 'bg-pink-300/40'} border border-red-50 p-6 md:p-8 flex flex-col items-center text-center`}>
-          {blog.coverImage && (
-            <div className="w-full max-w-3xl mb-8 rounded-[20px] overflow-hidden shadow-md">
-              <img src={blog.coverImage} alt={blog.title} className="w-full h-auto object-cover max-h-[500px]" />
-            </div>
-          )}
+        <section className={`relative rounded-[28px] ${blog.themeColor || 'bg-pink-300/40'} border border-red-50 p-6 md:p-8`}>
           <h1 className="text-2xl md:text-5xl text-rose-700 font-bold font-['Gentium_Book_Plus'] leading-tight md:leading-[60px]">
             {blog.title}
           </h1>
-          <p className="mt-6 text-black text-base md:text-2xl font-thin font-['Geologica'] leading-7 md:leading-8 text-justify whitespace-pre-line max-w-4xl mx-auto">
+          <p className="mt-6 text-black text-base md:text-2xl font-thin font-['Geologica'] leading-7 md:leading-8 text-justify whitespace-pre-line max-w-4xl">
             {blog.summary}
           </p>
         </section>
@@ -92,7 +87,7 @@ export default function BlogDetail() {
                 )}
               </section>
             )}
-            
+
             {section.type === 'image' && section.imageUrl && (
               <section className="mt-8 rounded-[30px] overflow-hidden border border-red-50 flex items-center justify-center">
                 <img src={section.imageUrl} alt={section.heading || "Blog Image"} className="w-full h-auto object-cover" />
