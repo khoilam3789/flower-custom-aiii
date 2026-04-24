@@ -1397,7 +1397,7 @@ export default function AdminDashboard() {
                 {blogs.map((blog) => (
                   <tr key={blog._id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50 align-top">
                     <td className="p-4">
-                      <img src={blog.coverImage} alt={blog.title} className="w-14 h-14 rounded-md object-contain bg-slate-100 border" />
+                      <img src={blog.coverImage} alt={blog.title} className="w-14 h-14 rounded-md object-cover border" />
                     </td>
                     <td className="p-4 font-semibold text-slate-800">
                       <Link
