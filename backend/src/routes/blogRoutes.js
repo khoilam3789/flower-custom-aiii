@@ -1,14 +1,14 @@
 import express from 'express';
 import { getBlogs, getBlogBySlug, createBlog, updateBlog, deleteBlog } from '../controllers/blogController.js';
-import adminAuth from '../middlewares/adminAuth.js';
+import { protect, admin } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
 router.get('/', getBlogs);
 router.get('/:slug', getBlogBySlug);
 
-router.post('/', adminAuth, createBlog);
-router.put('/:id', adminAuth, updateBlog);
-router.delete('/:id', adminAuth, deleteBlog);
+router.post('/', protect, admin, createBlog);
+router.put('/:id', protect, admin, updateBlog);
+router.delete('/:id', protect, admin, deleteBlog);
 
 export default router;
