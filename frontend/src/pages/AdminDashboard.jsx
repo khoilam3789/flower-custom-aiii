@@ -853,6 +853,7 @@ export default function AdminDashboard() {
             <button onClick={() => switchTab("orders")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "orders" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Quản Lý Đơn Hàng</button>
             <button onClick={() => switchTab("products")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "products" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Kho Sản Phẩm (Hoa/Lá)</button>
             <button onClick={() => switchTab("stories")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "stories" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Trang Story</button>
+            <button onClick={() => switchTab("blogs")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "blogs" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Quản Lý Blogs</button>
             <button onClick={() => switchTab("ai-settings")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "ai-settings" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>AI Settings</button>
           </div>
 
