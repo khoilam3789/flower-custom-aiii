@@ -86,24 +86,24 @@ export default function AboutUs() {
           
           <div className="absolute inset-0 pointer-events-none">
              {/* ROW 1 */}
-             <div className="absolute top-[49%] left-[14.5%] -translate-x-1/2 flex justify-center w-[30%]">
+             <div className="absolute top-[49%] left-[12%] -translate-x-1/2 flex justify-center w-[30%]">
                 <span className="font-bold text-[9px] sm:text-[11px] md:text-sm lg:text-[17px] uppercase tracking-widest text-center text-zinc-900 drop-shadow-sm leading-tight">Trần Thiên Phúc</span>
              </div>
              <div className="absolute top-[49%] left-[50%] -translate-x-1/2 flex justify-center w-[30%]">
                 <span className="font-bold text-[9px] sm:text-[11px] md:text-sm lg:text-[17px] uppercase tracking-widest text-center text-zinc-900 drop-shadow-sm leading-tight">Lê Thị Phương Vi</span>
              </div>
-             <div className="absolute top-[49%] left-[85.5%] -translate-x-1/2 flex justify-center w-[30%]">
+             <div className="absolute top-[49%] left-[88%] -translate-x-1/2 flex justify-center w-[30%]">
                 <span className="font-bold text-[9px] sm:text-[11px] md:text-sm lg:text-[17px] uppercase tracking-widest text-center text-zinc-900 drop-shadow-sm leading-tight">Nguyễn Thị Lê Na</span>
              </div>
 
              {/* ROW 2 */}
-             <div className="absolute top-[98%] md:top-[99%] left-[14.5%] -translate-x-1/2 flex justify-center w-[30%]">
+             <div className="absolute top-[103%] md:top-[104%] left-[12%] -translate-x-1/2 flex justify-center w-[30%]">
                 <span className="font-bold text-[9px] sm:text-[11px] md:text-sm lg:text-[17px] uppercase tracking-widest text-center text-zinc-900 drop-shadow-sm leading-tight">Trần Phối Kim</span>
              </div>
-             <div className="absolute top-[98%] md:top-[99%] left-[50%] -translate-x-1/2 flex justify-center w-[30%]">
+             <div className="absolute top-[103%] md:top-[104%] left-[50%] -translate-x-1/2 flex justify-center w-[30%]">
                 <span className="font-bold text-[9px] sm:text-[11px] md:text-sm lg:text-[17px] uppercase tracking-widest text-center text-zinc-900 drop-shadow-sm leading-tight">Lý Tú Trân</span>
              </div>
-             <div className="absolute top-[98%] md:top-[99%] left-[85.5%] -translate-x-1/2 flex justify-center w-[30%]">
+             <div className="absolute top-[103%] md:top-[104%] left-[88%] -translate-x-1/2 flex justify-center w-[30%]">
                 <span className="font-bold text-[9px] sm:text-[11px] md:text-sm lg:text-[17px] uppercase tracking-widest text-center text-zinc-900 drop-shadow-sm leading-tight">Phan Minh Thúy Trâm</span>
              </div>
           </div>

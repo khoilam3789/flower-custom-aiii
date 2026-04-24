@@ -120,11 +120,11 @@ export default function Customleaves(){
         
         {/* Panel Chọn Lá (Bên trái) */}
         <div className="w-full lg:w-[60%] bg-[#AF2E38] rounded-[20px] p-4 md:p-6 overflow-y-auto max-h-[60vh] md:max-h-[70vh] scrollbar-hide shadow-inner">
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 justify-items-center">
+          <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-6 justify-items-center">
             {products.map((leaf) => (
               <div 
                 key={leaf._id} 
-                className="relative w-full max-w-[260px] aspect-[260/330] flex flex-col items-center overflow-hidden rounded-xl bg-white shadow-md transition-transform hover:shadow-lg cursor-pointer"
+                className="relative w-full max-w-[170px] sm:max-w-[260px] aspect-[260/330] flex flex-col items-center overflow-hidden rounded-xl bg-white shadow-md transition-transform hover:shadow-lg cursor-pointer"
                 onClick={() => toggleSelection(leaf._id)}
               >
                 {/* Background base */}
@@ -150,18 +150,17 @@ export default function Customleaves(){
                      </div>
                      
                      {/* Description */}
-                     <div className="text-[#444] text-[11px] md:text-[13px] italic leading-tight text-center line-clamp-2 px-1 pb-3 min-h-[32px] md:min-h-[36px] flex items-center justify-center">
+                     <div className="text-[#444] text-[11px] md:text-[13px] italic leading-tight text-center line-clamp-2 px-1 pb-1 min-h-[24px] md:min-h-[28px] flex items-center justify-center">
                        {leaf.description}
                      </div>
                    </div>
 
-                   {/* Custom Checkbox */}
                    <div
                      onClick={(e) => {
                        e.stopPropagation();
                        toggleSelection(leaf._id);
                      }}
-                     className="absolute top-[52px] left-[62px] w-[22px] h-[22px] rounded-full cursor-pointer flex items-center justify-center transition-all duration-200 z-30"
+                     className="absolute top-4 right-4 w-[22px] h-[22px] rounded-full cursor-pointer flex items-center justify-center transition-all duration-200 z-30"
                      style={{
                        border: counts[leaf._id] ? '2px solid #3B73A9' : '2px solid #ccc',
                        background: 'white',
