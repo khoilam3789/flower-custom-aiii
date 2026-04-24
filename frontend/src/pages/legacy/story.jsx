@@ -290,7 +290,7 @@ export default function Story() {
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {blogs.slice(0, visibleBlogCount).map((post, index) => (
               <article key={post._id || index} className="bg-white rounded-[28px] border border-rose-100 overflow-hidden shadow-sm">
-                <img src={post.coverImage} alt={post.title} className="w-full h-56 object-cover" />
+                <img src={post.coverImage} alt={post.title} className="w-full h-56 object-contain bg-white/50" />
                 <div className="p-6 flex flex-col h-full">
                   <h3 className="text-black text-base font-medium font-['Geologica'] leading-6 line-clamp-3 min-h-[72px]">{post.title}</h3>
                   <p className="text-black/75 text-sm font-extralight font-['Geologica'] leading-6 mt-3 line-clamp-4 min-h-[96px]">{post.summary}</p>

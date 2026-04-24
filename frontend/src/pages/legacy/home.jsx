@@ -226,7 +226,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mx-auto">
             {blogs.map((blog, idx) => (
               <div key={blog._id} className={`${idx % 2 === 0 ? 'bg-red-400' : 'bg-slate-500'} rounded-[30px] overflow-hidden shadow-lg transform transition hover:-translate-y-2 flex flex-col p-8 pb-10 ${idx === 1 ? 'mt-0 md:mt-24' : ''}`}>
-                <img src={blog.coverImage} className="w-full h-48 object-cover rounded-[15px] opacity-90 mb-6" alt={blog.title} />
+                <img src={blog.coverImage} className="w-full h-48 object-contain bg-white/50 rounded-[15px] opacity-90 mb-6" alt={blog.title} />
                 <div className="text-white flex flex-col flex-grow">
                   <span className="text-white text-[10px] font-thin font-['Geologica'] leading-3 mb-4 opacity-80 border border-white/30 px-2 py-1 self-start rounded">{blog.date}</span>
                   <h3 className="text-white text-base font-extrabold font-['Geologica'] leading-5 mb-4">{blog.title}</h3>

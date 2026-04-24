@@ -89,8 +89,8 @@ export default function BlogDetail() {
             )}
 
             {section.type === 'image' && section.imageUrl && (
-              <section className="mt-8 rounded-[30px] overflow-hidden border border-red-50 flex items-center justify-center">
-                <img src={section.imageUrl} alt={section.heading || "Blog Image"} className="w-full h-auto max-h-[400px] md:max-h-[550px] object-cover" />
+              <section className="mt-8 rounded-[30px] overflow-hidden border border-red-50 flex items-center justify-center bg-white/50">
+                <img src={section.imageUrl} alt={section.heading || "Blog Image"} className="max-w-full h-auto max-h-[400px] md:max-h-[600px] object-contain mx-auto" />
               </section>
             )}
           </div>
