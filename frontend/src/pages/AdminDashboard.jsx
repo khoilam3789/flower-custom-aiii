@@ -854,6 +854,7 @@ export default function AdminDashboard() {
             <button onClick={() => switchTab("products")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "products" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Kho Sản Phẩm (Hoa/Lá)</button>
             <button onClick={() => switchTab("stories")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "stories" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Trang Story</button>
             <button onClick={() => switchTab("blogs")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "blogs" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Quản Lý Blogs</button>
+            <button onClick={() => switchTab("home-reviews")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "home-reviews" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>Quản Lý Review</button>
             <button onClick={() => switchTab("ai-settings")} className={`pb-4 px-4 font-bold uppercase tracking-wider text-sm ${activeTab === "ai-settings" ? "text-rose-700 border-b-2 border-rose-700" : "text-slate-500 hover:text-slate-800"}`}>AI Settings</button>
           </div>
 
@@ -1434,6 +1435,65 @@ export default function AdminDashboard() {
             </table>
             {blogs.length === 0 && <div className="text-center py-10 text-slate-500">Chưa có blog nào</div>}
           </div>
+        </div>
+      ) : activeTab === "home-reviews" ? (
+        <div className="max-w-4xl bg-white rounded-3xl shadow-sm border border-slate-200 p-6 mx-auto">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold">Chỉnh sửa Review Trang Chủ</h2>
+            <button type="button" onClick={addHomeReviewRow} className="px-4 py-2 bg-slate-100 text-slate-700 font-bold rounded-lg hover:bg-slate-200 transition">
+              + Thêm Review
+            </button>
+          </div>
+
+          <form onSubmit={handleSaveHomeReviews} className="space-y-6">
+            <div>
+              <label className="block text-sm font-bold text-slate-600 mb-1">Tiêu đề khu vực</label>
+              <input type="text" value={homeReviewForm.sectionTitle} onChange={(e) => setHomeReviewForm({ ...homeReviewForm, sectionTitle: e.target.value })} className="w-full px-4 py-2 bg-slate-50 border rounded-lg outline-none focus:border-rose-500" placeholder="ĐÁNH GIÁ TỪ HỘI YÊU HOA" />
+            </div>
+
+            <div className="space-y-6">
+              {homeReviewForm.reviews.map((review, index) => (
+                <div key={index} className="bg-slate-50 border border-slate-200 rounded-xl p-4 relative">
+                  <button type="button" onClick={() => removeHomeReviewRow(index)} className="absolute top-4 right-4 text-red-500 text-sm font-bold hover:underline">
+                    Xóa
+                  </button>
+                  <h3 className="font-semibold text-slate-700 mb-3">Review #{index + 1}</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1">Tên khách hàng *</label>
+                      <input required type="text" value={review.name} onChange={(e) => updateHomeReviewRow(index, "name", e.target.value)} className="w-full px-3 py-2 bg-white border rounded-md outline-none focus:border-rose-500" placeholder="VD: Đỗ Thị Hà" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1">Tuổi</label>
+                      <input type="number" value={review.age} onChange={(e) => updateHomeReviewRow(index, "age", e.target.value)} className="w-full px-3 py-2 bg-white border rounded-md outline-none focus:border-rose-500" placeholder="VD: 22" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1">Nghề nghiệp / Chức vụ</label>
+                      <input type="text" value={review.role} onChange={(e) => updateHomeReviewRow(index, "role", e.target.value)} className="w-full px-3 py-2 bg-white border rounded-md outline-none focus:border-rose-500" placeholder="VD: Sinh viên" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1">URL Ảnh đại diện *</label>
+                      <input required type="text" value={review.imageUrl} onChange={(e) => updateHomeReviewRow(index, "imageUrl", e.target.value)} className="w-full px-3 py-2 bg-white border rounded-md outline-none focus:border-rose-500" placeholder="/images/anhnguoi/1.jpg" />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="block text-xs font-bold text-slate-500 mb-1">Nội dung đánh giá *</label>
+                      <textarea required value={review.content} onChange={(e) => updateHomeReviewRow(index, "content", e.target.value)} className="w-full px-3 py-2 bg-white border rounded-md outline-none focus:border-rose-500" rows={3} placeholder="Viết đánh giá..."></textarea>
+                    </div>
+                    <div className="md:col-span-2 flex items-center gap-2">
+                      <input type="checkbox" checked={review.isActive} onChange={(e) => updateHomeReviewRow(index, "isActive", e.target.checked)} />
+                      <label className="text-sm font-semibold text-slate-700">Đang hoạt động (Hiển thị review này)</label>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-4 border-t border-slate-200">
+              <button type="submit" disabled={savingHomeReviews} className={`px-6 py-3 font-bold rounded-xl text-white transition ${savingHomeReviews ? "bg-slate-400" : "bg-rose-700 hover:bg-rose-800"}`}>
+                {savingHomeReviews ? "Đang lưu..." : "Lưu tất cả thay đổi"}
+              </button>
+            </div>
+          </form>
         </div>
       ) : (
         <div className="max-w-3xl bg-white rounded-3xl shadow-sm border border-slate-200 p-6">
