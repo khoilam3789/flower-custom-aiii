@@ -82,7 +82,7 @@ export default function Login() {
           </div>
 
           <p className="text-center text-xs md:text-[13px] font-semibold text-black/90 pt-1">
-            Chưa có tài khoản? <Link to="/register" className="text-rose-700 hover:underline cursor-pointer">Đăng ký ngay</Link>
+            Chưa có tài khoản? <Link to={`/register${searchParams.toString() ? `?${searchParams.toString()}` : ''}`} className="text-rose-700 hover:underline cursor-pointer">Đăng ký ngay</Link>
           </p>
 
           <p className="text-center text-xs md:text-[13px] font-semibold italic text-black/90 pt-1">

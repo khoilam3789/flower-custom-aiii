@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
@@ -8,12 +9,26 @@ export default function Cart() {
   const { token, user } = useAuth();
   const navigate = useNavigate();
   const backendUrl = API_BASE;
+  const [orders, setOrders] = useState([]);
 
-  const getOrderCode = (item, index) => {
+  useEffect(() => {
+    if (user && token) {
+      fetch(`${backendUrl}/api/orders/my-orders`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) setOrders(data);
+      })
+      .catch(console.error);
+    }
+  }, [user, token, backendUrl]);
+
+  const getOrderCode = (item, index, prefix = "TEMP") => {
     if (item?._id) {
       return `DH-${item._id.toString().slice(-8).toUpperCase()}`;
     }
-    return `DH-TEMP-${String(index + 1).padStart(3, "0")}`;
+    return `DH-${prefix}-${String(index + 1).padStart(3, "0")}`;
   };
 
   const resolveItemImage = (item) => {
@@ -94,39 +109,76 @@ export default function Cart() {
             <div className="col-span-2 text-right">Xóa</div>
           </div>
 
-          {cartItems.length === 0 ? (
-            <div className="text-center py-10 text-slate-500">Giỏ hàng của bạn đang trống.</div>
+          {cartItems.length === 0 && orders.length === 0 ? (
+            <div className="text-center py-10 text-slate-500">Chưa có đơn hàng nào.</div>
           ) : (
-            cartItems.map((item, index) => (
-              <div key={item._id || index} className="flex flex-col md:grid md:grid-cols-16 items-center gap-6 py-6 border-b border-slate-100 last:border-0 hover:bg-slate-50 transition rounded-xl px-2 md:px-0">
-                <div className="md:hidden w-full text-left font-bold text-slate-500 text-sm uppercase">Sản phẩm #{index + 1}</div>
-                
-                <div className="hidden md:block col-span-1 font-semibold text-rose-700 text-center">#{index + 1}</div>
+            <>
+              {cartItems.map((item, index) => (
+                <div key={item._id || index} className="flex flex-col md:grid md:grid-cols-16 items-center gap-6 py-6 border-b border-slate-100 last:border-0 hover:bg-slate-50 transition rounded-xl px-2 md:px-0 relative">
+                  <div className="absolute top-4 left-4 md:static md:col-span-1 text-center flex flex-col items-center">
+                    <span className="font-semibold text-rose-700">#{index + 1}</span>
+                    <span className="text-[10px] font-bold text-orange-500 uppercase mt-1 bg-orange-100 px-2 py-0.5 rounded-full">Chưa thanh toán</span>
+                  </div>
 
-                <div className="hidden md:block col-span-3 text-center text-xs font-bold text-slate-600 tracking-wide">
-                  {getOrderCode(item, index)}
-                </div>
-                
-                <div className="col-span-6 flex flex-col items-center md:items-start text-sm text-slate-600">
-                  <div className="font-bold text-slate-800 mb-2">Gói thiết kế tuỳ chọn</div>
-                  <div className="w-full max-w-[120px] aspect-square rounded-lg overflow-hidden border border-slate-200 shadow-sm mx-auto md:mx-0">
-                    <img src={resolveItemImage(item)} className="w-full h-full object-cover" alt="Gói thiết kế" />
+                  <div className="hidden md:block col-span-3 text-center text-xs font-bold text-slate-600 tracking-wide">
+                    {getOrderCode(item, index, "CART")}
+                  </div>
+                  
+                  <div className="col-span-6 flex flex-col items-center md:items-start text-sm text-slate-600 w-full mt-8 md:mt-0">
+                    <div className="font-bold text-slate-800 mb-2 text-center md:text-left">Gói thiết kế tuỳ chọn</div>
+                    <div className="w-full max-w-[120px] aspect-square rounded-lg overflow-hidden border border-slate-200 shadow-sm mx-auto md:mx-0">
+                      <img src={resolveItemImage(item)} className="w-full h-full object-cover" alt="Gói thiết kế" />
+                    </div>
+                  </div>
+                  
+                  <div className="col-span-1 text-center flex justify-center uppercase font-bold text-slate-700">
+                    x{item.totalQuantity}
+                  </div>
+
+                  <div className="col-span-3 flex md:justify-end font-bold text-rose-700 w-full md:w-auto justify-center">
+                     {item.subTotal.toLocaleString()}₫
+                  </div>
+
+                  <div className="col-span-2 flex md:justify-end w-full md:w-auto h-full items-center justify-center">
+                    <button onClick={() => removeFromCart(item._id || index)} className="text-red-500 hover:text-red-700 font-bold px-4 py-2 bg-red-50 hover:bg-red-100 rounded-lg transition">Xóa</button>
                   </div>
                 </div>
-                
-                <div className="col-span-1 text-center flex justify-center uppercase font-bold text-slate-700">
-                  x{item.totalQuantity}
-                </div>
+              ))}
 
-                <div className="col-span-3 flex md:justify-end font-bold text-rose-700 w-full md:w-auto">
-                   {item.subTotal.toLocaleString()}₫
-                </div>
+              {orders.flatMap(order => 
+                order.items.map((item, itemIndex) => (
+                  <div key={`${order._id}-${itemIndex}`} className="flex flex-col md:grid md:grid-cols-16 items-center gap-6 py-6 border-b border-slate-100 last:border-0 bg-green-50/30 hover:bg-green-50/50 transition rounded-xl px-2 md:px-0 relative opacity-80">
+                    <div className="absolute top-4 left-4 md:static md:col-span-1 text-center flex flex-col items-center">
+                      <span className="font-semibold text-emerald-700">✓</span>
+                      <span className="text-[10px] font-bold text-emerald-600 uppercase mt-1 bg-emerald-100 px-2 py-0.5 rounded-full">Đã thanh toán</span>
+                    </div>
 
-                <div className="col-span-2 flex md:justify-end w-full md:w-auto h-full items-center">
-                  <button onClick={() => removeFromCart(item._id || index)} className="text-red-500 hover:text-red-700 font-bold px-4 py-2 bg-red-50 hover:bg-red-100 rounded-lg transition">Xóa</button>
-                </div>
-              </div>
-            ))
+                    <div className="hidden md:block col-span-3 text-center text-xs font-bold text-slate-600 tracking-wide">
+                      {getOrderCode(item, itemIndex, "PAID")}
+                    </div>
+                    
+                    <div className="col-span-6 flex flex-col items-center md:items-start text-sm text-slate-600 w-full mt-8 md:mt-0">
+                      <div className="font-bold text-slate-800 mb-2 text-center md:text-left">Gói thiết kế tuỳ chọn</div>
+                      <div className="w-full max-w-[120px] aspect-square rounded-lg overflow-hidden border border-slate-200 shadow-sm mx-auto md:mx-0">
+                        <img src={resolveItemImage(item)} className="w-full h-full object-cover grayscale-[20%]" alt="Gói thiết kế" />
+                      </div>
+                    </div>
+                    
+                    <div className="col-span-1 text-center flex justify-center uppercase font-bold text-slate-700">
+                      x{item.totalQuantity}
+                    </div>
+
+                    <div className="col-span-3 flex md:justify-end font-bold text-slate-600 w-full md:w-auto justify-center">
+                       {item.subTotal.toLocaleString()}₫
+                    </div>
+
+                    <div className="col-span-2 flex md:justify-end w-full md:w-auto h-full items-center justify-center text-xs text-slate-500 font-semibold uppercase text-center">
+                      {new Date(order.createdAt).toLocaleDateString('vi-VN')}
+                    </div>
+                  </div>
+                ))
+              )}
+            </>
           )}
 
           {/* Actions */}

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { API_BASE } from '../../api';
 
@@ -12,6 +12,7 @@ export default function Register() {
   
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const backendUrl = API_BASE;
 
   const handleSubmit = async (e) => {
@@ -31,7 +32,14 @@ export default function Register() {
       const data = await res.json();
       if (res.ok) {
         login(data);
-        navigate('/'); // Điều hướng về trang chủ
+        const redirectPath = searchParams.get('redirect');
+        if (data.role === 'admin') {
+          navigate('/admin');
+        } else if (redirectPath && redirectPath.startsWith('/')) {
+          navigate(redirectPath);
+        } else {
+          navigate('/');
+        }
       } else {
         setError(data.message || 'Đăng ký thất bại');
       }
@@ -101,7 +109,7 @@ export default function Register() {
           </div>
 
           <p className="text-center text-xs font-semibold text-black/90 pt-1">
-            Đã có tài khoản? <Link to="/login" className="text-rose-700 hover:underline">Đăng nhập</Link>
+            Đã có tài khoản? <Link to={`/login${searchParams.toString() ? `?${searchParams.toString()}` : ''}`} className="text-rose-700 hover:underline">Đăng nhập</Link>
           </p>
 
           <div className="pt-4 flex justify-center">
