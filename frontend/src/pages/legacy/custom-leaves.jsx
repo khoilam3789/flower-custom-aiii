@@ -125,7 +125,7 @@ export default function Customleaves(){
               <div 
                 key={leaf._id} 
                 className="relative w-full overflow-hidden rounded-xl bg-white shadow-md transition-transform hover:shadow-lg cursor-pointer"
-                style={{ aspectRatio: '260/350' }}
+                style={{ height: '130px' }}
                 onClick={() => toggleSelection(leaf._id)}
               >
                 {/* Background base */}
