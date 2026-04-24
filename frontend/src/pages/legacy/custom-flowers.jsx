@@ -120,45 +120,45 @@ export default function Customhoa(){
         
         {/* Panel Chọn Hoa (Bên trái) */}
         <div className="w-full lg:w-[60%] bg-[#AF2E38] rounded-[20px] p-4 md:p-6 overflow-y-auto max-h-[60vh] md:max-h-[70vh] scrollbar-hide shadow-inner">
-          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5 justify-items-center w-full">
+          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5 w-full">
             {products.map((flower) => (
               <div 
                 key={flower._id} 
-                className="relative w-full flex flex-col items-center overflow-hidden rounded-xl bg-white shadow-md transition-transform hover:shadow-lg"
-                style={{ maxWidth: '160px', aspectRatio: '260/350' }}
+                className="relative w-full overflow-hidden rounded-xl bg-white shadow-md transition-transform hover:shadow-lg"
+                style={{ aspectRatio: '260/350' }}
               >
                 {/* Background base */}
                 <img className="absolute top-0 w-full h-full object-cover z-0" src="/images/CustomizeHoa/nenhoa.png" alt="nen" />
                 
                 {/* Inner Content */}
-                <div className="absolute inset-0 flex flex-col z-10 p-4 gap-2">
+                <div className="absolute inset-0 flex flex-col z-10 p-2 gap-1">
                    {/* Price */}
-                   <div className="text-[13px] font-bold italic text-[#AF2E38] pl-2 z-20 shrink-0">
+                   <div className="text-[11px] font-bold italic text-[#AF2E38] pl-1 z-20 shrink-0">
                      {new Intl.NumberFormat('vi-VN').format(flower.price)} VNĐ
                    </div>
                    
                    {/* Image */}
-                   <div className="flex-1 min-h-[60px] flex justify-center items-center z-20 pb-2 pt-2">
-                     <img className="object-contain transition-transform duration-300 h-full w-full" style={{ transform: 'scale(1.4)' }} src={flower.imageUrl} alt={flower.name} />
+                   <div className="flex-1 min-h-0 flex justify-center items-center z-20 overflow-hidden">
+                     <img className="object-contain w-[80%] h-[80%] transition-transform duration-300 hover:scale-110" src={flower.imageUrl} alt={flower.name} />
                    </div>
                    
                    {/* Bottom Content Group (Name, Desc, Buttons) pinned down */}
-                   <div className="flex flex-col shrink-0 items-center justify-end z-20 pb-1">
+                   <div className="flex flex-col shrink-0 items-center z-20">
                      {/* Name */}
-                     <div className="text-center text-[#3B73A9] text-[14px] md:text-[16px] font-bold line-clamp-1 px-1 leading-snug pb-0.5">
+                     <div className="text-center text-[#3B73A9] text-[11px] sm:text-[13px] font-bold line-clamp-1 px-1 leading-snug">
                        {flower.name}
                      </div>
                      
                      {/* Description */}
-                     <div className="text-[#444] text-[11px] md:text-[13px] italic leading-tight text-center line-clamp-2 px-1 pb-3 min-h-[32px] md:min-h-[36px] flex items-center justify-center">
+                     <div className="text-[#444] text-[9px] sm:text-[11px] italic leading-tight text-center line-clamp-1 px-1 pb-1 hidden xs:block">
                        {flower.description}
                      </div>
 
                      {/* Buttons */}
-                     <div className="flex items-center justify-center gap-4">
-                       <button onClick={(e) => { e.preventDefault(); decrease(flower._id); }} className="text-[#AF2E38] text-2xl font-black w-8 h-8 flex items-center justify-center hover:bg-rose-50 rounded-full transition shadow-sm bg-white/50 pb-1">-</button>
-                       <span className="text-[#AF2E38] text-base font-bold italic w-5 text-center">{counts[flower._id] || 0}</span>
-                       <button onClick={(e) => { e.preventDefault(); increase(flower._id); }} className="text-[#AF2E38] text-2xl font-black w-8 h-8 flex items-center justify-center hover:bg-rose-50 rounded-full transition shadow-sm bg-white/50 pb-1">+</button>
+                     <div className="flex items-center justify-center gap-2 pb-1">
+                       <button onClick={(e) => { e.preventDefault(); decrease(flower._id); }} className="text-[#AF2E38] text-xl font-black w-6 h-6 flex items-center justify-center hover:bg-rose-50 rounded-full transition shadow-sm bg-white/50">-</button>
+                       <span className="text-[#AF2E38] text-sm font-bold italic w-4 text-center">{counts[flower._id] || 0}</span>
+                       <button onClick={(e) => { e.preventDefault(); increase(flower._id); }} className="text-[#AF2E38] text-xl font-black w-6 h-6 flex items-center justify-center hover:bg-rose-50 rounded-full transition shadow-sm bg-white/50">+</button>
                      </div>
                    </div>
                 </div>

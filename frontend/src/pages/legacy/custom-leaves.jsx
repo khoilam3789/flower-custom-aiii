@@ -120,48 +120,44 @@ export default function Customleaves(){
         
         {/* Panel Chọn Lá (Bên trái) */}
         <div className="w-full lg:w-[60%] bg-[#AF2E38] rounded-[20px] p-4 md:p-6 overflow-y-auto max-h-[60vh] md:max-h-[70vh] scrollbar-hide shadow-inner">
-          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5 justify-items-center w-full">
+          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5 w-full">
             {products.map((leaf) => (
               <div 
                 key={leaf._id} 
-                className="relative w-full flex flex-col items-center overflow-hidden rounded-xl bg-white shadow-md transition-transform hover:shadow-lg cursor-pointer"
-                style={{ maxWidth: '160px', aspectRatio: '260/350' }}
+                className="relative w-full overflow-hidden rounded-xl bg-white shadow-md transition-transform hover:shadow-lg cursor-pointer"
+                style={{ aspectRatio: '260/350' }}
                 onClick={() => toggleSelection(leaf._id)}
               >
                 {/* Background base */}
                 <img className="absolute top-0 w-full h-full object-cover z-0" src="/images/CustomizeHoa/nenhoa.png" alt="nen" />
                 
                 {/* Inner Content */}
-                <div className="absolute inset-0 flex flex-col z-10 p-4 gap-2">
+                <div className="absolute inset-0 flex flex-col z-10 p-2 gap-1">
                    {/* Price */}
-                   <div className="text-[13px] font-bold italic text-[#AF2E38] pl-2 z-20 shrink-0">
+                   <div className="text-[11px] font-bold italic text-[#AF2E38] pl-1 z-20 shrink-0 pr-6">
                      {new Intl.NumberFormat('vi-VN').format(leaf.price)} VNĐ
                    </div>
                    
                    {/* Image */}
-                   <div className="flex-1 min-h-[60px] flex justify-center items-center z-20 pb-1 pt-2">
-                     <img className="object-contain transition-transform duration-300 h-full w-full" style={{ transform: 'scale(1.2)' }} src={leaf.imageUrl} alt={leaf.name} />
+                   <div className="flex-1 min-h-0 flex justify-center items-center z-20 overflow-hidden">
+                     <img className="object-contain w-[80%] h-[80%] transition-transform duration-300 hover:scale-110" src={leaf.imageUrl} alt={leaf.name} />
                    </div>
                    
                    {/* Bottom Content Group (Name, Desc) pinned down */}
-                   <div className="flex flex-col shrink-0 items-center justify-end z-20 pb-1">
+                   <div className="flex flex-col shrink-0 items-center z-20">
                      {/* Name */}
-                     <div className="text-center text-[#3B73A9] text-[14px] md:text-[16px] font-bold line-clamp-1 px-1 leading-snug pb-0.5">
+                     <div className="text-center text-[#3B73A9] text-[11px] sm:text-[13px] font-bold line-clamp-1 px-1 leading-snug">
                        {leaf.name}
-                     </div>
-                     
-                     {/* Description */}
-                     <div className="text-[#444] text-[11px] md:text-[12px] italic leading-tight text-center line-clamp-2 px-1 pb-0 min-h-[20px] md:min-h-[24px] flex items-center justify-center">
-                       {leaf.description}
                      </div>
                    </div>
 
+                   {/* Checkbox */}
                    <div
                      onClick={(e) => {
                        e.stopPropagation();
                        toggleSelection(leaf._id);
                      }}
-                     className="absolute top-[16px] right-[16px] w-[20px] h-[20px] rounded-full cursor-pointer flex items-center justify-center transition-all duration-200 z-30"
+                     className="absolute top-[10px] right-[10px] w-[18px] h-[18px] rounded-full cursor-pointer flex items-center justify-center transition-all duration-200 z-30"
                      style={{
                        border: counts[leaf._id] ? '2px solid #3B73A9' : '2px solid #ccc',
                        background: 'white',
@@ -169,7 +165,7 @@ export default function Customleaves(){
                      }}
                    >
                      {counts[leaf._id] === 1 && (
-                       <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: '#3B73A9' }}></div>
+                       <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#3B73A9' }}></div>
                      )}
                    </div>
                 </div>
