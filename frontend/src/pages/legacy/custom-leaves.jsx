@@ -120,7 +120,7 @@ export default function Customleaves(){
         
         {/* Panel Chọn Lá (Bên trái) */}
         <div className="w-full lg:w-[60%] bg-[#AF2E38] rounded-[20px] p-4 md:p-6 overflow-y-auto max-h-[60vh] md:max-h-[70vh] scrollbar-hide shadow-inner">
-          <div className="grid grid-cols-3 sm:grid-cols-3 xl:grid-cols-4 gap-2 md:gap-5 w-full">
+          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2 md:gap-5 w-full">
             {products.map((leaf) => (
               <div 
                 key={leaf._id} 

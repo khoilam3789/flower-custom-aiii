@@ -75,12 +75,6 @@ img {
   font-size: 16px;
 }
 
-.grid {
-  display: grid;
-  gap: 16px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
 .panel {
   background: var(--paper);
   border: 1px solid #d8c8b8;
@@ -130,12 +124,6 @@ button {
 .error {
   color: #991b1b;
   font-weight: 600;
-}
-
-@media (max-width: 960px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 /*
