@@ -149,7 +149,7 @@ export default function Customhoa(){
                      </div>
                      
                      {/* Description */}
-                     <div className="text-[#444] text-[9px] sm:text-[11px] italic leading-tight text-center line-clamp-1 px-1 pb-1 hidden xs:block">
+                     <div className="text-[#444] text-[9px] sm:text-[11px] italic leading-tight text-center line-clamp-1 px-1 pb-1 block">
                        {flower.description}
                      </div>
 
